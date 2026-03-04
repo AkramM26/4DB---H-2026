@@ -13,7 +13,13 @@ namespace HugoLand.Core.Services
     public class CombatService(HugoLandContext context)
     {
         private HugoLandContext Context = context;
-        public async Task<bool> ResolveCombat(MilitaryDetachment defence, MilitaryDetachment attack)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="defence"></param>
+        /// <param name="attack"></param>
+        /// <returns>return true if the defence won. return false if the defence lost</returns>
+        public async Task<bool> ResolveCombatAsync(MilitaryDetachment defence, MilitaryDetachment attack)
         {
             Random random = new Random();
             float installationMultiplayer = 1;
