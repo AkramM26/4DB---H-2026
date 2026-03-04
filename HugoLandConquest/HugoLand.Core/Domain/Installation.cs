@@ -18,8 +18,6 @@ namespace HugoLand.Core.Domain
 
         public InstallationType InstallationType { get; set; }
 
-        public Guid PlayerId { get; set; }
-        public virtual Player Player { get; set; }
         public Guid TerritoryId { get; set; }
         public virtual Territory Territory { get; set; }
     }

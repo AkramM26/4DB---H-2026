@@ -2,6 +2,7 @@
 using HugoLand.Core.Data;
 using HugoLand.Core.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,19 +51,23 @@ namespace HugoLand.Core.Services
             float effectiveForceAttack = attackForce * random.Next(CombatConstants.MinMultiplayerAttack,
                 CombatConstants.MaxMultiplayerAttack) / 10f;
 
+            int LoserForceBeforeCombat;
+            int LoserForceloss;
             if (effectiveForceDefence >= effectiveForceAttack)
             {
+                LoserForceBeforeCombat = attackForce;
                 defenceForce = (int)(defenceForce * 0.8);
                 attackForce = (int)(attackForce * 0.4);
-
                 defenceVictory = true;
+                LoserForceloss = LoserForceBeforeCombat - attackForce;
             }
             else
             {
+                LoserForceBeforeCombat = defenceForce;
                 defenceForce = (int)(defenceForce * 0.4);
                 attackForce = (int)(attackForce * 0.8);
-
                 defenceVictory = true;
+                LoserForceloss = LoserForceBeforeCombat - defenceForce;
             }
 
             var defenceDetachment = await Context.MilitaryDetachments
@@ -70,8 +75,26 @@ namespace HugoLand.Core.Services
             var attackDetachment = await Context.MilitaryDetachments
                 .FirstAsync(d => d.Id == attack.Id);
 
+            Guid playerId;
+            if (defenceVictory)
+                playerId = defence.PlayerId;
+            else
+                playerId = attack.PlayerId;
+
+            var player = await Context.Players
+                .FirstAsync(p => p.Id == playerId);
+
             defenceDetachment.MilitaryForce = defenceForce;
             attackDetachment.MilitaryForce = attackForce;
+            defenceDetachment.Energy = 0;
+            attackDetachment.Energy = 0;
+            player.Gold += (LoserForceloss / 10) * 5;
+
+            if (defenceVictory && attackForce < 10)
+                Context.Remove(attackDetachment);
+            else if (!defenceVictory && attackForce < 10)
+                Context.Remove(defenceDetachment);
+
 
             await Context.SaveChangesAsync();
             return defenceVictory;

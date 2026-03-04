@@ -9,6 +9,7 @@ namespace HugoLand.Core.Domain
     public class MilitaryDetachment
     {
         public Guid Id { get; protected set; } = Guid.NewGuid();
+        public int Energy { get; set; }
 
         public int MilitaryForce { get; set; }
 

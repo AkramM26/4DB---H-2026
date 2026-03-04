@@ -13,5 +13,6 @@ namespace HugoLand.Core.Data
         public DbSet<Game> Games => Set<Game>();
         public DbSet<Player> Players => Set<Player>();
         public DbSet<MilitaryDetachment> MilitaryDetachments => Set<MilitaryDetachment>();
+        public DbSet<Installation> Installations => Set<Installation>();
     }
 }
