@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36518.9 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HugoLand.Console", "HugoLand.Console\HugoLand.Console.csproj", "{812CCDC6-7A1A-4D26-B342-0E3FD7338754}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HugoLand.Core", "HugoLand.Core\HugoLand.Core.csproj", "{1FC5AF8F-4576-4229-BEBE-072D9AFC88EB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{812CCDC6-7A1A-4D26-B342-0E3FD7338754}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{812CCDC6-7A1A-4D26-B342-0E3FD7338754}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{812CCDC6-7A1A-4D26-B342-0E3FD7338754}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{812CCDC6-7A1A-4D26-B342-0E3FD7338754}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FC5AF8F-4576-4229-BEBE-072D9AFC88EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FC5AF8F-4576-4229-BEBE-072D9AFC88EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FC5AF8F-4576-4229-BEBE-072D9AFC88EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FC5AF8F-4576-4229-BEBE-072D9AFC88EB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {91FE8681-0088-4536-A82B-F36177C1D8C8}
+	EndGlobalSection
+EndGlobal
