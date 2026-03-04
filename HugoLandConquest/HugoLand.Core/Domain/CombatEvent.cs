@@ -8,6 +8,8 @@ namespace HugoLand.Core.Domain
 {
     public class CombatEvent
     {
+        public Guid Id { get; protected set; } = Guid.NewGuid();
+
         public Guid GameId { get; set; }
         public virtual Game Game { get; set; }
     }
