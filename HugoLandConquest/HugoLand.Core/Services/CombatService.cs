@@ -14,27 +14,58 @@ namespace HugoLand.Core.Services
     public class CombatService(HugoLandContext context)
     {
         private HugoLandContext Context = context;
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="defence"></param>
-        /// <param name="attack"></param>
-        /// <returns>return true if the defence won. return false if the defence lost</returns>
-        public async Task<bool> ResolveCombatAsync(MilitaryDetachment defence, MilitaryDetachment attack)
+        private record CombatResult(bool DefenceVictory, int DefenceForce, int AttackForce, int GoldGain);
+
+        public async Task<bool> ResolveCombatAsync(Guid defenceId, Guid attackId)
         {
-            Random random = new Random();
-            float installationMultiplayer = 1;
-            float territoryMultiplayer = 1;
+            var defence = await Context.MilitaryDetachments
+                .Include(d => d.Territory.Installation)
+                .Include(d => d.Player)
+                .FirstAsync(d => d.Id == defenceId);
+            var attack = await Context.MilitaryDetachments
+                .Include(a => a.Territory.Installation)
+                .Include(d => d.Player)
+                .FirstAsync(a => a.Id == attackId);
+
             int defenceForce = defence.MilitaryForce;
             int attackForce = attack.MilitaryForce;
-            bool defenceVictory = false;
             TerritoryType territoryType = defence.Territory.TerritoryType;
             InstallationType installationType;
-
             if (defence.Territory.Installation is null)
                 installationType = InstallationType.None;
             else
                 installationType = defence.Territory.Installation.InstallationType;
+
+            CombatResult combatResult = InternalResolveCombat(defenceForce, attackForce, territoryType, installationType);
+
+            defence.MilitaryForce = combatResult.DefenceForce;
+            attack.MilitaryForce = combatResult.AttackForce;
+            defence.Energy = 0;
+            attack.Energy = 0;
+
+            if (combatResult.DefenceVictory)
+            {
+                defence.Player.Gold += combatResult.GoldGain;
+                if (combatResult.AttackForce < 10)
+                    Context.Remove(attack);
+            }
+            else
+            {
+                attack.Player.Gold += combatResult.GoldGain;
+                if (combatResult.DefenceForce < 10)
+                    Context.Remove(defence);
+            }
+
+            await Context.SaveChangesAsync();
+
+            return combatResult.DefenceVictory;
+        }
+        private CombatResult InternalResolveCombat(int defenceForce, int attackForce, TerritoryType territoryType,
+            InstallationType installationType)
+        {
+            Random random = new Random();
+            float installationMultiplayer = 1;
+            float territoryMultiplayer = 1;
 
             if (territoryType == TerritoryType.Forest)
                 territoryMultiplayer = CombatConstants.ForestMultiplayer;
@@ -51,53 +82,28 @@ namespace HugoLand.Core.Services
             float effectiveForceAttack = attackForce * random.Next(CombatConstants.MinMultiplayerAttack,
                 CombatConstants.MaxMultiplayerAttack) / 10f;
 
-            int LoserForceBeforeCombat;
-            int LoserForceloss;
+            int loserForceBeforeCombat;
+            int loserForceloss;
+            bool defenceVictory;
             if (effectiveForceDefence >= effectiveForceAttack)
             {
-                LoserForceBeforeCombat = attackForce;
+                loserForceBeforeCombat = attackForce;
                 defenceForce = (int)(defenceForce * 0.8);
                 attackForce = (int)(attackForce * 0.4);
                 defenceVictory = true;
-                LoserForceloss = LoserForceBeforeCombat - attackForce;
+                loserForceloss = loserForceBeforeCombat - attackForce;
             }
             else
             {
-                LoserForceBeforeCombat = defenceForce;
+                loserForceBeforeCombat = defenceForce;
                 defenceForce = (int)(defenceForce * 0.4);
                 attackForce = (int)(attackForce * 0.8);
-                defenceVictory = true;
-                LoserForceloss = LoserForceBeforeCombat - defenceForce;
+                defenceVictory = false;
+                loserForceloss = loserForceBeforeCombat - defenceForce;
             }
 
-            var defenceDetachment = await Context.MilitaryDetachments
-                .FirstAsync(d => d.Id == defence.Id);
-            var attackDetachment = await Context.MilitaryDetachments
-                .FirstAsync(d => d.Id == attack.Id);
-
-            Guid playerId;
-            if (defenceVictory)
-                playerId = defence.PlayerId;
-            else
-                playerId = attack.PlayerId;
-
-            var player = await Context.Players
-                .FirstAsync(p => p.Id == playerId);
-
-            defenceDetachment.MilitaryForce = defenceForce;
-            attackDetachment.MilitaryForce = attackForce;
-            defenceDetachment.Energy = 0;
-            attackDetachment.Energy = 0;
-            player.Gold += (LoserForceloss / 10) * 5;
-
-            if (defenceVictory && attackForce < 10)
-                Context.Remove(attackDetachment);
-            else if (!defenceVictory && attackForce < 10)
-                Context.Remove(defenceDetachment);
-
-
-            await Context.SaveChangesAsync();
-            return defenceVictory;
+            CombatResult combatResult = new CombatResult(defenceVictory, defenceForce, attackForce, (loserForceloss / 10) * 5);
+            return combatResult;
         }
     }
 }
