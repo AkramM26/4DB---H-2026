@@ -9,6 +9,7 @@ namespace HugoLand.Core.Domain
     public class Game
     {
         public Guid Id { get; protected set; } = Guid.NewGuid();
+        public string SaveName { get; set; }
 
         public virtual ICollection<Player> Players { get; set; } = [];
         public virtual ICollection<Territory> Territories { get; set; } = [];
@@ -16,5 +17,14 @@ namespace HugoLand.Core.Domain
         public virtual ICollection<PlayerAction> PlayerActions { get; set; } = [];
         public virtual ICollection<TurnSnapShot> TurnSnapShots { get; set; } = [];
 
+        protected Game() { }
+
+        public static Game Create()
+        {
+            return new Game
+            {
+                SaveName = "Current Game"
+            };
+        }
     }
 }

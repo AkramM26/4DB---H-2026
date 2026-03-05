@@ -14,8 +14,10 @@ namespace HugoLand.Core.Domain
     }
     public class Territory
     {
-        public Guid Id { get; protected set; } = Guid.NewGuid();
+        public Guid Id { get; protected set; }
         public TerritoryType TerritoryType{ get; set; }
+        public int PositionX { get; set; }
+        public int PositionY { get; set; }
 
         public Guid GameId { get; set; }
         public virtual Game Game { get; set; }
@@ -23,5 +25,19 @@ namespace HugoLand.Core.Domain
         public virtual MilitaryDetachment? MilitaryDetachment { get; set; }
         public Guid? InstallationId { get; set; }
         public virtual Installation? Installation { get; set; }
+
+        protected Territory() { }
+
+        public static Territory Create(TerritoryType territoryType,int positionX,int positionY, Guid GameId)
+        {
+            return new Territory
+            {
+                Id = Guid.NewGuid(),
+                TerritoryType = territoryType,
+                GameId = GameId,
+                PositionY = positionY,
+                PositionX = positionX,
+            };
+        }
     }
 }

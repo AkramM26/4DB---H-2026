@@ -14,11 +14,23 @@ namespace HugoLand.Core.Domain
     }
     public class Installation
     {
-        public Guid Id { get; protected set; } = Guid.NewGuid();
+        public Guid Id { get; protected set; }
 
         public InstallationType InstallationType { get; set; }
 
         public Guid TerritoryId { get; set; }
         public virtual Territory Territory { get; set; }
+
+        protected Installation() { }
+
+        public static Installation Create(InstallationType installationType, Guid territoryId)
+        {
+            return new Installation
+            {
+                Id = Guid.NewGuid(),
+                InstallationType = installationType,
+                TerritoryId = territoryId
+            };
+        }
     }
 }

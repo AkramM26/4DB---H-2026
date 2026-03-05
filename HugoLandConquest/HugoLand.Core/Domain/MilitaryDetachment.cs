@@ -8,7 +8,7 @@ namespace HugoLand.Core.Domain
 {
     public class MilitaryDetachment
     {
-        public Guid Id { get; protected set; } = Guid.NewGuid();
+        public Guid Id { get; protected set; }
         public int Energy { get; set; }
 
         public int MilitaryForce { get; set; }
@@ -17,5 +17,19 @@ namespace HugoLand.Core.Domain
         public virtual Player Player { get; set; }
         public Guid TerritoryId { get; set; }
         public virtual Territory Territory { get; set; }
+
+        protected MilitaryDetachment() { }
+
+        public static MilitaryDetachment Create(int energy, int militaryForce, Guid playerId, Guid TerritoryId)
+        {
+            return new MilitaryDetachment
+            {
+                Energy = energy,
+                Id = Guid.NewGuid(),
+                MilitaryForce = militaryForce,
+                TerritoryId = TerritoryId,
+                PlayerId = playerId
+            };
+        }
     }
 }

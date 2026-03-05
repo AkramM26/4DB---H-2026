@@ -8,26 +8,13 @@ using System.Threading.Tasks;
 
 namespace HugoLand.Core.Services
 {
-    public class GameService
+    public class GameService (HugoLandContext context)
     {
-        private readonly HugoLandContext _context;
+        private readonly HugoLandContext Context = context;
 
-        public GameService(HugoLandContext context)
+        public async Task CreateGameAsync()
         {
-            _context = context;
-        }
-
-        public void CreateGame()
-        {
-            Game game = new();
-            Player player1 = new(), player2 = new();
-            game.Players.Add(player1);
-            game.Players.Add(player2);
-
-            foreach (var p in game.Players)
-            {
-                // Attribuer les éléments de départ à chaque joueur
-            }
+            await Seed.SeedGameAsync(Context);
         }
 
         public void LoadGame()
