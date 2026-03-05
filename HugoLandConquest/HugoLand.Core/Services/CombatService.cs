@@ -14,7 +14,9 @@ namespace HugoLand.Core.Services
     public class CombatService(HugoLandContext context)
     {
         private HugoLandContext Context = context;
-        private record CombatResult(bool DefenceVictory, int DefenceForce, int AttackForce, int GoldGain);
+        private record CombatResult(bool DefenceVictory, int DefenceForce, int AttackForce,
+            int GoldGain, float DefenceRandomFactor, float AttackRandomFactor,
+            float EffectiveDefenceForce, float EffectiveAttackForce);
 
         public async Task<bool> ResolveCombatAsync(Guid defenceId, Guid attackId)
         {
@@ -43,18 +45,28 @@ namespace HugoLand.Core.Services
             defence.Energy = 0;
             attack.Energy = 0;
 
+            int victorPlayerNumber;
             if (combatResult.DefenceVictory)
             {
+                victorPlayerNumber = defence.Player.PlayerNumber;
                 defence.Player.Gold += combatResult.GoldGain;
                 if (combatResult.AttackForce < 10)
                     Context.Remove(attack);
             }
             else
             {
+                victorPlayerNumber = attack.Player.PlayerNumber;
                 attack.Player.Gold += combatResult.GoldGain;
                 if (combatResult.DefenceForce < 10)
                     Context.Remove(defence);
             }
+
+            CombatEvent combatEvent = CombatEvent.Create(defence.Player.GameId, victorPlayerNumber,
+                combatResult.DefenceRandomFactor, combatResult.AttackRandomFactor, defenceForce, attackForce,
+                combatResult.EffectiveDefenceForce, combatResult.EffectiveAttackForce,
+                defenceForce - combatResult.DefenceForce,attackForce-combatResult.AttackForce,combatResult.GoldGain);
+                
+            Context.Add(combatEvent);
 
             await Context.SaveChangesAsync();
 
@@ -66,6 +78,11 @@ namespace HugoLand.Core.Services
             Random random = new Random();
             float installationMultiplayer = 1;
             float territoryMultiplayer = 1;
+            float attackRandomFactor = attackForce * random.Next(CombatConstants.MinMultiplayerAttack,
+                CombatConstants.MaxMultiplayerAttack) / 10f;
+            float defenceRandomFactor= defenceForce * random.Next(CombatConstants.MinMultiplayerDefence,
+                CombatConstants.MaxMultiplayerDefence) / 10f;
+
 
             if (territoryType == TerritoryType.Forest)
                 territoryMultiplayer = CombatConstants.ForestMultiplayer;
@@ -77,10 +94,8 @@ namespace HugoLand.Core.Services
             if (installationType == InstallationType.Camp)
                 installationMultiplayer = CombatConstants.CampMultiplayer;
 
-            float effectiveForceDefence = (defenceForce * random.Next(CombatConstants.MinMultiplayerDefence,
-                CombatConstants.MaxMultiplayerDefence) / 10f) * territoryMultiplayer * installationMultiplayer;
-            float effectiveForceAttack = attackForce * random.Next(CombatConstants.MinMultiplayerAttack,
-                CombatConstants.MaxMultiplayerAttack) / 10f;
+            float effectiveForceDefence = defenceForce * defenceRandomFactor * territoryMultiplayer * installationMultiplayer;
+            float effectiveForceAttack =attackForce * attackRandomFactor;
 
             int loserForceBeforeCombat;
             int loserForceloss;
@@ -102,7 +117,8 @@ namespace HugoLand.Core.Services
                 loserForceloss = loserForceBeforeCombat - defenceForce;
             }
 
-            CombatResult combatResult = new CombatResult(defenceVictory, defenceForce, attackForce, (loserForceloss / 10) * 5);
+            CombatResult combatResult = new CombatResult(defenceVictory, defenceForce, attackForce, (loserForceloss / 10) * 5,
+                defenceRandomFactor,attackRandomFactor, effectiveForceDefence, effectiveForceAttack);
             return combatResult;
         }
     }
