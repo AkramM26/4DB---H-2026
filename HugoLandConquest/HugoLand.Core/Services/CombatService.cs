@@ -13,7 +13,7 @@ namespace HugoLand.Core.Services
 {
     public class CombatService(HugoLandContext context)
     {
-        private HugoLandContext Context = context;
+        private readonly HugoLandContext Context = context;
         private record CombatResult(bool DefenceVictory, int DefenceForce, int AttackForce,
             int GoldGain, float DefenceRandomFactor, float AttackRandomFactor,
             float EffectiveDefenceForce, float EffectiveAttackForce);

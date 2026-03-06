@@ -16,6 +16,8 @@ namespace HugoLand.Core.Domain
         public virtual ICollection<CombatEvent> CombatEvents { get; set; } = [];
         public virtual ICollection<PlayerAction> PlayerActions { get; set; } = [];
         public virtual ICollection<TurnSnapShot> TurnSnapShots { get; set; } = [];
+        public virtual ICollection<Installation> Installations { get; set; } = [];
+        public virtual ICollection<MilitaryDetachment> MilitaryDetachments { get; set; } = [];
 
         protected Game() { }
 

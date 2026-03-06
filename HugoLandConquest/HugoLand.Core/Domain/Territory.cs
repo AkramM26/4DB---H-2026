@@ -21,9 +21,7 @@ namespace HugoLand.Core.Domain
 
         public Guid GameId { get; set; }
         public virtual Game Game { get; set; }
-        public Guid? MilitaryDetachmentId { get; set; }
         public virtual MilitaryDetachment? MilitaryDetachment { get; set; }
-        public Guid? InstallationId { get; set; }
         public virtual Installation? Installation { get; set; }
 
         protected Territory() { }

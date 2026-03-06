@@ -11,7 +11,7 @@ namespace HugoLand.Core.Services
 {
     public class EconomyService(HugoLandContext context)
     {
-        private readonly HugoLandContext Context;
+        private readonly HugoLandContext Context = context;
         public async Task CollectRevenue(Guid playerId)
         {
             var player = await Context.Players
