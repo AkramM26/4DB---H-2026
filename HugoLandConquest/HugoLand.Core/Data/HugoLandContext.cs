@@ -14,12 +14,15 @@ namespace HugoLand.Core.Data
 
         public DbSet<Game> Games => Set<Game>();
         public DbSet<Player> Players => Set<Player>();
-        public DbSet<Territory> Territories=> Set<Territory>();
+        public DbSet<Territory> Territories => Set<Territory>();
         public DbSet<MilitaryDetachment> MilitaryDetachments => Set<MilitaryDetachment>();
         public DbSet<Installation> Installations => Set<Installation>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Game>()
+                .HasQueryFilter(g => g.Id == CurrentGameId);
+
             modelBuilder.Entity<Player>()
                 .HasQueryFilter(p => p.GameId == CurrentGameId);
 
