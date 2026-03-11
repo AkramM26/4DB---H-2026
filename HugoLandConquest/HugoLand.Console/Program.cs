@@ -17,7 +17,6 @@ internal class Program
         GameService gameService = new GameService(context);
         await gameService.CreateGameAsync();
 
-
         GameDisplay.ShowGame(context);
 
     }

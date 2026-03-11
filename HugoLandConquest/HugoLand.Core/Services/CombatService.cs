@@ -64,8 +64,8 @@ namespace HugoLand.Core.Services
             CombatEvent combatEvent = CombatEvent.Create(defence.Player.GameId, victorPlayerNumber,
                 combatResult.DefenceRandomFactor, combatResult.AttackRandomFactor, defenceForce, attackForce,
                 combatResult.EffectiveDefenceForce, combatResult.EffectiveAttackForce,
-                defenceForce - combatResult.DefenceForce,attackForce-combatResult.AttackForce,combatResult.GoldGain);
-                
+                defenceForce - combatResult.DefenceForce, attackForce - combatResult.AttackForce, combatResult.GoldGain);
+
             Context.Add(combatEvent);
 
             await Context.SaveChangesAsync();
@@ -80,7 +80,7 @@ namespace HugoLand.Core.Services
             float territoryMultiplayer = 1;
             float attackRandomFactor = attackForce * random.Next(CombatConstants.MinMultiplayerAttack,
                 CombatConstants.MaxMultiplayerAttack) / 10f;
-            float defenceRandomFactor= defenceForce * random.Next(CombatConstants.MinMultiplayerDefence,
+            float defenceRandomFactor = defenceForce * random.Next(CombatConstants.MinMultiplayerDefence,
                 CombatConstants.MaxMultiplayerDefence) / 10f;
 
 
@@ -95,7 +95,7 @@ namespace HugoLand.Core.Services
                 installationMultiplayer = CombatConstants.CampMultiplayer;
 
             float effectiveForceDefence = defenceForce * defenceRandomFactor * territoryMultiplayer * installationMultiplayer;
-            float effectiveForceAttack =attackForce * attackRandomFactor;
+            float effectiveForceAttack = attackForce * attackRandomFactor;
 
             int loserForceBeforeCombat;
             int loserForceloss;
@@ -118,7 +118,7 @@ namespace HugoLand.Core.Services
             }
 
             CombatResult combatResult = new CombatResult(defenceVictory, defenceForce, attackForce, (loserForceloss / 10) * 5,
-                defenceRandomFactor,attackRandomFactor, effectiveForceDefence, effectiveForceAttack);
+                defenceRandomFactor, attackRandomFactor, effectiveForceDefence, effectiveForceAttack);
             return combatResult;
         }
     }
