@@ -18,6 +18,7 @@ namespace HugoLand.Core.Data
         public DbSet<MilitaryDetachment> MilitaryDetachments => Set<MilitaryDetachment>();
         public DbSet<Installation> Installations => Set<Installation>();
         public DbSet<PlayerAction> PlayerActions => Set<PlayerAction>();
+        public DbSet<TurnSnapShot> TurnSnapShots => Set<TurnSnapShot>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -38,6 +39,9 @@ namespace HugoLand.Core.Data
 
             modelBuilder.Entity<PlayerAction>()
                 .HasQueryFilter(a => a.GameId == CurrentGameId);
+
+            modelBuilder.Entity<TurnSnapShot>()
+                .HasQueryFilter(t => t.GameId == CurrentGameId);
 
             base.OnModelCreating(modelBuilder);
         }

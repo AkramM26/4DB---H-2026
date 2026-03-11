@@ -23,6 +23,10 @@ namespace HugoLand.Core.Services
 
         public async Task StartTurnAsync()
         {
+            var game = await Context.Games.FirstAsync();
+            if (game.IsFinished)
+                return;
+
             // Récupérer le joueur actuel
             var player = await Context.Players
                 .Include(p => p.MilitaryDetachments)
@@ -65,13 +69,49 @@ namespace HugoLand.Core.Services
 
         public async Task EndTurnAsync()
         {
-            // Un instantané de tour (TurnSnapshot) est enregistré automatiquement pour chaque joueur
+            var player = await Context.Players
+                .Include(p => p.MilitaryDetachments)
+                .Include(p => p.Installations)
+                .FirstAsync(p => p.PlayerNumber == _currentPlayerNumber);
 
-            // verification si victoire
+            var snapshot = TurnSnapShot.Create(player.GameId, player.PlayerNumber, player.Gold,
+                player.MilitaryDetachments.Count, player.MilitaryDetachments.Sum(m => m.MilitaryForce),
+                player.Installations.Count(i => i.InstallationType == InstallationType.Fortification));
 
-            // Passage au joueur suivant
-            _currentPlayerNumber = (_currentPlayerNumber == 1) ? 2 : 1;
-            await Task.CompletedTask;
+            await Context.TurnSnapShots.AddAsync(snapshot);
+            var otherPlayerNumber = _currentPlayerNumber == 1 ? 2 : 1;
+
+            var otherPlayer = await Context.Players
+                .Include(p => p.MilitaryDetachments)
+                .FirstAsync(p => p.PlayerNumber == otherPlayerNumber);
+
+            var game = await Context.Games.FirstAsync(g => g.Id == player.GameId);
+
+            if (!otherPlayer.MilitaryDetachments.Any())
+            {
+                game.IsFinished = true;
+                game.WinnerPlayerNumber = _currentPlayerNumber;
+                game.EndedAt = DateTime.UtcNow;
+            }
+            else if (player.TurnInDept >= 5)
+            {
+                game.IsFinished = true;
+                game.WinnerPlayerNumber = otherPlayerNumber;
+                game.EndedAt = DateTime.UtcNow;
+            }
+            else if (otherPlayer.TurnInDept >= 5)
+            {
+                game.IsFinished = true;
+                game.WinnerPlayerNumber = _currentPlayerNumber;
+                game.EndedAt = DateTime.UtcNow;
+            }
+            else
+            {
+                _currentPlayerNumber = otherPlayerNumber;
+            }
+
+            await Context.SaveChangesAsync();
+
         }
     }
 }

@@ -11,6 +11,10 @@ namespace HugoLand.Core.Domain
         public Guid Id { get;  set; } 
         public string SaveName { get; set; }
 
+        public bool IsFinished { get; set; }
+        public int? WinnerPlayerNumber { get; set; }
+        public DateTime? EndedAt { get; set; }
+
         public virtual ICollection<Player> Players { get; set; } = [];
         public virtual ICollection<Territory> Territories { get; set; } = [];
         public virtual ICollection<CombatEvent> CombatEvents { get; set; } = [];
@@ -26,7 +30,10 @@ namespace HugoLand.Core.Domain
             return new Game
             {
                 Id = Guid.NewGuid(),
-                SaveName = DateTime.Now.ToString()
+                SaveName = DateTime.Now.ToString(),
+                IsFinished = false,
+                WinnerPlayerNumber = null,
+                EndedAt = null
             };
         }
     }

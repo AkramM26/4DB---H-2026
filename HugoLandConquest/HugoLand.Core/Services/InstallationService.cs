@@ -83,7 +83,7 @@ namespace HugoLand.Core.Services
             militaryDetachment.CanAct = false;
             militaryDetachment.Territory.Installation.InstallationType = InstallationType.Fortification;
 
-            await Context.AddAsync(PlayerAction.Create(militaryDetachment.GameId, PlayerActionType.BuildCamp,
+            await Context.AddAsync(PlayerAction.Create(militaryDetachment.GameId, PlayerActionType.UpgradeCampToFortification,
                 $"Camp upgraded to fortification at ({militaryDetachment.Territory.PositionX}, {militaryDetachment.Territory.PositionY})"));
             await Context.SaveChangesAsync();
 
