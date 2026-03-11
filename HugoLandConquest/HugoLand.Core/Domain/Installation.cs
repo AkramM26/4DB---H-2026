@@ -14,7 +14,8 @@ namespace HugoLand.Core.Domain
     }
     public class Installation
     {
-        public Guid Id { get; protected set; }
+        public Guid Id { get; set; }
+
         public InstallationType InstallationType { get; set; }
 
         public Guid TerritoryId { get; set; }

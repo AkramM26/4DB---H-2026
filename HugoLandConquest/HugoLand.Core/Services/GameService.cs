@@ -1,9 +1,11 @@
-﻿using HugoLand.Core.Data;
+﻿using Castle.Components.DictionaryAdapter.Xml;
+using HugoLand.Core.Data;
 using HugoLand.Core.Domain;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,7 +20,7 @@ namespace HugoLand.Core.Services
 
         public async Task CreateGameAsync()
         {
-                await Seed.SeedGameAsync(Context);
+            await Seed.SeedGameAsync(Context);
         }
 
         public async Task StartTurnAsync()
@@ -46,24 +48,68 @@ namespace HugoLand.Core.Services
 
         public async Task SaveGameAsync()
         {
-            var game = await Context.Games
-                .AsNoTracking()
-                .Include(game => game.MilitaryDetachments)
+            var gameClone = await Context.Games.AsNoTracking()
                 .Include(game => game.Territories)
-                .Include(game => game.Installations)
+                    .ThenInclude(t => t.MilitaryDetachment)
+                .Include(game => game.Territories)
+                    .ThenInclude(t => t.Installation)
                 .Include(game => game.Players)
                 .Include(game => game.CombatEvents)
                 .Include(game => game.PlayerActions)
                 .Include(game => game.TurnSnapShots)
                 .FirstAsync();
-                
 
-            var game2 = game;
-            game2.Id = Guid.NewGuid();
-            game2.SaveName = DateTime.Now.ToString();
-            await Context.AddAsync(game2);
-
+            gameClone.Id = Guid.NewGuid();
+            foreach (PlayerAction pA in gameClone.PlayerActions)
+            {
+                pA.Id = Guid.NewGuid();
+                pA.GameId = gameClone.Id;
+            }
+            foreach (TurnSnapShot tS in gameClone.TurnSnapShots)
+            {
+                tS.Id = Guid.NewGuid();
+                tS.GameId = gameClone.Id;
+            }
+            foreach (CombatEvent c in gameClone.CombatEvents)
+            {
+                c.Id = Guid.NewGuid();
+                c.GameId = gameClone.Id;
+            }
+            foreach (Player p in gameClone.Players)
+            {
+                p.Id = Guid.NewGuid();
+                p.GameId = gameClone.Id;
+            }
+            foreach (Territory t in gameClone.Territories)
+                CopyTerritoryAndSiblings(t, gameClone);
+            await Context.AddAsync(gameClone);
             await Context.SaveChangesAsync();
+        }
+
+        private void CopyTerritoryAndSiblings(Territory t, Game gameClone)
+        {
+            t.Id = Guid.NewGuid();
+            t.GameId = gameClone.Id;
+            if (t.MilitaryDetachment != null)
+            {
+                int playerNumber = t.MilitaryDetachment.Player.PlayerNumber;
+                var newPlayer = gameClone.Players.First(p => p.GameId == gameClone.Id && p.PlayerNumber == playerNumber);
+                t.MilitaryDetachment.PlayerId = newPlayer.Id;
+                t.MilitaryDetachment.Player = newPlayer;
+                t.MilitaryDetachment.TerritoryId = t.Id;
+                t.MilitaryDetachment.Id = Guid.NewGuid();
+                t.MilitaryDetachment.GameId = gameClone.Id;
+            }
+            if (t.Installation != null)
+            {
+                int playerNumber = t.Installation.Player.PlayerNumber;
+                var newPlayer = gameClone.Players.First(p => p.GameId == gameClone.Id && p.PlayerNumber == playerNumber);
+                t.Installation.PlayerId = newPlayer.Id;
+                t.Installation.Player = newPlayer;
+                t.Installation.TerritoryId = t.Id;
+                t.Installation.Id = Guid.NewGuid();
+                t.Installation.GameId = gameClone.Id;
+            }
         }
 
         public async Task EndTurnAsync()
