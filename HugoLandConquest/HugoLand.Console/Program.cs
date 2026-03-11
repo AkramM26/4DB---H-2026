@@ -18,6 +18,7 @@ internal class Program
         GameService gameService = new GameService(context);
         await gameService.CreateGameAsync();
         await gameService.StartTurnAsync();
+        await gameService.SaveGameAsync();
 
         //Game game = context.Games
         //    .Include(g => g.Players)

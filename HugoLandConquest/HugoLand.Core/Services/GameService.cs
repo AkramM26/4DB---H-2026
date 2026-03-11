@@ -47,6 +47,7 @@ namespace HugoLand.Core.Services
         public async Task SaveGameAsync()
         {
             var game = await Context.Games
+                .AsNoTracking()
                 .Include(game => game.MilitaryDetachments)
                 .Include(game => game.Territories)
                 .Include(game => game.Installations)
@@ -55,9 +56,11 @@ namespace HugoLand.Core.Services
                 .Include(game => game.PlayerActions)
                 .Include(game => game.TurnSnapShots)
                 .FirstAsync();
+                
 
             var game2 = game;
             game2.Id = Guid.NewGuid();
+            game2.SaveName = DateTime.Now.ToString();
             await Context.AddAsync(game2);
 
             await Context.SaveChangesAsync();
