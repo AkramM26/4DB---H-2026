@@ -21,22 +21,22 @@ namespace HugoLand.Core.Services
         public async Task<bool> ResolveCombatAsync(Guid defenceId, Guid attackId)
         {
             var defence = await Context.MilitaryDetachments
-                .Include(d => d.Territory.Installation)
+                .Include(d => d.Territory)
+                .ThenInclude(t => t.Installation)
                 .Include(d => d.Player)
                 .FirstAsync(d => d.Id == defenceId);
+
             var attack = await Context.MilitaryDetachments
-                .Include(a => a.Territory.Installation)
-                .Include(d => d.Player)
+                .Include(a => a.Territory)
+                .ThenInclude(t => t.Installation)
+                .Include(a => a.Player)
                 .FirstAsync(a => a.Id == attackId);
 
             int defenceForce = defence.MilitaryForce;
             int attackForce = attack.MilitaryForce;
+
             TerritoryType territoryType = defence.Territory.TerritoryType;
-            InstallationType installationType;
-            if (defence.Territory.Installation is null)
-                installationType = InstallationType.None;
-            else
-                installationType = defence.Territory.Installation.InstallationType;
+            InstallationType installationType = defence.Territory.Installation?.InstallationType ?? InstallationType.None;
 
             CombatResult combatResult = InternalResolveCombat(defenceForce, attackForce, territoryType, installationType);
 
@@ -44,28 +44,44 @@ namespace HugoLand.Core.Services
             attack.MilitaryForce = combatResult.AttackForce;
             defence.Energy = 0;
             attack.Energy = 0;
+            defence.CanAct = false;
+            attack.CanAct = false;
 
             int victorPlayerNumber;
             if (combatResult.DefenceVictory)
             {
                 victorPlayerNumber = defence.Player.PlayerNumber;
                 defence.Player.Gold += combatResult.GoldGain;
+
                 if (combatResult.AttackForce < 10)
-                    Context.Remove(attack);
+                {
+                    if (attack.Territory.Installation?.InstallationType == InstallationType.Camp)
+                    {
+                        Context.Installations.Remove(attack.Territory.Installation);
+                    }
+
+                    Context.MilitaryDetachments.Remove(attack);
+                }
             }
             else
             {
                 victorPlayerNumber = attack.Player.PlayerNumber;
                 attack.Player.Gold += combatResult.GoldGain;
                 if (combatResult.DefenceForce < 10)
-                    Context.Remove(defence);
+                {
+                    if (defence.Territory.Installation?.InstallationType == InstallationType.Camp)
+                    {
+                        Context.Installations.Remove(defence.Territory.Installation);
+                    }
+                    Context.MilitaryDetachments.Remove(defence);
+                }
             }
 
             CombatEvent combatEvent = CombatEvent.Create(defence.Player.GameId, victorPlayerNumber,
                 combatResult.DefenceRandomFactor, combatResult.AttackRandomFactor, defenceForce, attackForce,
                 combatResult.EffectiveDefenceForce, combatResult.EffectiveAttackForce,
-                defenceForce - combatResult.DefenceForce,attackForce-combatResult.AttackForce,combatResult.GoldGain);
-                
+                defenceForce - combatResult.DefenceForce, attackForce - combatResult.AttackForce, combatResult.GoldGain);
+
             Context.Add(combatEvent);
 
             await Context.SaveChangesAsync();
@@ -78,24 +94,27 @@ namespace HugoLand.Core.Services
             Random random = new Random();
             float installationMultiplayer = 1;
             float territoryMultiplayer = 1;
+
             float attackRandomFactor = attackForce * random.Next(CombatConstants.MinMultiplayerAttack,
                 CombatConstants.MaxMultiplayerAttack) / 10f;
-            float defenceRandomFactor= defenceForce * random.Next(CombatConstants.MinMultiplayerDefence,
-                CombatConstants.MaxMultiplayerDefence) / 10f;
 
+            float defenceRandomFactor = defenceForce * random.Next(CombatConstants.MinMultiplayerDefence,
+                CombatConstants.MaxMultiplayerDefence) / 10f;
 
             if (territoryType == TerritoryType.Forest)
                 territoryMultiplayer = CombatConstants.ForestMultiplayer;
+
             if (territoryType == TerritoryType.Mountain)
                 territoryMultiplayer = CombatConstants.MountainMultiplayer;
 
             if (installationType == InstallationType.Fortification)
                 installationMultiplayer = CombatConstants.FortificationMultiplayer;
+
             if (installationType == InstallationType.Camp)
                 installationMultiplayer = CombatConstants.CampMultiplayer;
 
             float effectiveForceDefence = defenceForce * defenceRandomFactor * territoryMultiplayer * installationMultiplayer;
-            float effectiveForceAttack =attackForce * attackRandomFactor;
+            float effectiveForceAttack = attackForce * attackRandomFactor;
 
             int loserForceBeforeCombat;
             int loserForceloss;
@@ -118,7 +137,7 @@ namespace HugoLand.Core.Services
             }
 
             CombatResult combatResult = new CombatResult(defenceVictory, defenceForce, attackForce, (loserForceloss / 10) * 5,
-                defenceRandomFactor,attackRandomFactor, effectiveForceDefence, effectiveForceAttack);
+                defenceRandomFactor, attackRandomFactor, effectiveForceDefence, effectiveForceAttack);
             return combatResult;
         }
     }

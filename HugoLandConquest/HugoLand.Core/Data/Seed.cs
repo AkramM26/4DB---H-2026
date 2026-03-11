@@ -39,8 +39,8 @@ namespace HugoLand.Core.Data
 
             MilitaryDetachment militaryDetachment1 = MilitaryDetachment.Create(5, 30, player1Id, territories[3, 3].Id,gameId);
             MilitaryDetachment militaryDetachment2 = MilitaryDetachment.Create(5, 30, player2Id, territories[11, 6].Id, gameId);
-            Installation installation1 = Installation.Create(InstallationType.Fortification, territories[3,3].Id, gameId);
-            Installation installation2 = Installation.Create(InstallationType.Fortification, territories[11,6].Id, gameId);
+            Installation installation1 = Installation.Create(InstallationType.Fortification, territories[3,3].Id, player1Id, gameId);
+            Installation installation2 = Installation.Create(InstallationType.Fortification, territories[11,6].Id, player2Id, gameId);
 
             await context.AddAsync(militaryDetachment1);
             await context.AddAsync(militaryDetachment2);

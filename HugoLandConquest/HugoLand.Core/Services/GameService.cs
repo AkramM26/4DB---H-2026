@@ -26,12 +26,15 @@ namespace HugoLand.Core.Services
         public async Task StartTurnAsync()
         {
             // Récupérer le joueur actuel
-            var player = await Context.Players.FirstAsync(p => p.PlayerNumber == _currentPlayerNumber);
+            var player = await Context.Players
+                .Include(p => p.MilitaryDetachments)
+                .FirstAsync(p => p.PlayerNumber == _currentPlayerNumber);
 
             foreach (MilitaryDetachment m in player.MilitaryDetachments)
             {
                 // Recupération d'énergie pour chaque armée
                 m.Energy += Constants.GameConstants.energyRecuperation;
+                m.CanAct = true;
             }
             await _economyService.CollectRevenue(player);
             await _economyService.PayMaintenance(player);
@@ -45,8 +48,7 @@ namespace HugoLand.Core.Services
 
         public async Task SaveGameAsync()
         {
-            var gameClone = await Context.Games
-                .AsNoTracking()
+            var gameClone = await Context.Games.AsNoTracking()
                 .Include(game => game.Territories)
                     .ThenInclude(t => t.MilitaryDetachment)
                 .Include(game => game.Territories)
@@ -79,46 +81,36 @@ namespace HugoLand.Core.Services
                 p.GameId = gameClone.Id;
             }
             foreach (Territory t in gameClone.Territories)
-            {
-                t.Id = Guid.NewGuid();
-                t.GameId = gameClone.Id;
-                if (t.MilitaryDetachment != null)
-                {
-                    int playerNumber = t.MilitaryDetachment.Player.PlayerNumber;
-                    var newPlayer = gameClone.Players.First(p => p.GameId == gameClone.Id && p.PlayerNumber == playerNumber);
-                    t.MilitaryDetachment.PlayerId = newPlayer.Id;
-                    t.MilitaryDetachment.Player = newPlayer;
-                    t.MilitaryDetachment.TerritoryId = t.Id;
-                    t.MilitaryDetachment.Id = Guid.NewGuid();
-                    t.MilitaryDetachment.GameId = gameClone.Id;
-                }
-                if (t.Installation != null)
-                {
-                    t.Installation.TerritoryId = t.Id;
-                    t.Installation.Id = Guid.NewGuid();
-                    t.Installation.GameId = gameClone.Id;
-                }
-            }
+                CopyTerritoryAndSiblings(t, gameClone);
             await Context.AddAsync(gameClone);
             await Context.SaveChangesAsync();
         }
 
-        //private void UpdateIds(Game gameClone)
-        //{
-        //    Type type = gameClone.GetType();
-
-        //    foreach (PropertyInfo prop in type.GetProperties())
-        //    {
-        //        if (prop.PropertyType.IsClass && prop.PropertyType != typeof(string) 
-        //            && prop.PropertyType.GetProperties().Any(p => p.PropertyType == typeof(Guid)))
-        //        {
-        //            if (prop != typeof(Territory) && prop != type)
-        //            {
-
-        //            }
-        //        }
-        //    }
-        //}
+        private void CopyTerritoryAndSiblings(Territory t, Game gameClone)
+        {
+            t.Id = Guid.NewGuid();
+            t.GameId = gameClone.Id;
+            if (t.MilitaryDetachment != null)
+            {
+                int playerNumber = t.MilitaryDetachment.Player.PlayerNumber;
+                var newPlayer = gameClone.Players.First(p => p.GameId == gameClone.Id && p.PlayerNumber == playerNumber);
+                t.MilitaryDetachment.PlayerId = newPlayer.Id;
+                t.MilitaryDetachment.Player = newPlayer;
+                t.MilitaryDetachment.TerritoryId = t.Id;
+                t.MilitaryDetachment.Id = Guid.NewGuid();
+                t.MilitaryDetachment.GameId = gameClone.Id;
+            }
+            if (t.Installation != null)
+            {
+                int playerNumber = t.Installation.Player.PlayerNumber;
+                var newPlayer = gameClone.Players.First(p => p.GameId == gameClone.Id && p.PlayerNumber == playerNumber);
+                t.Installation.PlayerId = newPlayer.Id;
+                t.Installation.Player = newPlayer;
+                t.Installation.TerritoryId = t.Id;
+                t.Installation.Id = Guid.NewGuid();
+                t.Installation.GameId = gameClone.Id;
+            }
+        }
 
         public async Task EndTurnAsync()
         {
@@ -128,6 +120,7 @@ namespace HugoLand.Core.Services
 
             // Passage au joueur suivant
             _currentPlayerNumber = (_currentPlayerNumber == 1) ? 2 : 1;
+            await Task.CompletedTask;
         }
     }
 }
