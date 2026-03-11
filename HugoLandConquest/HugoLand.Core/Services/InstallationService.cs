@@ -35,6 +35,7 @@ namespace HugoLand.Core.Services
             var camp = Installation.Create(
                 InstallationType.Camp,
                 militaryDetachment.TerritoryId,
+                militaryDetachment.PlayerId,
                 militaryDetachment.GameId);
 
             militaryDetachment.Player.Gold -= GameConstants.CampConstructionCost;
@@ -69,6 +70,9 @@ namespace HugoLand.Core.Services
                 return false;
 
             if (militaryDetachment.Territory.Installation.InstallationType != InstallationType.Camp)
+                return false;
+
+            if (militaryDetachment.Territory.Installation.PlayerId != militaryDetachment.PlayerId)
                 return false;
 
             if (militaryDetachment.Player.Gold < GameConstants.FortificationUpgradeCost)

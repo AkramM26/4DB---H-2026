@@ -17,8 +17,10 @@ namespace HugoLand.Core.Services
         {
             var income = await Context.Installations
                 .Where(i => i.InstallationType == InstallationType.Fortification)
+                .Where(i => i.PlayerId == player.Id)
                 .Where(i => i.Territory.MilitaryDetachment != null)
                 .Where(i => i.Territory.MilitaryDetachment!.PlayerId == player.Id)
+                .Where(i => i.Territory.MilitaryDetachment!.MilitaryForce >= 10)
                 .CountAsync() * 5;
 
             player.Gold += income;

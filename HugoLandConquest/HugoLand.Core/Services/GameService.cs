@@ -24,12 +24,15 @@ namespace HugoLand.Core.Services
         public async Task StartTurnAsync()
         {
             // Récupérer le joueur actuel
-            var player = await Context.Players.FirstAsync(p => p.PlayerNumber == _currentPlayerNumber);
+            var player = await Context.Players
+                .Include(p => p.MilitaryDetachments)
+                .FirstAsync(p => p.PlayerNumber == _currentPlayerNumber);
 
             foreach (MilitaryDetachment m in player.MilitaryDetachments)
             {
                 // Recupération d'énergie pour chaque armée
                 m.Energy += Constants.GameConstants.energyRecuperation;
+                m.CanAct = true;
             }
             await _economyService.CollectRevenue(player);
             await _economyService.PayMaintenance(player);
@@ -68,6 +71,7 @@ namespace HugoLand.Core.Services
 
             // Passage au joueur suivant
             _currentPlayerNumber = (_currentPlayerNumber == 1) ? 2 : 1;
+            await Task.CompletedTask;
         }
     }
 }
