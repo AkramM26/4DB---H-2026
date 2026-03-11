@@ -37,7 +37,7 @@ namespace HugoLand.Core.Services
         /// Donne la liste des mouvements possibles 
         /// </summary>
         /// <returns></returns>
-        public List<Movements> TryMove(Domain.MilitaryDetachment army, int x,int y)
+        public List<Movements> TryMove(Domain.MilitaryDetachment army, int x, int y, Player player)
         {
             List<Movements> mpossibles = new List<Movements>();
 
@@ -45,14 +45,31 @@ namespace HugoLand.Core.Services
             int Nx = x;
             int Ny = y - 1;
 
+
+            var ATerritory = Context.Territories
+                .Include(t => t.MilitaryDetachment)
+                .FirstOrDefault(t => t.PositionX == x && t.PositionY == y);
+
             if (Ny >= 0)
             {
                 var NTerritory = Context.Territories
                     .Include(t => t.MilitaryDetachment)
                     .FirstOrDefault(t => t.PositionX == Nx && t.PositionY == Ny);
 
+
                 if (NTerritory?.MilitaryDetachment == null)
                     mpossibles.Add(Movements.North);
+                else
+                {
+                    if (NTerritory?.MilitaryDetachment.Player.PlayerNumber == player.PlayerNumber)
+                    {
+                        Fusion(NTerritory, ATerritory);
+                    }
+                    else
+                    {
+                        //Fight
+                    }
+                }
             }
 
 
@@ -67,42 +84,75 @@ namespace HugoLand.Core.Services
                     .Include(t => t.MilitaryDetachment)
                     .FirstOrDefault(t => t.PositionX == Sx && t.PositionY == Sy);
 
+
                 if (STerritory?.MilitaryDetachment == null)
                     mpossibles.Add(Movements.South);
+                else
+                {
+                    if (STerritory?.MilitaryDetachment.Player.PlayerNumber == player.PlayerNumber)
+                    {
+                        Fusion(STerritory, ATerritory);
+                    }
+                    else
+                    {
+                        //Fight
+                    }
+                }
+
+                //East movement 
+                int Ex = x + 1;
+                int Ey = y;
+
+                if (Ex < 15)
+                {
+                    var ETerritory = Context.Territories
+                        .Include(t => t.MilitaryDetachment)
+                        .FirstOrDefault(t => t.PositionX == Ex && t.PositionY == Ey);
+
+                    if (ETerritory?.MilitaryDetachment == null)
+                        mpossibles.Add(Movements.East);
+                    else
+                    {
+                        if (ETerritory?.MilitaryDetachment.Player.PlayerNumber == player.PlayerNumber)
+                        {
+                            Fusion(ETerritory, ATerritory);
+                        }
+                        else
+                        {
+                            //Fight
+                        }
+                    }
+                }
+
+                //West movement 
+                int Wx = x - 1;
+                int Wy = y;
+
+                if (Wx >= 0)
+                {
+                    var WTerritory = Context.Territories
+                        .Include(t => t.MilitaryDetachment)
+                        .FirstOrDefault(t => t.PositionX == Wx && t.PositionY == Wy);
+
+                    if (WTerritory?.MilitaryDetachment == null)
+                        mpossibles.Add(Movements.West);
+                    else
+                    {
+                        if (WTerritory?.MilitaryDetachment.Player.PlayerNumber == player.PlayerNumber)
+                        {
+                            Fusion(WTerritory, ATerritory);
+                        }
+                        else
+                        {
+                            //Fight
+                        }
+                    }
+                }
+
+
+                return mpossibles;
+
             }
-
-            //East movement 
-            int Ex = x + 1;
-            int Ey = y;
-
-            if (Ex < 15)
-            {
-                var ETerritory = Context.Territories
-                    .Include(t => t.MilitaryDetachment)
-                    .FirstOrDefault(t => t.PositionX == Ex && t.PositionY == Ey);
-
-                if (ETerritory?.MilitaryDetachment == null)
-                    mpossibles.Add(Movements.East);
-            }
-
-            //West movement 
-            int Wx = x - 1;
-            int Wy = y;
-
-            if (Wx >= 0)
-            {
-                var LTerritory = Context.Territories
-                    .Include(t => t.MilitaryDetachment)
-                    .FirstOrDefault(t => t.PositionX == Wx && t.PositionY == Wy);
-
-                if (LTerritory?.MilitaryDetachment == null)
-                    mpossibles.Add(Movements.West);
-            }
-
-
-            return mpossibles;
-
-        }
 
 
 
@@ -111,13 +161,13 @@ namespace HugoLand.Core.Services
         /// Effectue le mouvement 
         /// </summary>
         /// <returns></returns>
-        public void Move(Domain.MilitaryDetachment army, int x, int y,Movements mov)
+        public void Move(Domain.MilitaryDetachment army, int x, int y, Movements mov)
         {
             switch (mov)
             {
                 case Movements.North:
                     army.Territory.PositionX = x;
-                    army.Territory.PositionY = y-1;
+                    army.Territory.PositionY = y - 1;
                     break;
                 case Movements.South:
                     army.Territory.PositionX = x;
@@ -125,10 +175,10 @@ namespace HugoLand.Core.Services
                     break;
                 case Movements.East:
                     army.Territory.PositionX = x + 1;
-                    army.Territory.PositionY = y ;
+                    army.Territory.PositionY = y;
                     break;
                 case Movements.West:
-                    army.Territory.PositionX = x -1;
+                    army.Territory.PositionX = x - 1;
                     army.Territory.PositionY = y;
                     break;
             }
@@ -176,7 +226,7 @@ namespace HugoLand.Core.Services
         /// Effectue la fusion 
         /// </summary>
         /// <returns></returns>
-        public ArmyService Fusion()
+        public ArmyService Fusion(Territory nTerritory, Territory? aTerritory)
         {
             return new ArmyService(Context);
         }

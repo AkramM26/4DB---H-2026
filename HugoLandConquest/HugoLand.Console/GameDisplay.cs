@@ -130,7 +130,7 @@ namespace HugoLand
             switch (Answer)
             {
                 case "1":
-                    Move(context, armies);
+                    Move(context, armies,player);
                     break;
                 case "2":
                     Split(context, armies);
@@ -138,7 +138,7 @@ namespace HugoLand
             }
         }
 
-        private static void Move(HugoLandContext context, IEnumerable<MilitaryDetachment> armies)
+        private static void Move(HugoLandContext context, IEnumerable<MilitaryDetachment> armies, Player player)
         {
             ArmyService armyService = new ArmyService(context);
 
@@ -152,7 +152,7 @@ namespace HugoLand
                 int y = army.Territory.PositionY;
                 int E = army.Energy;
                 int NecessaryE = 1;
-                List<Movements> movements = armyService.TryMove(army, x, y);
+                List<Movements> movements = armyService.TryMove(army, x, y,player);
 
                 //Display beginning
                 Console.WriteLine($"--- Movement from ({x},{y}) — Energy : {E} ---");
