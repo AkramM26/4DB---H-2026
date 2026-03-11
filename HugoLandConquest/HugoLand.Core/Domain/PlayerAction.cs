@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace HugoLand.Core.Domain
 {
+
+
     public class PlayerAction
     {
         public Guid Id { get; set; }
@@ -16,7 +18,6 @@ namespace HugoLand.Core.Domain
 
         public Guid GameId { get; set; }
         public virtual Game Game { get; set; }
-
         protected PlayerAction() { }
 
         public static PlayerAction Create(Guid gameId, PlayerActionType actionType, string desc)
@@ -24,10 +25,8 @@ namespace HugoLand.Core.Domain
             return new PlayerAction
             {
                 Id = Guid.NewGuid(),
-                GameId = gameId,
-                ActionType = actionType,
-                Description = desc,
-                CreateAt = DateTime.UtcNow
+                GameId = gameId
+               
             };
         }
     }

@@ -26,7 +26,7 @@ namespace HugoLand.Core.Data
         }
         private static async Task SeedMapAsync(HugoLandContext context, Guid gameId, Guid player1Id, Guid player2Id)
         {
-            Territory[,] territories = new Territory[15, 10];
+             Territory[,] territories = new Territory[15, 10];
             for (int y = 0; y < 10; y++)
             {
                 for (int x = 0; x < 15; x++)

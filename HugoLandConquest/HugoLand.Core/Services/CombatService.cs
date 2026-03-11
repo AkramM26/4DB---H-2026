@@ -100,6 +100,8 @@ namespace HugoLand.Core.Services
 
             float attackRandomFactor = attackForce * random.Next(CombatConstants.MinMultiplayerAttack,
                 CombatConstants.MaxMultiplayerAttack) / 10f;
+            float defenceRandomFactor = defenceForce * random.Next(CombatConstants.MinMultiplayerDefence,
+                CombatConstants.MaxMultiplayerDefence) / 10f;
 
             float defenceRandomFactor = defenceForce * random.Next(CombatConstants.MinMultiplayerDefence,
                 CombatConstants.MaxMultiplayerDefence) / 10f;

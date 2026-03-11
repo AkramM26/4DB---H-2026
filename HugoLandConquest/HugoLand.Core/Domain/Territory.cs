@@ -37,5 +37,7 @@ namespace HugoLand.Core.Domain
                 PositionX = positionX,
             };
         }
+
+
     }
 }

@@ -45,5 +45,6 @@ namespace HugoLand.Core.Domain
                 GameId = gameId
             };
         }
+
     }
 }
