@@ -15,7 +15,7 @@ namespace HugoLand.Core.Domain
         public int Gold { get; set; }
         public int Income { get; set; }
         public int TurnInDept { get; set; }
-        public Guid GameId { get; protected set; }
+        public Guid GameId { get;  set; }
         public virtual Game Game { get; set; }
         public virtual ICollection<MilitaryDetachment> MilitaryDetachments { get; set; } = [];
         public virtual ICollection<Installation> Installations { get; set; } = [];

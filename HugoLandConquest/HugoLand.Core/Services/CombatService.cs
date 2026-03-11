@@ -103,9 +103,6 @@ namespace HugoLand.Core.Services
             float defenceRandomFactor = defenceForce * random.Next(CombatConstants.MinMultiplayerDefence,
                 CombatConstants.MaxMultiplayerDefence) / 10f;
 
-            float defenceRandomFactor = defenceForce * random.Next(CombatConstants.MinMultiplayerDefence,
-                CombatConstants.MaxMultiplayerDefence) / 10f;
-
             if (territoryType == TerritoryType.Forest)
                 territoryMultiplayer = CombatConstants.ForestMultiplayer;
 
