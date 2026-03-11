@@ -18,7 +18,9 @@ namespace HugoLand.Core.Services
 
         public async Task CreateGameAsync(string gameName = Constants.GameConstants.CurrentGame)
         {
-            await Seed.SeedGameAsync(Context);
+            if (gameName == Constants.GameConstants.CurrentGame)
+                await Seed.SeedGameAsync(Context);
+
             _game = await Context.Games.Include(g => g.Players)
                                             .Include(g => g.Territories)
                                             .ThenInclude(t => t.MilitaryDetachment)
