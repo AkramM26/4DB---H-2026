@@ -8,8 +8,17 @@ namespace HugoLand.Core.Domain
 {
     public class MilitaryDetachment
     {
+        private int _energy = 0;
         public Guid Id { get; protected set; }
-        public int Energy { get; set; }
+
+        public int Energy
+        {
+            get => _energy;
+            set
+            {
+                _energy = value > 5 ? 5 : value;
+            }
+        }
 
         public int MilitaryForce { get; set; }
 

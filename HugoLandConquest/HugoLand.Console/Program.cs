@@ -1,4 +1,5 @@
 ﻿using HugoLand.Core.Data;
+using HugoLand.Core.Domain;
 using HugoLand.Core.Services;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -16,9 +17,17 @@ internal class Program
 
         GameService gameService = new GameService(context);
         await gameService.CreateGameAsync();
+        await gameService.StartTurnAsync();
 
+        //Game game = context.Games
+        //    .Include(g => g.Players)
+        //    .Include(g => g.Territories)
+        //    .ThenInclude(t => t.MilitaryDetachment)
+        //    .Include(t => t.Territories)
+        //    .ThenInclude(t => t.Installation)
+        //    .First();
+        //game.SaveName = $"Partie {DateTime.Now.ToString("yyyy-MM-dd HH'h'mm")}"; Pour le nom de la partie ?
 
         GameDisplay.ShowGame(context);
-
     }
 }

@@ -25,7 +25,7 @@ namespace HugoLand.Core.Domain
         {
             return new Game
             {
-                SaveName = "Current Game"
+                SaveName = Constants.GameConstants.CurrentGame
             };
         }
     }
