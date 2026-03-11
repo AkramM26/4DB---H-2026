@@ -8,7 +8,7 @@ namespace HugoLand.Core.Domain
 {
     public class TurnSnapShot
     {
-        public Guid Id { get; protected set; } 
+        public Guid Id { get; set; } 
 
         public int PlayerNumber { get; set; }
         public int Gold { get; set; }

@@ -10,6 +10,8 @@ namespace HugoLand.Core.Domain
     {
         public Guid Id { get;  set; } 
         public string SaveName { get; set; }
+        public bool IsGameOver { get; set; }
+        public bool IsPlayer1Winner { get; set; }
 
         public bool IsFinished { get; set; }
         public int? WinnerPlayerNumber { get; set; }
@@ -35,6 +37,28 @@ namespace HugoLand.Core.Domain
                 WinnerPlayerNumber = null,
                 EndedAt = null
             };
+        }
+
+        public Game Clone()
+        {
+            Game gameClone = Game.Create();
+
+            AssignNewIds(this, gameClone);
+
+            return new Game()
+            {
+                Id = Guid.NewGuid(),
+                SaveName = this.SaveName,
+
+            };
+        }
+
+        private void AssignNewIds(Game game, Game gameClone)
+        {
+            foreach (var item in SaveName)
+            {
+                
+            }
         }
     }
 }

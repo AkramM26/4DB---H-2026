@@ -8,7 +8,7 @@ namespace HugoLand.Core.Domain
 {
     public class PlayerAction
     {
-        public Guid Id { get; protected set; }
+        public Guid Id { get; set; }
 
         public PlayerActionType ActionType { get; set; }
         public string Description { get; set; } = string.Empty;
