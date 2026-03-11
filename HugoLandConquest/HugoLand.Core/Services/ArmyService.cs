@@ -148,11 +148,12 @@ namespace HugoLand.Core.Services
                         }
                     }
                 }
-
-
-                return mpossibles;
-
             }
+
+
+            return mpossibles;
+
+        }
 
 
 
@@ -226,9 +227,23 @@ namespace HugoLand.Core.Services
         /// Effectue la fusion 
         /// </summary>
         /// <returns></returns>
-        public ArmyService Fusion(Territory nTerritory, Territory? aTerritory)
+        public Territory Fusion(Territory nTerritory, Territory? aTerritory)
         {
-            return new ArmyService(Context);
+            Territory FusionResult = Territory.Create(TerritoryType.Plain, nTerritory.PositionX, nTerritory.PositionY, nTerritory.GameId);
+
+            //New Force
+            FusionResult.MilitaryDetachment.MilitaryForce = nTerritory.MilitaryDetachment.MilitaryForce + aTerritory.MilitaryDetachment.MilitaryForce;
+
+
+            //New Enery
+            if (nTerritory.MilitaryDetachment.Energy > aTerritory.MilitaryDetachment.Energy)
+                FusionResult.MilitaryDetachment.Energy = aTerritory.MilitaryDetachment.Energy;
+            else
+                FusionResult.MilitaryDetachment.Energy = nTerritory.MilitaryDetachment.Energy;
+
+
+            //New Territory after fusion 
+            return FusionResult;
         }
 
 
