@@ -38,27 +38,5 @@ namespace HugoLand.Core.Domain
                 EndedAt = null
             };
         }
-
-        public Game Clone()
-        {
-            Game gameClone = Game.Create();
-
-            AssignNewIds(this, gameClone);
-
-            return new Game()
-            {
-                Id = Guid.NewGuid(),
-                SaveName = this.SaveName,
-
-            };
-        }
-
-        private void AssignNewIds(Game game, Game gameClone)
-        {
-            foreach (var item in SaveName)
-            {
-                
-            }
-        }
     }
 }
