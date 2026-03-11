@@ -19,5 +19,11 @@ internal class Program
 
         GameDisplay.ShowGame(context);
 
+        GameDisplay.AskAction(1,context);
+        GameDisplay.AskAction(2,context);
+
+        ArmyService armyService = new ArmyService(context);
+ 
+
     }
 }

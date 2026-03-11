@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace HugoLand.Core.Services
 {
+
+
     /// <summary>
     /// Auteur: Samuel KPLE-FAGET
     /// Description: Classe chargée de gérer les mouvements, scissions et fusions des armées d'un joueur 
@@ -21,6 +23,10 @@ namespace HugoLand.Core.Services
         /// </summary>
         private readonly HugoLandContext Context = context;
 
+        public Action AskAction()
+        {
+
+        }
 
 
         /// <summary>

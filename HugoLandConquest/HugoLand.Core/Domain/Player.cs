@@ -6,13 +6,19 @@ using System.Threading.Tasks;
 
 namespace HugoLand.Core.Domain
 {
+    //public enum Actions
+    //{
+    //    Move,
+    //    Split,
+    //    Fusion
+    //}
+
     public class Player
     {
         public Guid Id { get; protected set; }
         public int PlayerNumber { get;protected set; }
         public int Gold { get; set; }
         public int TurnInDept { get; set; }
-
         public Guid GameId { get; protected set; }
         public virtual Game Game { get; set; }
         public virtual ICollection<MilitaryDetachment> MilitaryDetachments { get; set; } = [];

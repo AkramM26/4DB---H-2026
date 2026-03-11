@@ -1,11 +1,13 @@
 ﻿using HugoLand.Core.Data;
 using HugoLand.Core.Domain;
+using HugoLand.Core.Services;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 
 namespace HugoLand
 {
@@ -50,14 +52,14 @@ namespace HugoLand
                     Console.Write("+-----");
                 }
                 Console.Write("+\n");
-                Console.Write(y+" ");
+                Console.Write(y + " ");
                 for (int x = 0; x < xLength; x++)
                 {
                     Console.Write(CreatePosition(x, y, territories[x, y]));
                 }
                 Console.Write("|\n");
             }
-                Console.Write("  ");
+            Console.Write("  ");
             for (int x = 0; x < xLength; x++)
             {
                 Console.Write("+-----");
@@ -102,6 +104,52 @@ namespace HugoLand
             }
 
             return text.ToString();
+        }
+
+        public static void AskAction(int PlayerNumber, HugoLandContext context)
+        {
+
+            var player= context.Players
+                .Include(p=> p.MilitaryDetachments)
+                .FirstOrDefault(p=> p.PlayerNumber == PlayerNumber);
+
+            Console.WriteLine("Which action do you want to do?");
+            Console.WriteLine("1 - Move");
+            Console.WriteLine("2 - Split");
+            Console.WriteLine("3 - Fusion");
+
+            string Answer = Console.ReadLine();
+
+            switch (Answer)
+            {
+                case "1":
+                    Move(context,player);
+                    break;
+                case "2":
+                    Split(context, player);                    
+                    break;
+                case "3":
+                    Fusion(context, player);
+                    break;
+            }
+        }
+
+        private static void Fusion(HugoLandContext context, Player? player)
+        {
+            ArmyService armyService = new ArmyService(context);
+
+        }
+
+        private static void Split(HugoLandContext context, Player? player)
+        {
+            ArmyService armyService = new ArmyService(context);
+
+        }
+
+        private static void Move(HugoLandContext context, Player? player)
+        {
+            ArmyService armyService = new ArmyService(context);
+
         }
     }
 }
