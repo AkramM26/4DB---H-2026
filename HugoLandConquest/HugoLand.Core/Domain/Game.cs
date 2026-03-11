@@ -8,8 +8,14 @@ namespace HugoLand.Core.Domain
 {
     public class Game
     {
-        public Guid Id { get; protected set; } = Guid.NewGuid();
+        public Guid Id { get;  set; } 
         public string SaveName { get; set; }
+        public bool IsGameOver { get; set; }
+        public bool IsPlayer1Winner { get; set; }
+
+        public bool IsFinished { get; set; }
+        public int? WinnerPlayerNumber { get; set; }
+        public DateTime? EndedAt { get; set; }
 
         public virtual ICollection<Player> Players { get; set; } = [];
         public virtual ICollection<Territory> Territories { get; set; } = [];
@@ -25,7 +31,11 @@ namespace HugoLand.Core.Domain
         {
             return new Game
             {
-                SaveName = "Current Game"
+                Id = Guid.NewGuid(),
+                SaveName = DateTime.Now.ToString(),
+                IsFinished = false,
+                WinnerPlayerNumber = null,
+                EndedAt = null
             };
         }
     }

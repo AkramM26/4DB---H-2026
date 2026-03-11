@@ -10,13 +10,17 @@ namespace HugoLand.Core.Domain
 
     public class PlayerAction
     {
-        public Guid Id { get; protected set; }
+        public Guid Id { get; set; }
+
+        public PlayerActionType ActionType { get; set; }
+        public string Description { get; set; } = string.Empty;
+        public DateTime CreateAt { get; set; }
 
         public Guid GameId { get; set; }
         public virtual Game Game { get; set; }
         protected PlayerAction() { }
 
-        public static PlayerAction Create(Guid gameId)
+        public static PlayerAction Create(Guid gameId, PlayerActionType actionType, string desc)
         {
             return new PlayerAction
             {

@@ -9,7 +9,7 @@ namespace HugoLand.Core.Domain
 {
     public class CombatEvent
     {
-        public Guid Id { get; protected set; }
+        public Guid Id { get; set; }
         public int VictorPlayerNumber { get; set; }
         public float DefenceRandomFactor { get; set; }
         public float AttackRandomFactor { get; set; }

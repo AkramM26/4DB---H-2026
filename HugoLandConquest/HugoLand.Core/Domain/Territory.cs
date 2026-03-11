@@ -14,7 +14,7 @@ namespace HugoLand.Core.Domain
     }
     public class Territory
     {
-        public Guid Id { get; protected set; }
+        public Guid Id { get; set; }
         public TerritoryType TerritoryType{ get; set; }
         public int PositionX { get; set; }
         public int PositionY { get; set; }

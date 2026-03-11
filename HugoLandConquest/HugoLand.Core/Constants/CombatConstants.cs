@@ -19,6 +19,5 @@ namespace HugoLand.Core.Constants
         public const float MountainMultiplayer = 1.3f;
         public const float CampMultiplayer = 1.1f;
         public const float FortificationMultiplayer = 1.2f;
-
     }
 }

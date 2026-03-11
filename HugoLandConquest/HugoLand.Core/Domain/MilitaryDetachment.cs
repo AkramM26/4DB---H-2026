@@ -8,8 +8,18 @@ namespace HugoLand.Core.Domain
 {
     public class MilitaryDetachment
     {
-        public Guid Id { get; protected set; }
-        public int Energy { get; set; }
+        private int _energy = 0;
+        public Guid Id { get; set; }
+
+        public int Energy
+        {
+            get => _energy;
+            set
+            {
+                _energy = value > 5 ? 5 : value;
+            }
+        }
+        public bool CanAct { get; set; }
 
         public int MilitaryForce { get; set; }
 
@@ -28,6 +38,7 @@ namespace HugoLand.Core.Domain
             {
                 Energy = energy,
                 Id = Guid.NewGuid(),
+                CanAct = true,
                 MilitaryForce = militaryForce,
                 TerritoryId = TerritoryId,
                 PlayerId = playerId,
