@@ -11,5 +11,6 @@ namespace HugoLand.Core.Constants
         public const int energyRecuperation = 2;
         public const int CampConstructionCost = 20;
         public const int MinimumArmyForceForActions = 10;
+        public const int FortificationUpgradeCost = 50;
     }
 }
