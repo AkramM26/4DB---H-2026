@@ -9,7 +9,7 @@ namespace HugoLand.Core.Services
     {
         private readonly HugoLandContext Context = context;
 
-        public async Task<bool> BuildCampAsync(Guid militaryDetachmentId)
+        public async Task<ResultService> BuildCampAsync(Guid militaryDetachmentId)
         {
             var militaryDetachment = await Context.MilitaryDetachments
                 .Include(m => m.Player)
@@ -18,19 +18,19 @@ namespace HugoLand.Core.Services
                 .FirstOrDefaultAsync(m => m.Id == militaryDetachmentId);
 
             if (militaryDetachment == null)
-                return false;
+                return ResultService.FailureResult("Military detachment not found.");
 
             if (militaryDetachment.MilitaryForce < GameConstants.MinimumArmyForceForActions)
-                return false;
+                return ResultService.FailureResult("Army needs a minimum of 10 soldiers.");
 
             if (!militaryDetachment.CanAct)
-                return false;
+                return ResultService.FailureResult("Army detachment cannot act this turn.");
 
             if (militaryDetachment.Territory.Installation != null)
-                return false;
+                return ResultService.FailureResult("There is already an installation on this territory.");
 
             if (militaryDetachment.Player.Gold < GameConstants.CampConstructionCost)
-                return false;
+                return ResultService.FailureResult("Not enough gold (20 needed)");
 
             var camp = Installation.Create(
                 InstallationType.Camp,
@@ -43,13 +43,14 @@ namespace HugoLand.Core.Services
             militaryDetachment.Territory.Installation = camp;
 
             await Context.Installations.AddAsync(camp);
-            await Context.AddAsync(PlayerAction.Create(militaryDetachment.GameId));
+            await Context.AddAsync(PlayerAction.Create(militaryDetachment.GameId, PlayerActionType.BuildCamp,
+                $"Camp built at ({militaryDetachment.Territory.PositionX}, {militaryDetachment.Territory.PositionY})"));
             await Context.SaveChangesAsync();
 
-            return true;
+            return ResultService.SuccessResult("Camp built successfully.");
         }
 
-        public async Task<bool> UpgradeCampToFortificationAsync(Guid militaryDetachmentId)
+        public async Task<ResultService> UpgradeCampToFortificationAsync(Guid militaryDetachmentId)
         {
             var militaryDetachment = await Context.MilitaryDetachments
                 .Include(m => m.Player)
@@ -58,34 +59,35 @@ namespace HugoLand.Core.Services
                 .FirstOrDefaultAsync(m => m.Id == militaryDetachmentId);
 
             if (militaryDetachment == null)
-                return false;
+                return ResultService.FailureResult("Army not found.");
 
             if (militaryDetachment.MilitaryForce < GameConstants.MinimumArmyForceForActions)
-                return false;
+                return ResultService.FailureResult("Army needs a minimum of 10 soldiers.");
 
             if (!militaryDetachment.CanAct)
-                return false;
+                return ResultService.FailureResult("Army cannot act this turn.");
 
             if (militaryDetachment.Territory.Installation == null)
-                return false;
+                return ResultService.FailureResult("There is no installation on this territory.");
 
             if (militaryDetachment.Territory.Installation.InstallationType != InstallationType.Camp)
-                return false;
+                return ResultService.FailureResult("Only camps can be upgraded to fortifications.");
 
             if (militaryDetachment.Territory.Installation.PlayerId != militaryDetachment.PlayerId)
-                return false;
+                return ResultService.FailureResult("You can only upgrade your own camps.");
 
             if (militaryDetachment.Player.Gold < GameConstants.FortificationUpgradeCost)
-                return false;
+                return ResultService.FailureResult("Not enough gold (50 needed)");
 
             militaryDetachment.Player.Gold -= GameConstants.FortificationUpgradeCost;
             militaryDetachment.CanAct = false;
             militaryDetachment.Territory.Installation.InstallationType = InstallationType.Fortification;
 
-            await Context.AddAsync(PlayerAction.Create(militaryDetachment.GameId));
+            await Context.AddAsync(PlayerAction.Create(militaryDetachment.GameId, PlayerActionType.BuildCamp,
+                $"Camp upgraded to fortification at ({militaryDetachment.Territory.PositionX}, {militaryDetachment.Territory.PositionY})"));
             await Context.SaveChangesAsync();
 
-            return true;
+            return ResultService.SuccessResult("Camp upgraded to fortification successfully.");
         }
     }
 }
