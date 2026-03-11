@@ -122,7 +122,6 @@ namespace HugoLand
             Console.WriteLine("Which action do you want to do?");
             Console.WriteLine("1 - Move");
             Console.WriteLine("2 - Split");
-            Console.WriteLine("3 - Fusion");
 
             Console.Write("Enter your answer : ");
 
@@ -135,9 +134,6 @@ namespace HugoLand
                     break;
                 case "2":
                     Split(context, armies);
-                    break;
-                case "3":
-                    Fusion(context, armies);
                     break;
             }
         }
@@ -165,51 +161,43 @@ namespace HugoLand
                 if (movements.Contains(Movements.North) && E >= NecessaryE)
                 {
                     Console.WriteLine($"[N] ({x},{y - 1}) - Empty \t Cost : 1 {NecessaryE} énergie ");
-                    army.Energy = E - 1;
                 }
                 else
                 {
                     Console.WriteLine($"[N] ({x},{y - 1}) - Opponent \t Cost : 1 {NecessaryE} énergie ");
-                    army.Energy = E - 1;
                 }
 
                 //South movement 
                 if (movements.Contains(Movements.South) && E >= NecessaryE)
                 {
                     Console.WriteLine($"[S] ({x},{y + 1}) - Empty \t Cost : 1 {NecessaryE} énergie ");
-                    army.Energy = E - 1;
                 }
                 else
                 {
                     Console.WriteLine($"[S] ({x},{y + 1}) - Opponent \t Cost : 1 {NecessaryE} énergie ");
-                    army.Energy = E - 1;
-                }
-
-                //West movement 
-                if (movements.Contains(Movements.West) && E >= NecessaryE)
-                {
-                    Console.WriteLine($"[W] ({x - 1},{y}) - Empty \t Cost : 1 {NecessaryE} énergie ");
-                    army.Energy = E - 1;
-                }
-                else
-                {
-                    Console.WriteLine($"[W] ({x - 1},{y}) - Opponent \t Cost : 1 {NecessaryE} énergie ");
-                    army.Energy = E - 1;
-
                 }
 
                 //East movement 
                 if (movements.Contains(Movements.East) && E >= NecessaryE)
                 {
-                    Console.WriteLine($"[E] ({x + 1},{y}) - Empty \t Cost : 1 {NecessaryE} énergie ");
-                    army.Energy = E - 1;
+                    Console.WriteLine($"[E] ({x + 1},{y}) - Empty \t Cost : {NecessaryE} énergie ");
                 }
                 else
                 {
-                    Console.WriteLine($"[E] ({x + 1},{y}) - Opponent \t Cost : 1 {NecessaryE} énergie ");
-                    army.Energy = E - 1;
+                    Console.WriteLine($"[E] ({x + 1},{y}) - Opponent \t Cost : {NecessaryE} énergie ");
 
                 }
+                //West movement 
+                if (movements.Contains(Movements.West) && E >= NecessaryE)
+                {
+                    Console.WriteLine($"[W] ({x - 1},{y}) - Empty \t Cost : {NecessaryE} énergie ");
+                }
+                else
+                {
+                    Console.WriteLine($"[W] ({x - 1},{y}) - Opponent \t Cost : {NecessaryE} énergie ");
+
+                }
+
 
 
                 //Choices
@@ -217,14 +205,14 @@ namespace HugoLand
                 foreach (var movement in movements)
                 {
                     string m = movement.ToString();
-                    movs+= m.Substring(1, m.Length - 2);
+                    movs+= m.Substring(0,1);
                     movs += "/";
                 }
-                movs.Substring(movs.Length - 1, 1);
+                movs=movs.Substring(0,movs.Length - 1);
                 Console.WriteLine($"Choices ({movs} or X to cancel");
 
 
-                Console.Write("Choose your movement :");
+                Console.Write($"Choose your movement:");
 
                 string Chosenmov = "";
                 Chosenmov = Console.ReadLine();
@@ -235,14 +223,18 @@ namespace HugoLand
                         if (movements.Contains(Movements.North))
                         {
                             armyService.Move(army, x, y, Movements.North);
-                            Console.WriteLine("Movement towars North done");
+                            Console.WriteLine("Movement towards North done");
+                            army.Energy = E - 1;
+
                         }
                         break;
                     case "S":
                         if (movements.Contains(Movements.South))
                         {
                             armyService.Move(army, x, y, Movements.South);
-                            Console.WriteLine("Movement towars South done");
+                            Console.WriteLine("Movement towards South done");
+                            army.Energy = E - 1;
+
 
                         }
                         break;
@@ -251,7 +243,9 @@ namespace HugoLand
                         if (movements.Contains(Movements.East))
                         {
                             armyService.Move(army, x, y, Movements.East);
-                            Console.WriteLine("Movement towars East done");
+                            Console.WriteLine("Movement towards East done");
+                            army.Energy = E - 1;
+
                         }
 
                         break;
@@ -259,8 +253,12 @@ namespace HugoLand
                         if (movements.Contains(Movements.West))
                         {
                             armyService.Move(army, x, y, Movements.West);
-                            Console.WriteLine("Movement towars West done");
+                            Console.WriteLine("Movement towards West done");
+                            army.Energy = E - 1;
                         }
+                        break;
+                    case "X":
+                        Console.WriteLine("Movement canceled");
                         break;
                 }
 

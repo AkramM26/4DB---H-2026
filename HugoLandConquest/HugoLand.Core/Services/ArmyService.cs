@@ -111,9 +111,27 @@ namespace HugoLand.Core.Services
         /// Effectue le mouvement 
         /// </summary>
         /// <returns></returns>
-        public ArmyService Move(Domain.MilitaryDetachment army, int x, int y,Movements mov)
+        public void Move(Domain.MilitaryDetachment army, int x, int y,Movements mov)
         {
-            return new ArmyService(Context);
+            switch (mov)
+            {
+                case Movements.North:
+                    army.Territory.PositionX = x;
+                    army.Territory.PositionY = y-1;
+                    break;
+                case Movements.South:
+                    army.Territory.PositionX = x;
+                    army.Territory.PositionY = y + 1;
+                    break;
+                case Movements.East:
+                    army.Territory.PositionX = x + 1;
+                    army.Territory.PositionY = y ;
+                    break;
+                case Movements.West:
+                    army.Territory.PositionX = x -1;
+                    army.Territory.PositionY = y;
+                    break;
+            }
         }
 
 
