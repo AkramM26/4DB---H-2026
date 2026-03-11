@@ -84,9 +84,12 @@ namespace HugoLand.Core.Services
 
             Context.Add(combatEvent);
 
+            await IsGameOver();
+
             await Context.SaveChangesAsync();
 
             return combatResult.DefenceVictory;
+
         }
         private CombatResult InternalResolveCombat(int defenceForce, int attackForce, TerritoryType territoryType,
             InstallationType installationType)
@@ -139,6 +142,33 @@ namespace HugoLand.Core.Services
             CombatResult combatResult = new CombatResult(defenceVictory, defenceForce, attackForce, (loserForceloss / 10) * 5,
                 defenceRandomFactor, attackRandomFactor, effectiveForceDefence, effectiveForceAttack);
             return combatResult;
+        }
+
+        private async Task IsGameOver()
+        {
+            var game = await Context.Games
+                .Include(g => g.Players)
+                .ThenInclude(g => g.MilitaryDetachments)
+                .FirstAsync();
+
+            Player p1 = game.Players.First(g => g.PlayerNumber == 1);
+            Player p2 = game.Players.First(g => g.PlayerNumber == 2);
+
+            int MilitaryPlayer1 = p1.MilitaryDetachments
+                .Count(m => m.MilitaryForce >= 10);
+            int MilitaryPlayer2 = p2.MilitaryDetachments
+                .Count(m => m.MilitaryForce >= 10);
+
+            if (MilitaryPlayer1 == 0)
+            {
+                game.IsGameOver = true;
+                game.IsPlayer1Winner = false;
+            }
+            if (MilitaryPlayer2 == 0)
+            {
+                game.IsGameOver = true;
+                game.IsPlayer1Winner = true;
+            }
         }
     }
 }
