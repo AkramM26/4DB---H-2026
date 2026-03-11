@@ -1,4 +1,6 @@
 ﻿using HugoLand.Core.Data;
+using HugoLand.Core.Domain;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +9,13 @@ using System.Threading.Tasks;
 
 namespace HugoLand.Core.Services
 {
+    public enum Movements
+    {
+        North,
+        South,
+        East,
+        West
+    }
 
 
     /// <summary>
@@ -23,9 +32,88 @@ namespace HugoLand.Core.Services
         /// </summary>
         private readonly HugoLandContext Context = context;
 
-        public Action AskAction()
-        {
 
+        /// <summary>
+        /// Donne la liste des mouvements possibles 
+        /// </summary>
+        /// <returns></returns>
+        public List<Movements> TryMove(Domain.MilitaryDetachment army, int x,int y)
+        {
+            List<Movements> mpossibles = new List<Movements>();
+
+            //North movement 
+            int Nx = x;
+            int Ny = y - 1;
+
+            if (Ny >= 0)
+            {
+                var NTerritory = Context.Territories
+                    .Include(t => t.MilitaryDetachment)
+                    .FirstOrDefault(t => t.PositionX == Nx && t.PositionY == Ny);
+
+                if (NTerritory?.MilitaryDetachment == null)
+                    mpossibles.Add(Movements.North);
+            }
+
+
+
+            //South movement 
+            int Sx = x;
+            int Sy = y + 1;
+
+            if (Sy < 10)
+            {
+                var STerritory = Context.Territories
+                    .Include(t => t.MilitaryDetachment)
+                    .FirstOrDefault(t => t.PositionX == Sx && t.PositionY == Sy);
+
+                if (STerritory?.MilitaryDetachment == null)
+                    mpossibles.Add(Movements.South);
+            }
+
+            //East movement 
+            int Ex = x + 1;
+            int Ey = y;
+
+            if (Ex < 15)
+            {
+                var ETerritory = Context.Territories
+                    .Include(t => t.MilitaryDetachment)
+                    .FirstOrDefault(t => t.PositionX == Ex && t.PositionY == Ey);
+
+                if (ETerritory?.MilitaryDetachment == null)
+                    mpossibles.Add(Movements.East);
+            }
+
+            //West movement 
+            int Wx = x - 1;
+            int Wy = y;
+
+            if (Wx >= 0)
+            {
+                var LTerritory = Context.Territories
+                    .Include(t => t.MilitaryDetachment)
+                    .FirstOrDefault(t => t.PositionX == Wx && t.PositionY == Wy);
+
+                if (LTerritory?.MilitaryDetachment == null)
+                    mpossibles.Add(Movements.West);
+            }
+
+
+            return mpossibles;
+
+        }
+
+
+
+
+        /// <summary>
+        /// Effectue le mouvement 
+        /// </summary>
+        /// <returns></returns>
+        public ArmyService Move(Domain.MilitaryDetachment army, int x, int y,Movements mov)
+        {
+            return new ArmyService(Context);
         }
 
 
@@ -51,29 +139,6 @@ namespace HugoLand.Core.Services
 
         }
 
-
-
-        /// <summary>
-        /// Vérifie si le mouvement est possible
-        /// </summary>
-        /// <returns></returns>
-        public bool TryMove()
-        {
-            return false;
-        }
-
-
-
-
-
-        /// <summary>
-        /// Effectue le mouvement 
-        /// </summary>
-        /// <returns></returns>
-        public ArmyService Move()
-        {
-            return new ArmyService(Context);
-        }
 
 
 

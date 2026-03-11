@@ -18,7 +18,8 @@ internal class Program
         await gameService.CreateGameAsync();
 
         GameDisplay.ShowGame(context);
-
+        var player1 = context.Players.FirstOrDefault(p => p.PlayerNumber == 1);
+        var player2 = context.Players.FirstOrDefault(p => p.PlayerNumber == 2);
         GameDisplay.AskAction(1,context);
         GameDisplay.AskAction(2,context);
 

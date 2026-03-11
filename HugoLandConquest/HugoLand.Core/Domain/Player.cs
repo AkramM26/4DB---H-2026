@@ -6,12 +6,7 @@ using System.Threading.Tasks;
 
 namespace HugoLand.Core.Domain
 {
-    //public enum Actions
-    //{
-    //    Move,
-    //    Split,
-    //    Fusion
-    //}
+
 
     public class Player
     {

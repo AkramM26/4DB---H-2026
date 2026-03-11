@@ -14,9 +14,6 @@ namespace HugoLand.Core.Domain
 
         public Guid GameId { get; set; }
         public virtual Game Game { get; set; }
-
-        public Action Action  { get; set; }
-
         protected PlayerAction() { }
 
         public static PlayerAction Create(Guid gameId)
