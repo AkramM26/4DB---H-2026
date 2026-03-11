@@ -17,6 +17,7 @@ internal class Program
 
         GameService gameService = new GameService(context);
         await gameService.CreateGameAsync();
+        await gameService.SaveGameAsync();
         await gameService.StartTurnAsync();
 
         //Game game = context.Games
