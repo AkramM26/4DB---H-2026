@@ -11,6 +11,7 @@ namespace HugoLand.Core.Domain
         public Guid Id { get; protected set; }
         public int PlayerNumber { get;protected set; }
         public int Gold { get; set; }
+        public int Income { get; set; }
         public int TurnInDept { get; set; }
 
         public Guid GameId { get; protected set; }

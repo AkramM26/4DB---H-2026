@@ -8,7 +8,7 @@ namespace HugoLand.Core.Domain
 {
     public class Game
     {
-        public Guid Id { get; protected set; } = Guid.NewGuid();
+        public Guid Id { get;  set; } 
         public string SaveName { get; set; }
 
         public virtual ICollection<Player> Players { get; set; } = [];
@@ -25,7 +25,8 @@ namespace HugoLand.Core.Domain
         {
             return new Game
             {
-                SaveName = Constants.GameConstants.CurrentGame
+                Id = Guid.NewGuid(),
+                SaveName = DateTime.Now.ToString()
             };
         }
     }

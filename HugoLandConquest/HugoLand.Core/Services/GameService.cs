@@ -14,64 +14,57 @@ namespace HugoLand.Core.Services
     {
         private readonly HugoLandContext Context = context;
         private int _currentPlayerNumber = 1;
-        private Game? _game = null;
+        private EconomyService _economyService = new EconomyService(context);
 
-        public async Task CreateGameAsync(string gameName = Constants.GameConstants.CurrentGame)
+        public async Task CreateGameAsync()
         {
-            if (gameName == Constants.GameConstants.CurrentGame)
                 await Seed.SeedGameAsync(Context);
-
-            _game = await Context.Games.Include(g => g.Players)
-                                            .Include(g => g.Territories)
-                                            .ThenInclude(t => t.MilitaryDetachment)
-                                            .Include(t => t.Territories)
-                                            .ThenInclude(t => t.Installation)
-                                        .Include(g => g.Installations).FirstAsync(g => g.SaveName == gameName);
         }
 
         public async Task StartTurnAsync()
         {
             // Récupérer le joueur actuel
-            var player = await Context.Players.Include(p => p.MilitaryDetachments)
-                                        .FirstAsync(p => p.PlayerNumber == _currentPlayerNumber);
+            var player = await Context.Players.FirstAsync(p => p.PlayerNumber == _currentPlayerNumber);
 
             foreach (MilitaryDetachment m in player.MilitaryDetachments)
             {
                 // Recupération d'énergie pour chaque armée
                 m.Energy += Constants.GameConstants.energyRecuperation;
-
-                // Chaque fortification occupée (armée ≥10 soldats) génère 5 or
-                foreach (Installation i in _game!.Installations)
-                {
-                    if (i.InstallationType == InstallationType.Fortification && m.TerritoryId == i.TerritoryId)
-                        player.Gold += Constants.GameConstants.ForticationGain;
-                }
             }
-
-            // Le joueur commande ses armées une par une, dans l'ordre de son choix. 1 action par armée par tour
-            foreach (MilitaryDetachment m in player.MilitaryDetachments)
-            {
-
-            }
-
-            // Un instantané de tour (TurnSnapshot) est enregistré automatiquement pour chaque joueur
-
+            await _economyService.CollectRevenue(player);
+            await _economyService.PayMaintenance(player);
+            await Context.SaveChangesAsync();
         }
 
-        public async Task LoadGameAsync(string gameName)
+        public void LoadGameAsync(Guid id)
         {
-            await CreateGameAsync(gameName);
+            Context.CurrentGameId = id;
         }
 
         public async Task SaveGameAsync()
         {
+            var game = await Context.Games
+                .Include(game => game.MilitaryDetachments)
+                .Include(game => game.Territories)
+                .Include(game => game.Installations)
+                .Include(game => game.Players)
+                .Include(game => game.CombatEvents)
+                .Include(game => game.PlayerActions)
+                .Include(game => game.TurnSnapShots)
+                .FirstAsync();
+
+            var game2 = game;
+            game2.Id = Guid.NewGuid();
+            await Context.AddAsync(game2);
+
             await Context.SaveChangesAsync();
         }
 
         public async Task EndTurnAsync()
         {
-            // Sauvegarde automatique
-            await SaveGameAsync();
+            // Un instantané de tour (TurnSnapshot) est enregistré automatiquement pour chaque joueur
+
+            // verification si victoire
 
             // Passage au joueur suivant
             _currentPlayerNumber = (_currentPlayerNumber == 1) ? 2 : 1;
