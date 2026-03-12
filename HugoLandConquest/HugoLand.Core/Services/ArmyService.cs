@@ -208,6 +208,7 @@ namespace HugoLand.Core.Services
                     militaryDetachement.PlayerId, militaryDetachement.TerritoryId, militaryDetachement.GameId));
 
             militaryDetachement.CanMove = false;
+            await Context.SaveChangesAsync();
             return moveResult;
         }
 
@@ -238,6 +239,7 @@ namespace HugoLand.Core.Services
                     player.Gold -= GoldCost;
                     army.MilitaryForce += soldierForReinfocement;
 
+                    await Context.SaveChangesAsync();
                     return ResultService.SuccessResult("The reinforcement was successful");
                 }
                 else
