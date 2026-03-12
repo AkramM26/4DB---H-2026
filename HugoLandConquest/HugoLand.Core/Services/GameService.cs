@@ -1,4 +1,5 @@
 ﻿using Castle.Components.DictionaryAdapter.Xml;
+using HugoLand.Core.Constants;
 using HugoLand.Core.Data;
 using HugoLand.Core.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -29,10 +30,12 @@ namespace HugoLand.Core.Services
             if (game.IsFinished)
                 return;
 
+
             // Récupérer le joueur actuel
             var player = await Context.Players
                 .Include(p => p.MilitaryDetachments)
                 .FirstAsync(p => p.PlayerNumber == _currentPlayerNumber);
+
 
             foreach (MilitaryDetachment m in player.MilitaryDetachments)
             {

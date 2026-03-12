@@ -1,7 +1,9 @@
-﻿using HugoLand.Core.Data;
+﻿using HugoLand.Core.Constants;
+using HugoLand.Core.Data;
 using HugoLand.Core.Domain;
 using HugoLand.Core.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -111,6 +113,7 @@ namespace HugoLand
         public static void AskAction(int PlayerNumber, HugoLandContext context)
         {
 
+
             var player = context.Players
                 .Include(p => p.MilitaryDetachments)
                 .FirstOrDefault(p => p.PlayerNumber == PlayerNumber);
@@ -121,27 +124,62 @@ namespace HugoLand
             foreach (var army in armies)
             {
 
+                // Recupération d'énergie pour chaque armée
+                army.Energy += GameConstants.energyRecuperation;
+                army.CanAct = true;
+                bool redo = true;
+
+                int startLine = Console.CursorTop;
+
                 Console.WriteLine("Player " + PlayerNumber);
 
                 Console.WriteLine("Which action do you want to do?");
                 Console.WriteLine("1 - Move");
                 Console.WriteLine("2 - Split");
+                Console.WriteLine("3 - Reinforce");
+                Console.WriteLine("4 - Do Nothing");
+
 
                 Console.Write("Enter your answer : ");
 
-                string Answer = Console.ReadLine();
-
-                switch (Answer)
+                do
                 {
-                    case "1":
-                        Move(context, army, player);
-                        break;
-                    case "2":
-                        Split(context, army);
-                        break;
+                    redo = true;
+                    string Answer = Console.ReadLine();
+
+                    switch (Answer)
+                    {
+                        case "1":
+                            Move(context, army, player);
+                            break;
+                        case "2":
+                            redo = TrySplit(context, army);
+                            Split(context, army);
+                            break;
+                        case "3":
+                            Reinforce(context, army);
+                            break;
+                        case "4":
+                            break;
+                    }
                 }
+                while (!redo);
+
+                Console.SetCursorPosition(0, startLine);
+
+                for (int i = 0; i < 5; i++)
+                {
+                    Console.WriteLine(new string(' ', Console.WindowWidth));
+                }
+
+                Console.SetCursorPosition(0, startLine);
             }
 
+
+        }
+
+        private static void Reinforce(HugoLandContext context, MilitaryDetachment army)
+        {
 
         }
 
@@ -149,10 +187,14 @@ namespace HugoLand
 
         {
             ArmyService armyService = new ArmyService(context);
+            char S = ' ';
+            if (player.PlayerNumber == 1)
+                S = 'A';
+            else if (player.PlayerNumber == 2)
+                S = 'B';
 
 
-            //Energy upgrades 
-            army.Energy = army.Energy + 2;
+
 
             //Variables intialisation
             int x = army.Territory.PositionX;
@@ -162,7 +204,7 @@ namespace HugoLand
             List<Movements> movements = armyService.TryMove(army, x, y, player);
 
             //Display beginning
-            Console.WriteLine($"--- Movement from ({x},{y}) — Energy : {E} ---");
+            Console.WriteLine($"--- Movement from ({x},{y}) — Energy : {E} ---{S}{army.MilitaryForce}");
 
             //North movement 
             if (movements.Contains(Movements.North) && E >= NecessaryE)
@@ -233,8 +275,6 @@ namespace HugoLand
                     {
                         armyService.Move(army, x, y, Movements.North);
                         Console.WriteLine("Movement towards North done");
-                        army.Energy = E - 1;
-
                     }
                     break;
                 case "S":
@@ -244,7 +284,6 @@ namespace HugoLand
                     {
                         armyService.Move(army, x, y, Movements.South);
                         Console.WriteLine("Movement towards South done");
-                        army.Energy = E - 1;
                     }
                     break;
 
@@ -255,7 +294,6 @@ namespace HugoLand
                     {
                         armyService.Move(army, x, y, Movements.East);
                         Console.WriteLine("Movement towards East done");
-                        army.Energy = E - 1;
                     }
 
                     break;
@@ -266,7 +304,6 @@ namespace HugoLand
                     {
                         armyService.Move(army, x, y, Movements.West);
                         Console.WriteLine("Movement towards West done");
-                        army.Energy = E - 1;
                     }
                     break;
                 case "X":
@@ -284,32 +321,48 @@ namespace HugoLand
         {
             ArmyService armyService = new ArmyService(context);
 
-            if (army.MilitaryForce>=11)
+            if (army.MilitaryForce >= 11)
             {
+                int x = army.Territory.PositionX;
+                int y = army.Territory.PositionY;
                 Console.WriteLine("How many soldiers do you want to use for the split :");
                 string Answer = Console.ReadLine();
-                int SoldierNumberForSplit=0;
-                bool splt=int.TryParse(Answer,out SoldierNumberForSplit);
+                int SoldierNumberForSplit = 0;
+                bool splt = int.TryParse(Answer, out SoldierNumberForSplit);
 
                 if (splt)
                 {
                     Console.WriteLine($"You selected {SoldierNumberForSplit} soldiers for the split");
+                    List<Movements> mvmts=armyService.SplitMove(army, x, y);
+
+
+                    string movs = "";
+                    foreach (var movement in mvmts)
+                    {
+                        string m = movement.ToString();
+                        movs += m.Substring(0, 1);
+                        movs += "/";
+                    }
+                    movs = movs.Substring(0, movs.Length - 1);
+                    Console.WriteLine($"Territories availables for the split are : {movs}");
                 }
-
-
-
-                
+                else
+                    throw new Exception("You did not entered a valide number for the split !!!");
             }
-            else
+        }
+
+        private static bool TrySplit(HugoLandContext context, MilitaryDetachment army)
+        {
+            if (army.MilitaryForce < 11)
             {
                 Console.WriteLine("You don't have enough soldiers to split");
+                return false;
             }
-
-
-
-
+            else
+                return true;
 
         }
+
 
         //private static void Fusion(HugoLandContext context, IEnumerable<MilitaryDetachment> armies)
         //{

@@ -24,11 +24,9 @@ internal class Program
         GameDisplay.ShowGame(context);
         var player1 = context.Players.FirstOrDefault(p => p.PlayerNumber == 1);
         var player2 = context.Players.FirstOrDefault(p => p.PlayerNumber == 2);
+
         GameDisplay.AskAction(1,context);
         GameDisplay.AskAction(2,context);
-
-        ArmyService armyService = new ArmyService(context);
- 
 
         //Game game = context.Games
         //    .Include(g => g.Players)
