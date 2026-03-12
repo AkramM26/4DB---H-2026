@@ -1,6 +1,7 @@
 ﻿using HugoLand.Core.Data;
 using HugoLand.Core.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,41 +29,34 @@ namespace HugoLand.Core.Services
     public class ArmyService(HugoLandContext context)
     {
 
-        /// <summary>
-        /// Donne le context du jeu à la classe
-        /// </summary>
         private readonly HugoLandContext Context = context;
-
+        private CombatService CombatService = new CombatService(context);
+        private Random Rnd = new Random();
+        public record MoveResult(bool move, bool Fight, bool Fusion, bool DefenceVicory);
 
         /// <summary>
         /// Donne la liste des mouvements possibles 
         /// </summary>
         /// <returns></returns>
-        public List<Movements> TryMove(Domain.MilitaryDetachment army, int x, int y)
+        public async Task<List<Territory>> TryMove(Domain.MilitaryDetachment army, int x, int y)
         {
 
+            List<Territory> mpossibles = new List<Territory>();
 
-            List<Movements> mpossibles = new List<Movements>();
+            var territories = await Context.Territories
+                .Include(t => t.MilitaryDetachment)
+                .ToListAsync();
 
             //North movement 
             int Nx = x;
             int Ny = y - 1;
 
-
-            var ATerritory = Context.Territories
-                .Include(t => t.MilitaryDetachment)
-                .FirstOrDefault(t => t.PositionX == x && t.PositionY == y);
-
             if (Ny >= 0)
             {
-                var NTerritory = Context.Territories
-                    .Include(t => t.MilitaryDetachment)
-                    .FirstOrDefault(t => t.PositionX == Nx && t.PositionY == Ny);
+                var NTerritory = territories.First(t => t.PositionX == Nx && t.PositionY == Ny);
 
-
-                if (NTerritory?.MilitaryDetachment == null)
-                    mpossibles.Add(Movements.North);
-
+                if (NTerritory.MilitaryDetachment == null || NTerritory.MilitaryDetachment.PlayerId == army.PlayerId)
+                    mpossibles.Add(NTerritory);
             }
 
 
@@ -73,13 +67,12 @@ namespace HugoLand.Core.Services
 
             if (Sy < 10)
             {
-                var STerritory = Context.Territories
-                    .Include(t => t.MilitaryDetachment)
+                var STerritory = territories
                     .FirstOrDefault(t => t.PositionX == Sx && t.PositionY == Sy);
 
 
-                if (STerritory?.MilitaryDetachment == null)
-                    mpossibles.Add(Movements.South);
+                if (STerritory?.MilitaryDetachment == null || STerritory.MilitaryDetachment.PlayerId == army.PlayerId)
+                    mpossibles.Add(STerritory);
 
             }
 
@@ -89,12 +82,11 @@ namespace HugoLand.Core.Services
 
             if (Ex < 15)
             {
-                var ETerritory = Context.Territories
-                    .Include(t => t.MilitaryDetachment)
+                var ETerritory = territories
                     .FirstOrDefault(t => t.PositionX == Ex && t.PositionY == Ey);
 
-                if (ETerritory?.MilitaryDetachment == null)
-                    mpossibles.Add(Movements.East);
+                if (ETerritory?.MilitaryDetachment == null || ETerritory.MilitaryDetachment.PlayerId == army.PlayerId)
+                    mpossibles.Add(ETerritory);
 
             }
 
@@ -104,12 +96,11 @@ namespace HugoLand.Core.Services
 
             if (Wx >= 0)
             {
-                var WTerritory = Context.Territories
-                    .Include(t => t.MilitaryDetachment)
+                var WTerritory = territories
                     .FirstOrDefault(t => t.PositionX == Wx && t.PositionY == Wy);
 
-                if (WTerritory?.MilitaryDetachment == null)
-                    mpossibles.Add(Movements.West);
+                if (WTerritory?.MilitaryDetachment == null || WTerritory.MilitaryDetachment.PlayerId == army.PlayerId)
+                    mpossibles.Add(WTerritory);
 
             }
             return mpossibles;
@@ -117,475 +108,140 @@ namespace HugoLand.Core.Services
 
 
 
-
-
-
-
-
-        /// <summary>
-        /// Effectue le mouvement 
-        /// </summary>
-        /// <returns></returns>
-        public async void Move(MilitaryDetachment army, int x, int y, Movements mov)
+        public async Task<MoveResult> Move(Guid militaryDetachementId, Movements movement)
         {
-            if (army.MilitaryForce < 10)
-            {
-                army.Energy = 5;
-                Console.WriteLine("Too few soldiers to move");
-                return;
-            }
+            var militaryDetachement = await Context.MilitaryDetachments
+                .Include(m => m.Territory)
+                .FirstAsync(m => m.Id == militaryDetachementId);
+            bool defenceVictory = false;
+            bool move = false;
+            bool fight = false;
+            bool fusion = false;
+            int oldX = militaryDetachement.Territory.PositionX;
+            int oldY = militaryDetachement.Territory.PositionY;
+            int newX = oldX;
+            int newY = oldY;
 
 
-            var ATerritory = Context.Territories
-                .Include(t => t.MilitaryDetachment)
-                .FirstOrDefault(t => t.PositionX == x && t.PositionY == y);
-
-            switch (mov)
+            switch (movement)
             {
                 case Movements.North:
-
-                    var NTerritory = Context.Territories
-                        .Include(t => t.MilitaryDetachment)
-                        .FirstOrDefault(t => t.PositionX == x && t.PositionY == (y - 1));
-
-                    if (NTerritory?.MilitaryDetachment == null)
-                    {
-
-                        NTerritory.PositionX = x;
-                        NTerritory.PositionY = y - 1;
-                    }
-                    else
-                    {
-                        if (NTerritory?.MilitaryDetachment.Player.PlayerNumber == army.Player.PlayerNumber)
-                        {
-                            Fusion(NTerritory, ATerritory);
-                        }
-                        else
-                        {
-                            //Fight
-                        }
-                    }
+                    newY--;
                     break;
-
                 case Movements.South:
-
-                    var STerritory = Context.Territories
-                        .Include(t => t.MilitaryDetachment)
-                        .FirstOrDefault(t => t.PositionX == x && t.PositionY == (y + 1));
-
-                    if (STerritory?.MilitaryDetachment == null)
-                    {
-                        STerritory.PositionX = x;
-                        STerritory.PositionY = y + 1;
-                    }
-                    else
-                    {
-                        if (STerritory.MilitaryDetachment.Player.PlayerNumber == army.Player.PlayerNumber)
-                        {
-                            Fusion(STerritory, ATerritory);
-                        }
-                        else
-                        {
-                            //Fight
-                        }
-                    }
+                    newY++;
                     break;
-
                 case Movements.East:
-
-                    var ETerritory = Context.Territories
-                        .Include(t => t.MilitaryDetachment)
-                        .FirstOrDefault(t => t.PositionX == (x + 1) && t.PositionY == y);
-
-                    if (ETerritory?.MilitaryDetachment == null)
-                    {
-                        ETerritory.PositionX = x + 1;
-                        ETerritory.PositionY = y;
-                    }
-                    else
-                    {
-                        if (ETerritory.MilitaryDetachment.Player.PlayerNumber == army.Player.PlayerNumber)
-                        {
-                            Fusion(ETerritory, ATerritory);
-                        }
-                        else
-                        {
-                            //Fight
-                        }
-                    }
+                    newX++;
                     break;
-
                 case Movements.West:
-
-                    var WTerritory = Context.Territories
-                        .Include(t => t.MilitaryDetachment)
-                        .FirstOrDefault(t => t.PositionX == (x - 1) && t.PositionY == y);
-
-                    if (WTerritory?.MilitaryDetachment == null)
-                    {
-                        WTerritory.PositionX = x - 1;
-                        WTerritory.PositionY = y;
-                    }
-                    else
-                    {
-                        if (WTerritory.MilitaryDetachment.Player.PlayerNumber == army.Player.PlayerNumber)
-                        {
-                            Fusion(WTerritory, ATerritory);
-                        }
-                        else
-                        {
-                            //Fight
-                        }
-                    }
+                    newX--;
+                    break;
+                default:
                     break;
             }
-            army.Energy = army.Energy - 1;
-            await Context.SaveChangesAsync();
+            if (newX >= 15 || newX < 0 || newY >= 10 || newY < 0 || !militaryDetachement.CanMove)
+                return new MoveResult(move, fight, fusion, defenceVictory);
 
-
-        }
-
-
-        /// <summary>
-        /// Vérifie si la scission est possible
-        /// </summary>
-        /// <returns></returns>
-        //public List<Movements> TrySplit(MilitaryDetachment army, int x, int y)
-        //{
-        //    int playernumber = army.Player.PlayerNumber;
-
-        //    List<Movements> mpossibles = new List<Movements>();
-
-        //    //North movement 
-        //    int Nx = x;
-        //    int Ny = y - 1;
-
-
-        //    var ATerritory = Context.Territories
-        //        .Include(t => t.MilitaryDetachment)
-        //        .FirstOrDefault(t => t.PositionX == x && t.PositionY == y);
-
-        //    if (Ny >= 0)
-        //    {
-        //        var NTerritory = Context.Territories
-        //            .Include(t => t.MilitaryDetachment)
-        //            .FirstOrDefault(t => t.PositionX == Nx && t.PositionY == Ny);
-        //    }
-
-
-
-        //    //South movement 
-        //    int Sx = x;
-        //    int Sy = y + 1;
-
-        //    if (Sy < 10)
-        //    {
-        //        var STerritory = Context.Territories
-        //            .Include(t => t.MilitaryDetachment)
-        //            .FirstOrDefault(t => t.PositionX == Sx && t.PositionY == Sy);
-        //    }
-
-        //    //East movement 
-        //    int Ex = x + 1;
-        //    int Ey = y;
-
-        //    if (Ex < 15)
-        //    {
-        //        var ETerritory = Context.Territories
-        //            .Include(t => t.MilitaryDetachment)
-        //            .FirstOrDefault(t => t.PositionX == Ex && t.PositionY == Ey);
-        //    }
-
-        //    //West movement 
-        //    int Wx = x - 1;
-        //    int Wy = y;
-
-        //    if (Wx >= 0)
-        //    {
-        //        var WTerritory = Context.Territories
-        //            .Include(t => t.MilitaryDetachment)
-        //            .FirstOrDefault(t => t.PositionX == Wx && t.PositionY == Wy);
-        //    }
-        //    return mpossibles;
-        //}
-
-
-
-        /// <summary>
-        /// Effectue la scission
-        /// </summary>
-        /// <returns></returns>
-        //public async void Split(MilitaryDetachment army, int x, int y, int soldierNumberForSplit, Movements mov)
-        //{
-        //    army.MilitaryForce = army.MilitaryForce - soldierNumberForSplit;
-
-        //    MilitaryDetachment NewArmy = MilitaryDetachment.Create(army.Energy, soldierNumberForSplit, army.PlayerId, army.TerritoryId, army.GameId);
-
-        //    switch (mov)
-        //    {
-        //        case Movements.North:
-        //            NewArmy.Territory.PositionX = x;
-        //            NewArmy.Territory.PositionY = y - 1;
-        //            break;
-        //        case Movements.South:
-        //            NewArmy.Territory.PositionX = x;
-        //            NewArmy.Territory.PositionY = y + 1;
-        //            break;
-        //        case Movements.East:
-        //            NewArmy.Territory.PositionX = x + 1;
-        //            NewArmy.Territory.PositionY = y;
-        //            break;
-        //        case Movements.West:
-        //            NewArmy.Territory.PositionX = x - 1;
-        //            NewArmy.Territory.PositionY = y;
-        //            break;
-        //    }
-        //    army.Energy = army.Energy - 1;
-
-
-        //    await Context.SaveChangesAsync();
-
-        //}
-
-
-
-
-
-        //public Territory SplitFusion(Territory nTerritory, Territory? aTerritory)
-        //{
-        //    Territory FusionResult = Territory.Create(TerritoryType.Plain, nTerritory.PositionX, nTerritory.PositionY, nTerritory.GameId);
-
-        //    //New Force
-        //    FusionResult.MilitaryDetachment.MilitaryForce = nTerritory.MilitaryDetachment.MilitaryForce + aTerritory.MilitaryDetachment.MilitaryForce;
-
-
-        //    //New Enery
-        //    if (nTerritory.MilitaryDetachment.Energy > aTerritory.MilitaryDetachment.Energy)
-        //        FusionResult.MilitaryDetachment.Energy = aTerritory.MilitaryDetachment.Energy;
-        //    else
-        //        FusionResult.MilitaryDetachment.Energy = nTerritory.MilitaryDetachment.Energy;
-
-
-        //    //New Territory after fusion 
-        //    return FusionResult;
-        //}
-
-        public async void SplitMove(MilitaryDetachment army, int x, int y, int soldierNumberForSplit, Movements mov, Player player)
-        {
-
-            army.MilitaryForce = army.MilitaryForce - soldierNumberForSplit;
-
-            var ATerritory = Context.Territories
+            var territory = await Context.Territories
                 .Include(t => t.MilitaryDetachment)
-                .FirstOrDefault(t => t.PositionX == x && t.PositionY == y);
+                .FirstAsync(t => t.PositionX == newX && t.PositionY == newY);
+            MilitaryDetachment otherMilitaryDetachment = territory.MilitaryDetachment;
 
-            switch (mov)
+            if (otherMilitaryDetachment == null)
             {
-                case Movements.North:
-
-                    var NTerritory = Context.Territories
-                        .Include(t => t.MilitaryDetachment)
-                        .FirstOrDefault(t => t.PositionX == x && t.PositionY == (y - 1));
-
-                    if (NTerritory?.MilitaryDetachment == null)
-                    {
-                        MilitaryDetachment NewArmy = MilitaryDetachment.Create(army.Energy, soldierNumberForSplit, army.PlayerId, army.TerritoryId, army.GameId);
-
-                        NewArmy.Territory = Territory.Create(TerritoryType.Plain, x, y - 1, army.GameId);
-
-                        //if (soldierNumberForSplit < 10)
-                        //{
-                        //    if (player.Gold >= 20)
-                        //    {
-                        //        player.Gold -= 20;
-                        //        NewArmy.Territory.Installation.InstallationType = InstallationType.Camp;
-                        //    }
-                        //}
-
-
-                    }
-                    else
-                    {
-                        if (NTerritory?.MilitaryDetachment.Player.PlayerNumber == army.Player.PlayerNumber)
-                        {
-                            SplitFusion(NTerritory, ATerritory, soldierNumberForSplit);
-                        }
-                        else
-                        {
-                            //Fight
-                        }
-                    }
-                    break;
-
-                case Movements.South:
-
-                    var STerritory = Context.Territories
-                        .Include(t => t.MilitaryDetachment)
-                        .FirstOrDefault(t => t.PositionX == x && t.PositionY == (y + 1));
-
-                    if (STerritory?.MilitaryDetachment == null)
-                    {
-                        MilitaryDetachment NewArmy = MilitaryDetachment.Create(army.Energy, soldierNumberForSplit, army.PlayerId, army.TerritoryId, army.GameId);
-                        NewArmy.Territory = Territory.Create(TerritoryType.Plain, x, y + 1, army.GameId);
-
-                        if (soldierNumberForSplit < 10)
-                        {
-                            NewArmy.Territory.Installation.InstallationType = InstallationType.Camp;
-                        }
-
-                    }
-                    else
-                    {
-                        if (STerritory.MilitaryDetachment.Player.PlayerNumber == army.Player.PlayerNumber)
-                        {
-                            SplitFusion(STerritory, ATerritory, soldierNumberForSplit);
-                        }
-                        else
-                        {
-                            //Fight
-                        }
-                    }
-                    break;
-
-                case Movements.East:
-
-                    var ETerritory = Context.Territories
-                        .Include(t => t.MilitaryDetachment)
-                        .FirstOrDefault(t => t.PositionX == (x + 1) && t.PositionY == y);
-
-                    if (ETerritory?.MilitaryDetachment == null)
-                    {
-                        MilitaryDetachment NewArmy = MilitaryDetachment.Create(army.Energy, soldierNumberForSplit, army.PlayerId, army.TerritoryId, army.GameId);
-                        NewArmy.Territory = Territory.Create(TerritoryType.Plain, x + 1, y, army.GameId);
-
-                        if (soldierNumberForSplit < 10)
-                        {
-                            NewArmy.Territory.Installation.InstallationType = InstallationType.Camp;
-                        }
-                    }
-                    else
-                    {
-                        if (ETerritory.MilitaryDetachment.Player.PlayerNumber == army.Player.PlayerNumber)
-                        {
-                            SplitFusion(ETerritory, ATerritory, soldierNumberForSplit);
-                        }
-                        else
-                        {
-                            //Fight
-                        }
-                    }
-                    break;
-
-                case Movements.West:
-
-                    var WTerritory = Context.Territories
-                        .Include(t => t.MilitaryDetachment)
-                        .FirstOrDefault(t => t.PositionX == (x - 1) && t.PositionY == y);
-
-                    if (WTerritory?.MilitaryDetachment == null)
-                    {
-                        MilitaryDetachment NewArmy = MilitaryDetachment.Create(army.Energy, soldierNumberForSplit, army.PlayerId, army.TerritoryId, army.GameId);
-                        NewArmy.Territory = Territory.Create(TerritoryType.Plain, x - 1, y, army.GameId);
-
-                        if (soldierNumberForSplit < 10)
-                        {
-                            NewArmy.Territory.Installation.InstallationType = InstallationType.Camp;
-                        }
-                    }
-                    else
-                    {
-                        if (WTerritory.MilitaryDetachment.Player.PlayerNumber == army.Player.PlayerNumber)
-                        {
-                            SplitFusion(WTerritory, ATerritory, soldierNumberForSplit);
-                        }
-                        else
-                        {
-                            //Fight
-                        }
-                    }
-                    break;
+                militaryDetachement.TerritoryId = territory.Id;
+                militaryDetachement.Energy--;
+                move = true;
             }
-            army.Energy = army.Energy - 1;
+            else if (otherMilitaryDetachment.PlayerId == militaryDetachement.PlayerId)
+            {
+                Fusion(militaryDetachement, otherMilitaryDetachment);
+                fusion = true;
+                move = true;
+            }
+            else if (otherMilitaryDetachment.PlayerId != militaryDetachement.PlayerId)
+            {
+                defenceVictory = await CombatService.ResolveCombatAsync(otherMilitaryDetachment.Id, militaryDetachement.Id);
+                if (!defenceVictory)
+                {
+                    militaryDetachement.TerritoryId = territory.Id;
+                    List<Territory> listTerritory = await TryMove(otherMilitaryDetachment, territory.PositionX, territory.PositionY);
+                    if (listTerritory.Count == 0)
+                        Context.Remove(otherMilitaryDetachment);
+                    else
+                    {
+                        Territory newTerritory = listTerritory[Rnd.Next(listTerritory.Count)];
+                        otherMilitaryDetachment.TerritoryId = newTerritory.Id;
+                    }
+                }
+                else
+                    move = false;
+                fight = true;
+            }
+            militaryDetachement.CanAct = false;
             await Context.SaveChangesAsync();
-
-
-
+            return new MoveResult(move, fight, fusion, defenceVictory);
         }
 
-
-        /// <summary>
-        /// Vérifie si la fusion est possible 
-        /// </summary>
-        /// <returns></returns>
-        public bool TryFusion()
+        public async Task<MoveResult> Split(Guid militaryDetachementId, Movements movement, int splitNumber)
         {
-            return false;
-        }
+            var militaryDetachement = await Context.MilitaryDetachments
+                .Include(m => m.Territory)
+                .FirstAsync(m => m.Id == militaryDetachementId);
+            int remainingArmy = militaryDetachement.MilitaryForce - splitNumber;
+            Territory territory = militaryDetachement.Territory;
 
+            if (splitNumber < 10)
+                return new MoveResult(false, false, false, false);
+            if (remainingArmy <= 0)
+                return new MoveResult(false, false, false, false);
 
+            MoveResult moveResult = await Move(militaryDetachementId, movement);
 
-        /// <summary>
-        /// Effectue la fusion 
-        /// </summary>
-        /// <returns></returns>
-        public async void Fusion(Territory nTerritory, Territory? aTerritory)
-        {
-            //New Force
-            nTerritory.MilitaryDetachment.MilitaryForce += aTerritory.MilitaryDetachment.MilitaryForce;
-
-
-            //New Enery
-            if (nTerritory.MilitaryDetachment.Energy > aTerritory.MilitaryDetachment.Energy)
-                nTerritory.MilitaryDetachment.Energy = aTerritory.MilitaryDetachment.Energy;
+            if (!moveResult.move && !moveResult.Fight)
+                return moveResult;
+            else if (moveResult.Fight && moveResult.DefenceVicory)
+                militaryDetachement.MilitaryForce = remainingArmy;
             else
-                nTerritory.MilitaryDetachment.Energy = nTerritory.MilitaryDetachment.Energy;
+                await Context.AddAsync(MilitaryDetachment.Create(militaryDetachement.Energy, remainingArmy,
+                    militaryDetachement.PlayerId, militaryDetachement.TerritoryId, militaryDetachement.GameId));
 
-
-            await Context.SaveChangesAsync();
-
+            militaryDetachement.CanMove = false;
+            return moveResult;
         }
-        public async void SplitFusion(Territory nTerritory, Territory? aTerritory, int soldierNumberForSplit)
+
+        private void Fusion(MilitaryDetachment movingArmy, MilitaryDetachment stationaryArmy)
         {
+            movingArmy.Energy--;
+            stationaryArmy.MilitaryForce += movingArmy.MilitaryForce;
 
-            //New Force
-            nTerritory.MilitaryDetachment.MilitaryForce += soldierNumberForSplit;
+            if (movingArmy.Energy < stationaryArmy.Energy)
+                stationaryArmy.Energy = movingArmy.Energy;
 
-
-            //New Enery
-            if (nTerritory.MilitaryDetachment.Energy > aTerritory.MilitaryDetachment.Energy)
-                nTerritory.MilitaryDetachment.Energy = aTerritory.MilitaryDetachment.Energy;
-            else
-                nTerritory.MilitaryDetachment.Energy = nTerritory.MilitaryDetachment.Energy;
-
-            //Old territory is destroyed
-            Territory.Delete(aTerritory);
-
-            await Context.SaveChangesAsync();
-
+            Context.Remove(movingArmy);
         }
 
-        public void Reinforce(HugoLandContext context, MilitaryDetachment army, int soldierForReinfocement, Player player)
+
+        public async Task<ResultService> Reinforce(MilitaryDetachment army, int soldierForReinfocement, Player player)
         {
             if (army.MilitaryForce < 10)
-                Console.WriteLine("Reinforcement failed !!!Too few soldiers for reinforcement");
+                return ResultService.FailureResult("The militaryForce need to be 10 or more");
+            if (army.Territory.Installation == null)
+                return ResultService.FailureResult("Reinforcement is impossible if there is no Installation");
             else
             {
                 int GoldCost = soldierForReinfocement * 2;
 
                 if (GoldCost < player.Gold)
                 {
-                    //Player's new Gold amount
                     player.Gold -= GoldCost;
-
-                    //Reinforcement 
                     army.MilitaryForce += soldierForReinfocement;
-                    Console.WriteLine("!!!Successful reinforcement!!!");
 
+                    return ResultService.SuccessResult("The reinforcement was successful");
                 }
                 else
-                    Console.WriteLine("Reinforcement failed !!! Too few gold!!!");
-
-
+                    return ResultService.FailureResult("There is not enough gold");
             }
         }
     }

@@ -20,6 +20,7 @@ namespace HugoLand.Core.Domain
             }
         }
         public bool CanAct { get; set; }
+        public bool CanMove { get; set; }
 
         public int MilitaryForce { get; set; }
 
@@ -39,6 +40,7 @@ namespace HugoLand.Core.Domain
                 Energy = energy,
                 Id = Guid.NewGuid(),
                 CanAct = true,
+                CanMove = true,
                 MilitaryForce = militaryForce,
                 TerritoryId = TerritoryId,
                 PlayerId = playerId,

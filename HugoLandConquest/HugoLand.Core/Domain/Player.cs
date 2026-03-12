@@ -30,7 +30,8 @@ namespace HugoLand.Core.Domain
                 Gold = gold,
                 TurnInDept = 0,
                 GameId = GameId,
-                PlayerNumber = playerNumber
+                PlayerNumber = playerNumber,
+                Income = 0
             };
         }
     }

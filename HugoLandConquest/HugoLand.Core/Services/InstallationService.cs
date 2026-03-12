@@ -40,6 +40,7 @@ namespace HugoLand.Core.Services
 
             militaryDetachment.Player.Gold -= GameConstants.CampConstructionCost;
             militaryDetachment.CanAct = false;
+            militaryDetachment.CanMove = false;
             militaryDetachment.Territory.Installation = camp;
 
             await Context.Installations.AddAsync(camp);
@@ -81,6 +82,7 @@ namespace HugoLand.Core.Services
 
             militaryDetachment.Player.Gold -= GameConstants.FortificationUpgradeCost;
             militaryDetachment.CanAct = false;
+            militaryDetachment.CanMove = false;
             militaryDetachment.Territory.Installation.InstallationType = InstallationType.Fortification;
 
             await Context.AddAsync(PlayerAction.Create(militaryDetachment.GameId, PlayerActionType.UpgradeCampToFortification,

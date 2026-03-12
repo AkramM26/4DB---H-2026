@@ -42,6 +42,7 @@ namespace HugoLand.Core.Services
                 // Recupération d'énergie pour chaque armée
                 m.Energy += Constants.GameConstants.energyRecuperation;
                 m.CanAct = true;
+                m.CanMove = true;
             }
             await _economyService.CollectRevenue(player);
             await _economyService.PayMaintenance(player);
