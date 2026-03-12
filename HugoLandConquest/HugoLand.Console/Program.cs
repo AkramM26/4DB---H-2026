@@ -37,6 +37,6 @@ internal class Program
         //    .First();
         //game.SaveName = $"Partie {DateTime.Now.ToString("yyyy-MM-dd HH'h'mm")}"; Pour le nom de la partie ?
 
-        GameDisplay.ShowGame(context);
+        //GameDisplay.ShowGame(context);
     }
 }

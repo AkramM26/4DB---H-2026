@@ -430,7 +430,7 @@ namespace HugoLand.Core.Services
 
                         if (soldierNumberForSplit < 10)
                         {
-                            NewArmy.Territory.Installation.InstallationType = InstallationType.Camp;
+                            NewArmy.Territory.Installation = Installation.Create(InstallationType.Camp, NewArmy.TerritoryId,NewArmy.PlayerId, NewArmy.GameId);
                         }
 
                     }
@@ -460,7 +460,8 @@ namespace HugoLand.Core.Services
 
                         if (soldierNumberForSplit < 10)
                         {
-                            NewArmy.Territory.Installation.InstallationType = InstallationType.Camp;
+                            NewArmy.Territory.Installation = Installation.Create(InstallationType.Camp, NewArmy.TerritoryId, NewArmy.PlayerId, NewArmy.GameId);
+
                         }
                     }
                     else
@@ -489,7 +490,7 @@ namespace HugoLand.Core.Services
 
                         if (soldierNumberForSplit < 10)
                         {
-                            NewArmy.Territory.Installation.InstallationType = InstallationType.Camp;
+                            NewArmy.Territory.Installation = Installation.Create(InstallationType.Camp, NewArmy.TerritoryId, NewArmy.PlayerId, NewArmy.GameId);
                         }
                     }
                     else
