@@ -38,6 +38,9 @@ namespace HugoLand.Core.Domain
             };
         }
 
-
+        internal static void Delete(Territory aTerritory)
+        {
+            aTerritory = null;
+        }
     }
 }

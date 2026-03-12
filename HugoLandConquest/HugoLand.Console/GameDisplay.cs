@@ -145,7 +145,8 @@ namespace HugoLand
                 do
                 {
                     redo = true;
-                    string Answer = Console.ReadLine();
+                    string Answer = "";
+                    Answer = Console.ReadLine();
 
                     switch (Answer)
                     {
@@ -153,17 +154,18 @@ namespace HugoLand
                             Move(context, army, player);
                             break;
                         case "2":
-                            redo = TrySplit(context, army);
-                            Split(context, army);
+                            redo = SplitPossible(context, army);
+                            if (redo)
+                                Split(context, army, player);
                             break;
                         case "3":
-                            Reinforce(context, army);
+                            Reinforce(context, army, player);
                             break;
                         case "4":
                             break;
                     }
                 }
-                while (!redo);
+                while (redo);
 
                 Console.SetCursorPosition(0, startLine);
 
@@ -178,9 +180,23 @@ namespace HugoLand
 
         }
 
-        private static void Reinforce(HugoLandContext context, MilitaryDetachment army)
+        private static void Reinforce(HugoLandContext context, MilitaryDetachment army, Player player)
         {
+            ArmyService armyService = new ArmyService(context);
 
+
+            Console.Write("How much soldiers do you want to add to your army ? :");
+            string answer = "";
+            answer = Console.ReadLine();
+            int SoldierForReinfocement = 0;
+            bool reiforcement = int.TryParse(answer, out SoldierForReinfocement);
+
+            if (!reiforcement)
+                throw new Exception("You did not entered a valid number for the reinforcement !!!");
+
+            Console.WriteLine($"You chose to reinforce your army with {SoldierForReinfocement} soldiers");
+
+            armyService.Reinforce(context, army, SoldierForReinfocement, player);
         }
 
         private static void Move(HugoLandContext context, MilitaryDetachment army, Player player)
@@ -201,7 +217,8 @@ namespace HugoLand
             int y = army.Territory.PositionY;
             int E = army.Energy;
             int NecessaryE = 1;
-            List<Movements> movements = armyService.TryMove(army, x, y, player);
+            List<Movements> movements = armyService.TryMove(army, x, y);
+
 
             //Display beginning
             Console.WriteLine($"--- Movement from ({x},{y}) — Energy : {E} ---{S}{army.MilitaryForce}");
@@ -317,41 +334,123 @@ namespace HugoLand
 
 
         }
-        private static void Split(HugoLandContext context, MilitaryDetachment army)
+        private static void Split(HugoLandContext context, MilitaryDetachment army, Player player)
         {
             ArmyService armyService = new ArmyService(context);
 
-            if (army.MilitaryForce >= 11)
+            int x = army.Territory.PositionX;
+            int y = army.Territory.PositionY;
+
+            Console.WriteLine($"How many soldiers do you want to use for the split(Less than {army.MilitaryForce}) :");
+            string Answer = "";
+            Answer = Console.ReadLine();
+            int SoldierNumberForSplit = 0;
+            bool splt = int.TryParse(Answer, out SoldierNumberForSplit);
+
+            if (!splt)
+                throw new Exception("You did not entered a valid number for the split !!!");
+
+            if (army.MilitaryForce - SoldierNumberForSplit < 1)
             {
-                int x = army.Territory.PositionX;
-                int y = army.Territory.PositionY;
-                Console.WriteLine("How many soldiers do you want to use for the split :");
-                string Answer = Console.ReadLine();
-                int SoldierNumberForSplit = 0;
-                bool splt = int.TryParse(Answer, out SoldierNumberForSplit);
-
-                if (splt)
-                {
-                    Console.WriteLine($"You selected {SoldierNumberForSplit} soldiers for the split");
-                    List<Movements> mvmts=armyService.SplitMove(army, x, y);
-
-
-                    string movs = "";
-                    foreach (var movement in mvmts)
-                    {
-                        string m = movement.ToString();
-                        movs += m.Substring(0, 1);
-                        movs += "/";
-                    }
-                    movs = movs.Substring(0, movs.Length - 1);
-                    Console.WriteLine($"Territories availables for the split are : {movs}");
-                }
-                else
-                    throw new Exception("You did not entered a valide number for the split !!!");
+                throw new Exception("You selected too much soldiers for the split");
             }
+
+            Console.WriteLine($"You selected {SoldierNumberForSplit} soldiers for the split");
+            List<Movements> movements = armyService.TryMove(army, x, y);
+
+
+            string movs = "";
+            foreach (var movement in movements)
+            {
+                string m = movement.ToString();
+                movs += m.Substring(0, 1);
+                movs += "/";
+            }
+            movs = movs.Substring(0, movs.Length - 1);
+            Console.WriteLine($"Territories availables for the split are : {movs}");
+
+            Console.Write($"Choose your movement:");
+
+            bool redo = true;
+            do
+            {
+                string Chosenmov = "";
+                Chosenmov = Console.ReadLine();
+                redo = true;
+                switch (Chosenmov)
+                {
+                    case "N":
+                    case "n":
+
+                        if (movements.Contains(Movements.North))
+                        {
+                            armyService.SplitMove(army, x, y, SoldierNumberForSplit, Movements.North, player);
+                            Console.WriteLine($"Army splits of {SoldierNumberForSplit} towards North done");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Movement not possible");
+                            redo = true;
+                        }
+                        break;
+                    case "S":
+                    case "s":
+
+                        if (movements.Contains(Movements.South))
+                        {
+                            armyService.SplitMove(army, x, y, SoldierNumberForSplit, Movements.South, player);
+                            Console.WriteLine($"Army splits of {SoldierNumberForSplit} towards South done");
+
+                        }
+                        else
+                        {
+                            Console.WriteLine("Movement not possible");
+                            redo = true;
+                        }
+                        break;
+
+                    case "E":
+                    case "e":
+
+                        if (movements.Contains(Movements.East))
+                        {
+                            armyService.SplitMove(army, x, y, SoldierNumberForSplit, Movements.East, player);
+                            Console.WriteLine($"Army splits of {SoldierNumberForSplit} towards East done");
+
+                        }
+                        else
+                        {
+                            Console.WriteLine("Movement not possible");
+                            redo = true;
+                        }
+
+                        break;
+                    case "W":
+                    case "w":
+
+                        if (movements.Contains(Movements.West))
+                        {
+                            armyService.SplitMove(army, x, y, SoldierNumberForSplit, Movements.West, player);
+                            Console.WriteLine($"Army splits of {SoldierNumberForSplit} towards West done");
+
+                        }
+                        else
+                        {
+                            Console.WriteLine("Movement not possible");
+                            redo = true;
+                        }
+                        break;
+                    default:
+                        Console.WriteLine("You entered a wrong direction");
+                        redo = true;
+                        break;
+                }
+            } while (redo);
+
+
         }
 
-        private static bool TrySplit(HugoLandContext context, MilitaryDetachment army)
+        private static bool SplitPossible(HugoLandContext context, MilitaryDetachment army)
         {
             if (army.MilitaryForce < 11)
             {
