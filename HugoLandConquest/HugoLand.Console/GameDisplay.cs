@@ -113,7 +113,6 @@ namespace HugoLand
         public static void AskAction(int PlayerNumber, HugoLandContext context)
         {
 
-
             var player = context.Players
                 .Include(p => p.MilitaryDetachments)
                 .FirstOrDefault(p => p.PlayerNumber == PlayerNumber);
@@ -164,11 +163,14 @@ namespace HugoLand
                             break;
                     }
 
-                } while (redo);
+                } while (!redo);
 
-                int endLine = Console.CursorTop;
+                Console.WriteLine();
+                Console.WriteLine("APPUYER SUR UNE TOUCHE POUR CONTINUER ");
+                Console.ReadKey();
+                int lastBufferLine = Console.BufferHeight - 1;
 
-                for (int i = startLine; i <= endLine; i++)
+                for (int i = startLine; i <= lastBufferLine; i++)
                 {
                     Console.SetCursorPosition(0, i);
                     Console.Write(new string(' ', Console.WindowWidth));
@@ -447,7 +449,7 @@ namespace HugoLand
                             redo = true;
                             break;
                     }
-                } while (redo);
+                } while (!redo);
             }
 
         }
