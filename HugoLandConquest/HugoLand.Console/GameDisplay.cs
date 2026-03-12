@@ -139,7 +139,7 @@ namespace HugoLand
 
                 do
                 {
-                    redo = false;
+                    redo = true;
 
                     string Answer = Console.ReadLine();
 
