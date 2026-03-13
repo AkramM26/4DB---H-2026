@@ -58,9 +58,6 @@ namespace HugoLand.Core.Services
                 if (NTerritory.MilitaryDetachment == null || NTerritory.MilitaryDetachment.PlayerId == army.PlayerId)
                     mpossibles.Add(NTerritory);
             }
-
-
-
             //South movement 
             int Sx = x;
             int Sy = y + 1;

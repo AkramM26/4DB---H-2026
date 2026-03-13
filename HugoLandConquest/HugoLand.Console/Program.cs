@@ -15,18 +15,23 @@ internal class Program
         await context.Database.OpenConnectionAsync();
         await context.Database.EnsureCreatedAsync();
 
-        GameService gameService = new GameService(context);
-        await gameService.CreateGameAsync();
-        await gameService.SaveGameAsync();
-        await gameService.StartTurnAsync();
-        await gameService.SaveGameAsync();
+        MenuManager menuManager = new MenuManager(context);
+        menuManager.GameLoop();
 
-        GameDisplay.ShowGame(context);
-        var player1 = context.Players.FirstOrDefault(p => p.PlayerNumber == 1);
-        var player2 = context.Players.FirstOrDefault(p => p.PlayerNumber == 2);
 
-        GameDisplay.AskAction(1,context);
-        GameDisplay.AskAction(2,context);
+
+        //GameService gameService = new GameService(context);
+        //await gameService.CreateGameAsync();
+        //await gameService.SaveGameAsync();
+        //await gameService.StartTurnAsync();
+        //await gameService.SaveGameAsync();
+
+        //GameDisplay.ShowGame(context);
+        //var player1 = context.Players.FirstOrDefault(p => p.PlayerNumber == 1);
+        //var player2 = context.Players.FirstOrDefault(p => p.PlayerNumber == 2);
+
+        //GameDisplay.AskAction(1,context);
+        //GameDisplay.AskAction(2,context);
 
         //Game game = context.Games
         //    .Include(g => g.Players)

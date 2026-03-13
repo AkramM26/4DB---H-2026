@@ -49,7 +49,7 @@ namespace HugoLand.Core.Services
             await Context.SaveChangesAsync();
         }
 
-        public void LoadGameAsync(Guid id)
+        public void LoadGame(Guid id)
         {
             Context.CurrentGameId = id;
         }
@@ -162,8 +162,13 @@ namespace HugoLand.Core.Services
             {
                 _currentPlayerNumber = otherPlayerNumber;
             }
+            game.TurnNumber++;
+            if (game.PlayerTurn ==1)
+                game.PlayerTurn = 2;
+            else
+                game.PlayerTurn = 1;
 
-            await Context.SaveChangesAsync();
+                await Context.SaveChangesAsync();
 
         }
     }

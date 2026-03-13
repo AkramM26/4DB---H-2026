@@ -12,6 +12,8 @@ namespace HugoLand.Core.Domain
         public string SaveName { get; set; }
         public bool IsGameOver { get; set; }
         public bool IsPlayer1Winner { get; set; }
+        public int TurnNumber { get; set; }
+        public int PlayerTurn { get; set; }
 
         public bool IsFinished { get; set; }
         public int? WinnerPlayerNumber { get; set; }
@@ -35,7 +37,9 @@ namespace HugoLand.Core.Domain
                 SaveName = DateTime.Now.ToString(),
                 IsFinished = false,
                 WinnerPlayerNumber = null,
-                EndedAt = null
+                EndedAt = null,
+                TurnNumber = 1,
+                PlayerTurn = 1
             };
         }
     }
