@@ -23,7 +23,7 @@ namespace HugoLand
                 Console.WriteLine("  [1] New Game");
                 Console.WriteLine("  [2] Load Game");
                 Console.WriteLine("  [3] Quit\n");
-                Console.Write("  Choix :");
+                Console.Write("  Choice :");
                 string input = Console.ReadLine();
                 validInput = int.TryParse(input, out choice);
                 if (choice > 3 || choice < 1)
@@ -45,7 +45,7 @@ namespace HugoLand
                     Console.WriteLine($"  [{i}] " + games[i - 1].SaveName);
                 }
                 Console.WriteLine($"  [0] Quit\n");
-                Console.Write("  Choix :");
+                Console.Write("  Choice :");
                 string input = Console.ReadLine();
                 validInput = int.TryParse(input, out choice);
                 choice--;
@@ -64,12 +64,13 @@ namespace HugoLand
                 Console.WriteLine("  [1] Select an army");
                 Console.WriteLine("  [2] Save Game");
                 Console.WriteLine("  [3] Go to main menu");
-                Console.Write("  Choix :");
+                Console.WriteLine("  [4] Skip turn");
+                Console.Write("  Choice :");
                 string input = Console.ReadLine();
 
                 validInput = int.TryParse(input, out choice);
 
-                if (choice > 3 || choice < 1)
+                if (choice > 4 || choice < 1)
                     validInput = false;
                 if (!validInput)
                     GameDisplay.ShowGame(context);
@@ -100,12 +101,202 @@ namespace HugoLand
                     validInputY = false;
 
                 MilitaryDetachment militaryDetachment = militaryDetachments.FirstOrDefault(m => m.Territory.PositionX == posX && m.Territory.PositionY == posY);
-                if (militaryDetachment == null || militaryDetachment.Player.PlayerNumber != game.PlayerTurn)
+                if (militaryDetachment == null || militaryDetachment.Player.PlayerNumber != game.PlayerTurn || militaryDetachment.MilitaryForce < 10)
                     validInputX = false;
 
                 if (validInputX && validInputY)
                     return militaryDetachment;
             }
+        }
+        public static int ShowArmyAction(MilitaryDetachment militaryDetachment)
+        {
+            bool valideInput = false;
+            int choice = 0;
+
+            while (!valideInput)
+            {
+                bool installationPresent = militaryDetachment.Territory.Installation != null;
+                bool forticicationPresent = false;
+                if (installationPresent)
+                    forticicationPresent = militaryDetachment.Territory.Installation!.InstallationType == InstallationType.Fortification;
+
+                Console.WriteLine($"\n  --- Army in ({militaryDetachment.Territory.PositionX},{militaryDetachment.Territory.PositionY}) " +
+                    $"- {militaryDetachment.MilitaryForce} soldier, {militaryDetachment.Energy} energy ---");
+
+                string installation = "";
+                if (militaryDetachment.Territory.Installation == null)
+                    installation = "None";
+                else
+                    installation = militaryDetachment.Territory.Installation.InstallationType.ToString();
+
+                Console.WriteLine($"    Installation: {installation}\n");
+                Console.WriteLine($"    Available actions :");
+                Console.WriteLine($"       [1] Move");
+                if (!installationPresent)
+                    Console.WriteLine($"       [2] Build a camp                 (20 gold)");
+                else
+                    Console.WriteLine($"       [2] Build a camp                 (20 gold)   - Impossible : installation already present");
+                if (installationPresent && !forticicationPresent)
+                    Console.WriteLine($"       [3] Convert into fortification   (50 gold)");
+                else
+                    Console.WriteLine($"       [3] Convert into fortification   (50 gold)   - Impossible : fortification already present");
+                if (forticicationPresent)
+                    Console.WriteLine($"       [4] Strenghten the army          (2 gold/soldier)");
+                else
+                    Console.WriteLine($"       [4] Strenghten the army          (2 gold/soldier)   - Impossible : There is no fortification");
+                if (militaryDetachment.MilitaryForce < 11)
+                    Console.WriteLine($"       [5] Split the army   - Impossible : The army is not big enough");
+                else
+                    Console.WriteLine($"       [5] Split the army");
+
+                Console.WriteLine($"       [6] Pass (do nothing)");
+
+                Console.Write("\n    Choice :");
+
+                string input = Console.ReadLine();
+                valideInput = int.TryParse(input, out choice);
+
+                if (choice > 6 || choice < 1)
+                    valideInput = false;
+                else if (choice == 2 && installationPresent)
+                    valideInput = false;
+                else if (choice == 3 && forticicationPresent)
+                    valideInput = false;
+                else if (choice == 4 && !installationPresent)
+                    valideInput = false;
+                else if (choice == 5 && militaryDetachment.MilitaryForce < 11)
+                    valideInput = false;
+            }
+            return choice;
+        }
+        public static char ShowMoveMenu(ICollection<Territory> territories, MilitaryDetachment militaryDetachment)
+        {
+            bool validInput = false;
+            char choice = ' ';
+            int posX = militaryDetachment.Territory.PositionX;
+            int posY = militaryDetachment.Territory.PositionY;
+
+            Territory nTerritory = territories.FirstOrDefault(t => t.PositionY == posY - 1 && t.PositionX == posX)!;
+            Territory sTerritory = territories.FirstOrDefault(t => t.PositionY == posY + 1 && t.PositionX == posX)!;
+            Territory eTerritory = territories.FirstOrDefault(t => t.PositionY == posY && t.PositionX == posX + 1)!;
+            Territory wTerritory = territories.FirstOrDefault(t => t.PositionY == posY && t.PositionX == posX - 1)!;
+
+            bool enemyNorth = (nTerritory.MilitaryDetachment != null) && (nTerritory.MilitaryDetachment.PlayerId != militaryDetachment.PlayerId);
+            bool enemySouth = (sTerritory.MilitaryDetachment != null) && (sTerritory.MilitaryDetachment.PlayerId != militaryDetachment.PlayerId);
+            bool enemyEst = (eTerritory.MilitaryDetachment != null) && (eTerritory.MilitaryDetachment.PlayerId != militaryDetachment.PlayerId);
+            bool enemyWest = (wTerritory.MilitaryDetachment != null) && (wTerritory.MilitaryDetachment.PlayerId != militaryDetachment.PlayerId);
+            bool allyNorth = (nTerritory.MilitaryDetachment != null) && (nTerritory.MilitaryDetachment.PlayerId == militaryDetachment.PlayerId);
+            bool allySouth = (sTerritory.MilitaryDetachment != null) && (sTerritory.MilitaryDetachment.PlayerId == militaryDetachment.PlayerId);
+            bool allyEast = (eTerritory.MilitaryDetachment != null) && (eTerritory.MilitaryDetachment.PlayerId == militaryDetachment.PlayerId);
+            bool allyWest = (wTerritory.MilitaryDetachment != null) && (wTerritory.MilitaryDetachment.PlayerId == militaryDetachment.PlayerId);
+
+            string nArmy = "Empty";
+            string sArmy = "Empty";
+            string eArmy = "Empty";
+            string wArmy = "Empty";
+            if (nTerritory != null && enemyNorth)
+                nArmy = $"Enemy : military force({nTerritory.MilitaryDetachment!.MilitaryForce})";
+            else if (nTerritory != null && allyNorth)
+                nArmy = $"ally : military force({nTerritory.MilitaryDetachment!.MilitaryForce})";
+            if (sTerritory != null && enemySouth)
+                sArmy = $"Enemy : military force({sTerritory.MilitaryDetachment!.MilitaryForce})";
+            else if (sTerritory != null && allySouth)
+                sArmy = $"ally : military force({sTerritory.MilitaryDetachment!.MilitaryForce})";
+            if (eTerritory != null && enemyEst)
+                eArmy = $"Enemy : military force({eTerritory.MilitaryDetachment!.MilitaryForce})";
+            else if (eTerritory != null && allyEast)
+                eArmy = $"ally : military force({eTerritory.MilitaryDetachment!.MilitaryForce})";
+            if (wTerritory != null && enemyWest)
+                wArmy = $"Enemy : military force({wTerritory.MilitaryDetachment!.MilitaryForce})";
+            else if (wTerritory != null && allyWest)
+                wArmy = $"ally : military force({wTerritory.MilitaryDetachment!.MilitaryForce})";
+
+            while (!validInput)
+            {
+                Console.WriteLine($"\n  --- Army at ({posX},{posY}) - Energy : {militaryDetachment.Energy} ---\n");
+                Console.WriteLine("    Adjacent territories :");
+                if (nTerritory != null)
+                {
+                    Console.Write($"      [N] ({nTerritory.PositionX},{nTerritory.PositionY}) - {nArmy}");
+                    Console.Write("Cost : 1 Energy ".PadLeft(20, ' '));
+                    if (enemyNorth)
+                        Console.Write("  Fight\n");
+                    else if (allyNorth)
+                        Console.Write("  Fusion\n");
+                    else
+                        Console.Write("  Move\n");
+                }
+                if (sTerritory != null)
+                {
+                    Console.Write($"      [S] ({sTerritory.PositionX},{sTerritory.PositionY}) - {sArmy}");
+                    Console.Write("Cost : 1 Energy ".PadLeft(20, ' '));
+                    if (enemySouth)
+                        Console.Write("  Fight\n");
+                    else if (allySouth)
+                        Console.Write("  Fusion\n");
+                    else
+                        Console.Write("  Move\n");
+                }
+                if (eTerritory != null)
+                {
+                    Console.Write($"      [E] ({eTerritory.PositionX},{eTerritory.PositionY}) - {eArmy}");
+                    Console.Write("Cost : 1 Energy ".PadLeft(20, ' '));
+                    if (enemyEst)
+                        Console.Write("  Fight\n");
+                    else if (allyEast)
+                        Console.Write("  Fusion\n");
+                    else
+                        Console.Write("  Move\n");
+                }
+                if (wTerritory != null)
+                {
+                    Console.Write($"      [W] ({wTerritory.PositionX},{wTerritory.PositionY}) - {wArmy}");
+                    Console.Write("Cost : 1 Energy ".PadLeft(20, ' '));
+                    if (enemyWest)
+                        Console.Write("  Fight\n");
+                    else if (allyWest)
+                        Console.Write("  Fusion\n");
+                    else
+                        Console.Write("  Move\n");
+                }
+                Console.WriteLine("      [X] Cancel");
+                Console.Write("  Choice :");
+                string input = Console.ReadLine();
+
+                validInput = char.TryParse(input, out choice);
+                choice = Char.ToUpper(choice);
+
+                if (choice != 'N' && choice != 'S' && choice != 'E' && choice != 'W' && choice != 'X')
+                    validInput = false;
+                else if (choice == 'N' && nTerritory == null)
+                    validInput = false;
+                else if (choice == 'S' && sTerritory == null)
+                    validInput = false;
+                else if (choice == 'W' && wTerritory == null)
+                    validInput = false;
+                else if (choice == 'E' && eTerritory == null)
+                    validInput = false;
+            }
+            return choice;
+        }
+
+        public static int ShowSplitNumber(MilitaryDetachment militaryDetachment)
+        {
+            bool validInput = false;
+            int splitNumber = -1;
+
+            while (validInput)
+            {
+                Console.WriteLine("------------------------------------------------------");
+                Console.WriteLine("Enter the number of soldiers to split (minimum 10, or 0 to cancel): ");
+                string input = Console.ReadLine();
+
+                validInput = int.TryParse(input, out splitNumber);
+
+                if (splitNumber < 10 && splitNumber != 0)
+                    validInput = false;
+            }
+            return splitNumber;
         }
     }
 }

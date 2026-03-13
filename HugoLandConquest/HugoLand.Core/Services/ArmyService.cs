@@ -55,8 +55,7 @@ namespace HugoLand.Core.Services
             {
                 var NTerritory = territories.First(t => t.PositionX == Nx && t.PositionY == Ny);
 
-                if (NTerritory.MilitaryDetachment == null || NTerritory.MilitaryDetachment.PlayerId == army.PlayerId)
-                    mpossibles.Add(NTerritory);
+                mpossibles.Add(NTerritory);
             }
             //South movement 
             int Sx = x;
@@ -67,9 +66,7 @@ namespace HugoLand.Core.Services
                 var STerritory = territories
                     .FirstOrDefault(t => t.PositionX == Sx && t.PositionY == Sy);
 
-
-                if (STerritory?.MilitaryDetachment == null || STerritory.MilitaryDetachment.PlayerId == army.PlayerId)
-                    mpossibles.Add(STerritory);
+                mpossibles.Add(STerritory);
 
             }
 
@@ -82,8 +79,7 @@ namespace HugoLand.Core.Services
                 var ETerritory = territories
                     .FirstOrDefault(t => t.PositionX == Ex && t.PositionY == Ey);
 
-                if (ETerritory?.MilitaryDetachment == null || ETerritory.MilitaryDetachment.PlayerId == army.PlayerId)
-                    mpossibles.Add(ETerritory);
+                mpossibles.Add(ETerritory);
 
             }
 
@@ -96,8 +92,7 @@ namespace HugoLand.Core.Services
                 var WTerritory = territories
                     .FirstOrDefault(t => t.PositionX == Wx && t.PositionY == Wy);
 
-                if (WTerritory?.MilitaryDetachment == null || WTerritory.MilitaryDetachment.PlayerId == army.PlayerId)
-                    mpossibles.Add(WTerritory);
+                mpossibles.Add(WTerritory);
 
             }
             return mpossibles;
