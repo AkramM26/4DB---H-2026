@@ -60,6 +60,8 @@ namespace HugoLand
             int choice = 0;
             while (!validInput)
             {
+                GameDisplay.ShowGame(context);
+
                 Console.WriteLine("====================");
                 Console.WriteLine("  [1] Select an army");
                 Console.WriteLine("  [2] Save Game");
@@ -72,12 +74,12 @@ namespace HugoLand
 
                 if (choice > 4 || choice < 1)
                     validInput = false;
-                if (!validInput)
-                    GameDisplay.ShowGame(context);
+                //if (!validInput)
+                //    GameDisplay.ShowGame(context);
             }
             return choice;
         }
-        public static MilitaryDetachment ShowArmyChoice(ICollection<MilitaryDetachment> militaryDetachments, Game game)
+        public static MilitaryDetachment ShowArmyChoice(ICollection<MilitaryDetachment> militaryDetachments, Game game, HugoLandContext context)
         {
             bool validInputX = false;
             bool validInputY = false;
@@ -86,6 +88,8 @@ namespace HugoLand
 
             while (true)
             {
+                GameDisplay.ShowGame(context);
+
                 Console.WriteLine("====================");
                 Console.WriteLine("Insert the position of the military detachment you want to use");
                 Console.Write("Position in x: ");
@@ -108,13 +112,15 @@ namespace HugoLand
                     return militaryDetachment;
             }
         }
-        public static int ShowArmyAction(MilitaryDetachment militaryDetachment)
+        public static int ShowArmyAction(MilitaryDetachment militaryDetachment, HugoLandContext context)
         {
             bool valideInput = false;
             int choice = 0;
 
             while (!valideInput)
             {
+                GameDisplay.ShowGame(context);
+
                 bool installationPresent = militaryDetachment.Territory.Installation != null;
                 bool forticicationPresent = false;
                 if (installationPresent)
@@ -169,7 +175,7 @@ namespace HugoLand
             }
             return choice;
         }
-        public static char ShowMoveMenu(ICollection<Territory> territories, MilitaryDetachment militaryDetachment)
+        public static char ShowMoveMenu(ICollection<Territory> territories, MilitaryDetachment militaryDetachment, HugoLandContext context)
         {
             bool validInput = false;
             char choice = ' ';
@@ -213,12 +219,14 @@ namespace HugoLand
 
             while (!validInput)
             {
+                GameDisplay.ShowGame(context);
+
                 Console.WriteLine($"\n  --- Army at ({posX},{posY}) - Energy : {militaryDetachment.Energy} ---\n");
                 Console.WriteLine("    Adjacent territories :");
                 if (nTerritory != null)
                 {
-                    Console.Write($"      [N] ({nTerritory.PositionX},{nTerritory.PositionY}) - {nArmy}");
-                    Console.Write("Cost : 1 Energy ".PadLeft(20, ' '));
+                    Console.Write($"      [N] ({nTerritory.PositionX},{nTerritory.PositionY}) - {nArmy} " +
+                        $"         Cost : 1 Energy      ");
                     if (enemyNorth)
                         Console.Write("  Fight\n");
                     else if (allyNorth)
@@ -228,8 +236,8 @@ namespace HugoLand
                 }
                 if (sTerritory != null)
                 {
-                    Console.Write($"      [S] ({sTerritory.PositionX},{sTerritory.PositionY}) - {sArmy}");
-                    Console.Write("Cost : 1 Energy ".PadLeft(20, ' '));
+                    Console.Write($"      [S] ({sTerritory.PositionX},{sTerritory.PositionY}) - {sArmy} " +
+                        $"         Cost : 1 Energy      ");
                     if (enemySouth)
                         Console.Write("  Fight\n");
                     else if (allySouth)
@@ -239,8 +247,8 @@ namespace HugoLand
                 }
                 if (eTerritory != null)
                 {
-                    Console.Write($"      [E] ({eTerritory.PositionX},{eTerritory.PositionY}) - {eArmy}");
-                    Console.Write("Cost : 1 Energy ".PadLeft(20, ' '));
+                    Console.Write($"      [E] ({eTerritory.PositionX},{eTerritory.PositionY}) - {eArmy} " +
+                        $"         Cost : 1 Energy      ");
                     if (enemyEst)
                         Console.Write("  Fight\n");
                     else if (allyEast)
@@ -250,8 +258,8 @@ namespace HugoLand
                 }
                 if (wTerritory != null)
                 {
-                    Console.Write($"      [W] ({wTerritory.PositionX},{wTerritory.PositionY}) - {wArmy}");
-                    Console.Write("Cost : 1 Energy ".PadLeft(20, ' '));
+                    Console.Write($"      [W] ({wTerritory.PositionX},{wTerritory.PositionY}) - {wArmy} " +
+                        $"         Cost : 1 Energy      ");
                     if (enemyWest)
                         Console.Write("  Fight\n");
                     else if (allyWest)
@@ -280,13 +288,15 @@ namespace HugoLand
             return choice;
         }
 
-        public static int ShowSplitNumber(MilitaryDetachment militaryDetachment)
+        public static int ShowSplitNumber(MilitaryDetachment militaryDetachment, HugoLandContext context)
         {
             bool validInput = false;
             int splitNumber = -1;
 
-            while (validInput)
+            while (!validInput)
             {
+                GameDisplay.ShowGame(context);
+
                 Console.WriteLine("------------------------------------------------------");
                 Console.WriteLine("Enter the number of soldiers to split (minimum 10, or 0 to cancel): ");
                 string input = Console.ReadLine();

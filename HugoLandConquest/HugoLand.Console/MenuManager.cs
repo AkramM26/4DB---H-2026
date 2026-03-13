@@ -43,124 +43,124 @@ namespace HugoLand
                         break;
                     case 3: return;
                 }
-                if (!skipGame)
+
+                while (!skipGame)
                 {
-                    while (!skipGame)
+                    await _gameService.StartTurnAsync();
+
+                    var game = await Context.Games
+                        .Include(g => g.MilitaryDetachments)
+                        .ThenInclude(m => m.Territory)
+                        .ThenInclude(t => t.Installation)
+                        .FirstOrDefaultAsync();
+                    MilitaryDetachment? militaryDetachment = null;
+
+                    bool showActionChoice = true;
+                    bool showArmyAction = false;
+
+                    while (showActionChoice)
                     {
-                        await _gameService.StartTurnAsync();
-
-                        var game = await Context.Games
-                            .Include(g => g.MilitaryDetachments)
-                            .ThenInclude(m => m.Territory)
-                            .ThenInclude(t => t.Installation)
-                            .FirstOrDefaultAsync();
-                        MilitaryDetachment? militaryDetachment = null;
-
-                        bool showActionChoice = true;
-                        bool showArmyAction = false;
-
-                        while (showActionChoice)
+                        choice = MenuDisplay.ShowActionChoice(Context);
+                        switch (choice)
                         {
-                            GameDisplay.ShowGame(context);
-                            choice = MenuDisplay.ShowActionChoice(context);
+                            case 1:
+                                militaryDetachment = MenuDisplay.ShowArmyChoice(game.MilitaryDetachments, game, Context);
+                                showActionChoice = true;
+                                showArmyAction = true;
+                                break;
+                            case 2:
+                                await _gameService.SaveGameAsync();
+                                showActionChoice = true;
+                                showArmyAction = false;
+                                break;
+                            case 3:
+                                showActionChoice = false;
+                                skipGame = true;
+                                showMainMenu = true;
+                                showArmyAction = false;
+                                break;
+                            case 4:
+                                showActionChoice = false;
+                                showArmyAction = false;
+                                await _gameService.EndTurnAsync();
+                                break;
+                        }
+                        if (showArmyAction && militaryDetachment != null)
+                        {
+                            choice = MenuDisplay.ShowArmyAction(militaryDetachment, Context);
                             switch (choice)
                             {
                                 case 1:
-                                    militaryDetachment = MenuDisplay.ShowArmyChoice(game.MilitaryDetachments, game);
-                                    showActionChoice = true;
-                                    showArmyAction= true;
-                                    break;
+                                    {
+                                        List<Territory> lstTerritory = await _armyService.TryMove(militaryDetachment, militaryDetachment.Territory.PositionX, militaryDetachment.Territory.PositionY);
+                                        char moveChoice = MenuDisplay.ShowMoveMenu(lstTerritory, militaryDetachment, Context);
+                                        if (moveChoice == 'N')
+                                        {
+                                            MoveResult moveResult = await _armyService.Move(militaryDetachment.Id, Movements.North);
+                                            // Show move result.
+                                        }
+                                        else if (moveChoice == 'S')
+                                        {
+                                            MoveResult moveResult = await _armyService.Move(militaryDetachment.Id, Movements.South);
+                                            // Show move result.
+                                        }
+                                        else if (moveChoice == 'E')
+                                        {
+                                            MoveResult moveResult = await _armyService.Move(militaryDetachment.Id, Movements.East);
+                                            // Show move result.
+                                        }
+                                        else if (moveChoice == 'W')
+                                        {
+                                            MoveResult moveResult = await _armyService.Move(militaryDetachment.Id, Movements.West);
+                                            // Show move result.
+                                        }
+                                        break;
+                                    }
                                 case 2:
-                                    await _gameService.SaveGameAsync();
-                                    showActionChoice = true;
                                     break;
                                 case 3:
-                                    showActionChoice = false;
-                                    skipGame = true;
-                                    showMainMenu = true;
                                     break;
                                 case 4:
-                                    showActionChoice = false;
-                                    showArmyAction = false;
-                                    await _gameService.EndTurnAsync();
                                     break;
-                            }
-                            if (showArmyAction && militaryDetachment != null)
-                            {
-                                choice = MenuDisplay.ShowArmyAction(militaryDetachment);
-                                switch (choice)
-                                {
-                                    case 1:
-                                        {
-                                            List<Territory> lstTerritory = await _armyService.TryMove(militaryDetachment, militaryDetachment.Territory.PositionX, militaryDetachment.Territory.PositionY);
-                                            char moveChoice = MenuDisplay.ShowMoveMenu(lstTerritory, militaryDetachment);
-                                            if (moveChoice == 'N')
-                                            {
-                                                MoveResult moveResult = await _armyService.Move(militaryDetachment.Id, Movements.North);
-                                                // Show move result.
-                                            }
-                                            else if (moveChoice == 'S')
-                                            {
-                                                MoveResult moveResult = await _armyService.Move(militaryDetachment.Id, Movements.South);
-                                                // Show move result.
-                                            }
-                                            else if (moveChoice == 'E')
-                                            {
-                                                MoveResult moveResult = await _armyService.Move(militaryDetachment.Id, Movements.East);
-                                                // Show move result.
-                                            }
-                                            else if (moveChoice == 'W')
-                                            {
-                                                MoveResult moveResult = await _armyService.Move(militaryDetachment.Id, Movements.West);
-                                                // Show move result.
-                                            }
-                                            break;
-                                        }
-                                    case 2:
-                                        break;
-                                    case 3:
-                                        break;
-                                    case 4:
-                                        break;
-                                    case 5:
-                                        {
-                                            List<Territory> lstTerritory = await _armyService.TryMove(militaryDetachment, militaryDetachment.Territory.PositionX, militaryDetachment.Territory.PositionY);
-                                            int splitNumber = MenuDisplay.ShowSplitNumber(militaryDetachment);
-                                            char moveChoice = MenuDisplay.ShowMoveMenu(lstTerritory, militaryDetachment);
+                                case 5:
+                                    {
+                                        List<Territory> lstTerritory = await _armyService.TryMove(militaryDetachment, militaryDetachment.Territory.PositionX, militaryDetachment.Territory.PositionY);
+                                        int splitNumber = MenuDisplay.ShowSplitNumber(militaryDetachment, Context);
+                                        char moveChoice = MenuDisplay.ShowMoveMenu(lstTerritory, militaryDetachment, Context);
 
-                                            if (splitNumber == 0)
-                                                showActionChoice = true;
-                                            else if (moveChoice == 'N')
-                                            {
-                                                MoveResult moveResult = await _armyService.Split(militaryDetachment.Id, Movements.North, splitNumber);
-                                                // Show move result.
-                                            }
-                                            else if (moveChoice == 'S')
-                                            {
-                                                MoveResult moveResult = await _armyService.Split(militaryDetachment.Id, Movements.South, splitNumber);
-                                                // Show move result.
-                                            }
-                                            else if (moveChoice == 'E')
-                                            {
-                                                MoveResult moveResult = await _armyService.Split(militaryDetachment.Id, Movements.East, splitNumber);
-                                                // Show move result.
-                                            }
-                                            else if (moveChoice == 'W')
-                                            {
-                                                MoveResult moveResult = await _armyService.Split(militaryDetachment.Id, Movements.West, splitNumber);
-                                                // Show move result.
-                                            }
-                                            break;
+                                        if (splitNumber == 0)
+                                            showActionChoice = true;
+                                        else if (moveChoice == 'N')
+                                        {
+                                            MoveResult moveResult = await _armyService.Split(militaryDetachment.Id, Movements.North, splitNumber);
+                                            // Show move result.
                                         }
-                                    case 6:
+                                        else if (moveChoice == 'S')
+                                        {
+                                            MoveResult moveResult = await _armyService.Split(militaryDetachment.Id, Movements.South, splitNumber);
+                                            // Show move result.
+                                        }
+                                        else if (moveChoice == 'E')
+                                        {
+                                            MoveResult moveResult = await _armyService.Split(militaryDetachment.Id, Movements.East, splitNumber);
+                                            // Show move result.
+                                        }
+                                        else if (moveChoice == 'W')
+                                        {
+                                            MoveResult moveResult = await _armyService.Split(militaryDetachment.Id, Movements.West, splitNumber);
+                                            // Show move result.
+                                        }
                                         break;
-                                    default:
-                                        break;
-                                }
+                                    }
+                                case 6:
+                                    break;
+                                default:
+                                    break;
                             }
                         }
                     }
                 }
+
             }
         }
     }

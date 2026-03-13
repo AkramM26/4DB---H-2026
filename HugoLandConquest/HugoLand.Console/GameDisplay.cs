@@ -42,6 +42,7 @@ namespace HugoLand
                 }
             }
             Console.Clear();
+            Console.WriteLine("\x1b[3J");
             char playerLetter;
             char playerIncome;
             if (player.PlayerNumber == 1)

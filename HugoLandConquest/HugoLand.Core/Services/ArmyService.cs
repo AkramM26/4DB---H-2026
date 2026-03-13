@@ -189,6 +189,9 @@ namespace HugoLand.Core.Services
             if (remainingArmy <= 0)
                 return new MoveResult(false, false, false, false);
 
+            militaryDetachement.MilitaryForce = splitNumber;
+            await Context.SaveChangesAsync();
+
             MoveResult moveResult = await Move(militaryDetachementId, movement);
 
             if (!moveResult.move && !moveResult.Fight)
@@ -196,10 +199,14 @@ namespace HugoLand.Core.Services
             else if (moveResult.Fight && moveResult.DefenceVicory)
                 militaryDetachement.MilitaryForce = remainingArmy;
             else
-                await Context.AddAsync(MilitaryDetachment.Create(militaryDetachement.Energy, remainingArmy,
-                    militaryDetachement.PlayerId, militaryDetachement.TerritoryId, militaryDetachement.GameId));
+            {
+                MilitaryDetachment stationaryMilitaryDetachment = MilitaryDetachment.Create(militaryDetachement.Energy, remainingArmy,
+                    militaryDetachement.PlayerId, territory.Id, militaryDetachement.GameId);
+                await Context.AddAsync(stationaryMilitaryDetachment);
+                stationaryMilitaryDetachment.CanMove = false;
+                stationaryMilitaryDetachment.CanAct = false;
+            }
 
-            militaryDetachement.CanMove = false;
             await Context.SaveChangesAsync();
             return moveResult;
         }
