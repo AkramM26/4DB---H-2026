@@ -172,6 +172,10 @@ namespace HugoLand.Core.Services
                 fight = true;
             }
             militaryDetachement.CanAct = false;
+
+            if (militaryDetachement.Territory.Installation != null && militaryDetachement.Territory.Installation.InstallationType == InstallationType.Camp)
+                Context.Remove(militaryDetachement.Territory.Installation);
+
             await Context.SaveChangesAsync();
             return new MoveResult(move, fight, fusion, defenceVictory);
         }
@@ -192,6 +196,7 @@ namespace HugoLand.Core.Services
             militaryDetachement.MilitaryForce = splitNumber;
             await Context.SaveChangesAsync();
 
+            int energy = militaryDetachement.Energy;
             MoveResult moveResult = await Move(militaryDetachementId, movement);
 
             if (!moveResult.move && !moveResult.Fight)
@@ -205,6 +210,7 @@ namespace HugoLand.Core.Services
                 await Context.AddAsync(stationaryMilitaryDetachment);
                 stationaryMilitaryDetachment.CanMove = false;
                 stationaryMilitaryDetachment.CanAct = false;
+                stationaryMilitaryDetachment.Energy = energy;
             }
 
             await Context.SaveChangesAsync();

@@ -114,10 +114,10 @@ namespace HugoLand
         }
         public static int ShowArmyAction(MilitaryDetachment militaryDetachment, HugoLandContext context)
         {
-            bool valideInput = false;
+            bool validInput = false;
             int choice = 0;
 
-            while (!valideInput)
+            while (!validInput)
             {
                 GameDisplay.ShowGame(context);
 
@@ -137,21 +137,31 @@ namespace HugoLand
 
                 Console.WriteLine($"    Installation: {installation}\n");
                 Console.WriteLine($"    Available actions :");
-                Console.WriteLine($"       [1] Move");
-                if (!installationPresent)
-                    Console.WriteLine($"       [2] Build a camp                 (20 gold)");
+                if (militaryDetachment.Energy == 0)
+                    Console.WriteLine($"       [1] Move                                     - Impossible : The army have 0 energy");
+                else if (!militaryDetachment.CanMove)
+                    Console.WriteLine($"       [1] Move                                     - Impossible : The army can't move");
                 else
+                    Console.WriteLine($"       [1] Move");
+
+                if (!militaryDetachment.CanAct)
+                    Console.WriteLine($"       [2] Build a camp                 (20 gold)   - Impossible : The army can't act");
+                else if (installationPresent)
                     Console.WriteLine($"       [2] Build a camp                 (20 gold)   - Impossible : installation already present");
-                if (installationPresent && !forticicationPresent)
-                    Console.WriteLine($"       [3] Convert into fortification   (50 gold)");
                 else
-                    Console.WriteLine($"       [3] Convert into fortification   (50 gold)   - Impossible : fortification already present");
+                    Console.WriteLine($"       [2] Build a camp                 (20 gold)");
                 if (forticicationPresent)
+                    Console.WriteLine($"       [3] Convert into fortification   (50 gold)   - Impossible : fortification already present");
+                else if (!militaryDetachment.CanAct)
+                    Console.WriteLine($"       [3] Convert into fortification   (20 gold)   - Impossible : The army can't act");
+                else
+                    Console.WriteLine($"       [3] Convert into fortification   (50 gold)");
+                if (installationPresent)
                     Console.WriteLine($"       [4] Strenghten the army          (2 gold/soldier)");
                 else
-                    Console.WriteLine($"       [4] Strenghten the army          (2 gold/soldier)   - Impossible : There is no fortification");
+                    Console.WriteLine($"       [4] Strenghten the army          (2 gold/soldier)   - Impossible : There is no installation");
                 if (militaryDetachment.MilitaryForce < 11)
-                    Console.WriteLine($"       [5] Split the army   - Impossible : The army is not big enough");
+                    Console.WriteLine($"       [5] Split the army   - Impossible : The army is not big enough (11 or more)");
                 else
                     Console.WriteLine($"       [5] Split the army");
 
@@ -160,18 +170,20 @@ namespace HugoLand
                 Console.Write("\n    Choice :");
 
                 string input = Console.ReadLine();
-                valideInput = int.TryParse(input, out choice);
+                validInput = int.TryParse(input, out choice);
 
                 if (choice > 6 || choice < 1)
-                    valideInput = false;
-                else if (choice == 2 && installationPresent)
-                    valideInput = false;
-                else if (choice == 3 && forticicationPresent)
-                    valideInput = false;
+                    validInput = false;
+                else if ((choice == 1 && militaryDetachment.Energy == 0) || (choice == 1 && !militaryDetachment.CanMove))
+                    validInput = false;
+                else if ((choice == 2 && installationPresent) || (choice == 2 && !militaryDetachment.CanAct))
+                    validInput = false;
+                else if ((choice == 3 && forticicationPresent) || (choice == 2 && !militaryDetachment.CanAct))
+                    validInput = false;
                 else if (choice == 4 && !installationPresent)
-                    valideInput = false;
+                    validInput = false;
                 else if (choice == 5 && militaryDetachment.MilitaryForce < 11)
-                    valideInput = false;
+                    validInput = false;
             }
             return choice;
         }
@@ -187,14 +199,14 @@ namespace HugoLand
             Territory eTerritory = territories.FirstOrDefault(t => t.PositionY == posY && t.PositionX == posX + 1)!;
             Territory wTerritory = territories.FirstOrDefault(t => t.PositionY == posY && t.PositionX == posX - 1)!;
 
-            bool enemyNorth = (nTerritory.MilitaryDetachment != null) && (nTerritory.MilitaryDetachment.PlayerId != militaryDetachment.PlayerId);
-            bool enemySouth = (sTerritory.MilitaryDetachment != null) && (sTerritory.MilitaryDetachment.PlayerId != militaryDetachment.PlayerId);
-            bool enemyEst = (eTerritory.MilitaryDetachment != null) && (eTerritory.MilitaryDetachment.PlayerId != militaryDetachment.PlayerId);
-            bool enemyWest = (wTerritory.MilitaryDetachment != null) && (wTerritory.MilitaryDetachment.PlayerId != militaryDetachment.PlayerId);
-            bool allyNorth = (nTerritory.MilitaryDetachment != null) && (nTerritory.MilitaryDetachment.PlayerId == militaryDetachment.PlayerId);
-            bool allySouth = (sTerritory.MilitaryDetachment != null) && (sTerritory.MilitaryDetachment.PlayerId == militaryDetachment.PlayerId);
-            bool allyEast = (eTerritory.MilitaryDetachment != null) && (eTerritory.MilitaryDetachment.PlayerId == militaryDetachment.PlayerId);
-            bool allyWest = (wTerritory.MilitaryDetachment != null) && (wTerritory.MilitaryDetachment.PlayerId == militaryDetachment.PlayerId);
+            bool enemyNorth = (nTerritory != null) && (nTerritory.MilitaryDetachment != null) && (nTerritory.MilitaryDetachment.PlayerId != militaryDetachment.PlayerId);
+            bool enemySouth = (sTerritory != null) && (sTerritory.MilitaryDetachment != null) && (sTerritory.MilitaryDetachment.PlayerId != militaryDetachment.PlayerId);
+            bool enemyEst = (eTerritory != null) && (eTerritory.MilitaryDetachment != null) && (eTerritory.MilitaryDetachment.PlayerId != militaryDetachment.PlayerId);
+            bool enemyWest = (wTerritory != null) && (wTerritory.MilitaryDetachment != null) && (wTerritory.MilitaryDetachment.PlayerId != militaryDetachment.PlayerId);
+            bool allyNorth = (nTerritory != null) && (nTerritory.MilitaryDetachment != null) && (nTerritory.MilitaryDetachment.PlayerId == militaryDetachment.PlayerId);
+            bool allySouth = (sTerritory != null) && (sTerritory.MilitaryDetachment != null) && (sTerritory.MilitaryDetachment.PlayerId == militaryDetachment.PlayerId);
+            bool allyEast = (eTerritory != null) && (eTerritory.MilitaryDetachment != null) && (eTerritory.MilitaryDetachment.PlayerId == militaryDetachment.PlayerId);
+            bool allyWest = (wTerritory != null) && (wTerritory.MilitaryDetachment != null) && (wTerritory.MilitaryDetachment.PlayerId == militaryDetachment.PlayerId);
 
             string nArmy = "Empty";
             string sArmy = "Empty";
@@ -327,6 +339,18 @@ namespace HugoLand
                     validInput = false;
             }
             return reinforceNumber;
+        }
+        public static void ShowVictoryScreen(Game game, HugoLandContext context)
+        {
+            char player;
+            if (game.WinnerPlayerNumber == 1)
+                player = 'A';
+            else
+                player = 'B';
+            GameDisplay.ShowGame(context);
+            Console.WriteLine($"=====================");
+            Console.WriteLine($"The player {player} has won the game.");
+            Console.WriteLine($"=====================");
         }
     }
 }

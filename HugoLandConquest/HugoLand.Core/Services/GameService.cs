@@ -90,6 +90,7 @@ namespace HugoLand.Core.Services
             }
             foreach (Territory t in gameClone.Territories)
                 CopyTerritoryAndSiblings(t, gameClone);
+            gameClone.SaveName = DateTime.Now.ToString();
             await Context.AddAsync(gameClone);
             await Context.SaveChangesAsync();
         }

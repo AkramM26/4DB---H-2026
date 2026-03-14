@@ -53,12 +53,20 @@ namespace HugoLand
                         .Include(g => g.MilitaryDetachments)
                         .ThenInclude(m => m.Territory)
                         .ThenInclude(t => t.Installation)
-                        .Include(g=> g.Players)
+                        .Include(g => g.Players)
                         .FirstOrDefaultAsync();
                     MilitaryDetachment? militaryDetachment = null;
 
                     bool showActionChoice = true;
                     bool showArmyAction = false;
+
+                    if (game.IsGameOver)
+                    {
+                        MenuDisplay.ShowVictoryScreen(game, Context);
+                        showActionChoice = false;
+                        skipGame = true;
+                        showMainMenu = true;
+                    }
 
                     while (showActionChoice)
                     {
@@ -94,27 +102,31 @@ namespace HugoLand
                             {
                                 case 1:
                                     {
-                                        List<Territory> lstTerritory = await _armyService.TryMove(militaryDetachment, militaryDetachment.Territory.PositionX, militaryDetachment.Territory.PositionY);
-                                        char moveChoice = MenuDisplay.ShowMoveMenu(lstTerritory, militaryDetachment, Context);
-                                        if (moveChoice == 'N')
+                                        char moveChoice = ' ';
+                                        while (moveChoice != 'X')
                                         {
-                                            MoveResult moveResult = await _armyService.Move(militaryDetachment.Id, Movements.North);
-                                            // Show move result.
-                                        }
-                                        else if (moveChoice == 'S')
-                                        {
-                                            MoveResult moveResult = await _armyService.Move(militaryDetachment.Id, Movements.South);
-                                            // Show move result.
-                                        }
-                                        else if (moveChoice == 'E')
-                                        {
-                                            MoveResult moveResult = await _armyService.Move(militaryDetachment.Id, Movements.East);
-                                            // Show move result.
-                                        }
-                                        else if (moveChoice == 'W')
-                                        {
-                                            MoveResult moveResult = await _armyService.Move(militaryDetachment.Id, Movements.West);
-                                            // Show move result.
+                                            List<Territory> lstTerritory = await _armyService.TryMove(militaryDetachment, militaryDetachment.Territory.PositionX, militaryDetachment.Territory.PositionY);
+                                            moveChoice = MenuDisplay.ShowMoveMenu(lstTerritory, militaryDetachment, Context);
+                                            if (moveChoice == 'N')
+                                            {
+                                                MoveResult moveResult = await _armyService.Move(militaryDetachment.Id, Movements.North);
+                                                // Show move result.
+                                            }
+                                            else if (moveChoice == 'S')
+                                            {
+                                                MoveResult moveResult = await _armyService.Move(militaryDetachment.Id, Movements.South);
+                                                // Show move result.
+                                            }
+                                            else if (moveChoice == 'E')
+                                            {
+                                                MoveResult moveResult = await _armyService.Move(militaryDetachment.Id, Movements.East);
+                                                // Show move result.
+                                            }
+                                            else if (moveChoice == 'W')
+                                            {
+                                                MoveResult moveResult = await _armyService.Move(militaryDetachment.Id, Movements.West);
+                                                // Show move result.
+                                            }
                                         }
                                         break;
                                     }
@@ -130,7 +142,7 @@ namespace HugoLand
                                     }
                                 case 4:
                                     {
-                                        int reinforceNumber = MenuDisplay.ShowReinforceNumber(militaryDetachment,Context);
+                                        int reinforceNumber = MenuDisplay.ShowReinforceNumber(militaryDetachment, Context);
                                         Player player = game!.Players.FirstOrDefault(p => p.PlayerNumber == game.PlayerTurn)!;
                                         ResultService result = await _armyService.Reinforce(militaryDetachment, reinforceNumber, player);
                                         break;
