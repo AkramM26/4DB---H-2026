@@ -52,7 +52,7 @@ namespace HugoLand
             if (player.Income >= 0)
                 playerIncome = '+';
             else
-                playerIncome = '-';
+                playerIncome = ' ';
             Console.Write($"Turn {game.TurnNumber} - Player {playerLetter}");
             Console.Write($"Gold: {player.Gold}({playerIncome}{player.Income})     Turn In Dept: {player.TurnInDept}\n\n".PadLeft(70,' '));
             Console.Write("  ");

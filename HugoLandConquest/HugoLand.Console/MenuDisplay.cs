@@ -308,5 +308,25 @@ namespace HugoLand
             }
             return splitNumber;
         }
+        public static int ShowReinforceNumber(MilitaryDetachment militaryDetachment, HugoLandContext context)
+        {
+            bool validInput = false;
+            int reinforceNumber = -1;
+
+            while (!validInput)
+            {
+                GameDisplay.ShowGame(context);
+
+                Console.WriteLine("------------------------------------------------------");
+                Console.WriteLine("Enter the number of soldiers to buy: ");
+                string input = Console.ReadLine();
+
+                validInput = int.TryParse(input, out reinforceNumber);
+
+                if (reinforceNumber < 0)
+                    validInput = false;
+            }
+            return reinforceNumber;
+        }
     }
 }

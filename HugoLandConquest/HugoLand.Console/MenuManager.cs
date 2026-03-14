@@ -16,6 +16,7 @@ namespace HugoLand
         private HugoLandContext Context = context;
         private GameService _gameService = new GameService(context);
         private ArmyService _armyService = new ArmyService(context);
+        private InstallationService _installationService = new InstallationService(context);
 
         public async void GameLoop()
         {
@@ -52,6 +53,7 @@ namespace HugoLand
                         .Include(g => g.MilitaryDetachments)
                         .ThenInclude(m => m.Territory)
                         .ThenInclude(t => t.Installation)
+                        .Include(g=> g.Players)
                         .FirstOrDefaultAsync();
                     MilitaryDetachment? militaryDetachment = null;
 
@@ -117,11 +119,22 @@ namespace HugoLand
                                         break;
                                     }
                                 case 2:
-                                    break;
+                                    {
+                                        ResultService result = await _installationService.BuildCampAsync(militaryDetachment.Id);
+                                        break;
+                                    }
                                 case 3:
-                                    break;
+                                    {
+                                        ResultService result = await _installationService.UpgradeCampToFortificationAsync(militaryDetachment.Id);
+                                        break;
+                                    }
                                 case 4:
-                                    break;
+                                    {
+                                        int reinforceNumber = MenuDisplay.ShowReinforceNumber(militaryDetachment,Context);
+                                        Player player = game!.Players.FirstOrDefault(p => p.PlayerNumber == game.PlayerTurn)!;
+                                        ResultService result = await _armyService.Reinforce(militaryDetachment, reinforceNumber, player);
+                                        break;
+                                    }
                                 case 5:
                                     {
                                         List<Territory> lstTerritory = await _armyService.TryMove(militaryDetachment, militaryDetachment.Territory.PositionX, militaryDetachment.Territory.PositionY);
