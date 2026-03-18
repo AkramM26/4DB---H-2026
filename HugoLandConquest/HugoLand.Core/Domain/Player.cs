@@ -14,6 +14,7 @@ namespace HugoLand.Core.Domain
         public int PlayerNumber { get;protected set; }
         public int Gold { get; set; }
         public int Income { get; set; }
+        public int Cost { get; set; }
         public int TurnInDept { get; set; }
         public Guid GameId { get;  set; }
         public virtual Game Game { get; set; }
@@ -31,7 +32,8 @@ namespace HugoLand.Core.Domain
                 TurnInDept = 0,
                 GameId = GameId,
                 PlayerNumber = playerNumber,
-                Income = 0
+                Income = 0,
+                Cost = 0
             };
         }
     }

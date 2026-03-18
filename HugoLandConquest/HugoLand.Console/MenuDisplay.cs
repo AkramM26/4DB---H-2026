@@ -351,6 +351,8 @@ namespace HugoLand
             Console.WriteLine($"=====================");
             Console.WriteLine($"The player {player} has won the game.");
             Console.WriteLine($"=====================");
+            Console.WriteLine("Press a key to go to the main menu.");
+            Console.ReadKey();
         }
     }
 }

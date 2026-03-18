@@ -43,6 +43,19 @@ namespace HugoLand.Core.Data
             modelBuilder.Entity<TurnSnapShot>()
                 .HasQueryFilter(t => t.GameId == CurrentGameId);
 
+            modelBuilder.Entity<CombatEvent>()
+                .HasOne(c => c.Game)
+                .WithMany(g => g.CombatEvents)
+                .HasForeignKey(c => c.GameId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<PlayerAction>()
+                .HasOne(p => p.Game)
+                .WithMany(g => g.PlayerActions)
+                .HasForeignKey(p => p.GameId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
             base.OnModelCreating(modelBuilder);
         }
     }

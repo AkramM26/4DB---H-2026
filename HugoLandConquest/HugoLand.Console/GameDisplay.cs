@@ -44,17 +44,13 @@ namespace HugoLand
             Console.Clear();
             Console.WriteLine("\x1b[3J");
             char playerLetter;
-            char playerIncome;
             if (player.PlayerNumber == 1)
                 playerLetter = 'A';
             else
                 playerLetter = 'B';
-            if (player.Income >= 0)
-                playerIncome = '+';
-            else
-                playerIncome = ' ';
+
             Console.Write($"Turn {game.TurnNumber} - Player {playerLetter}");
-            Console.Write($"Gold: {player.Gold}({playerIncome}{player.Income})     Turn In Dept: {player.TurnInDept}\n\n".PadLeft(70,' '));
+            Console.Write($"Gold: {player.Gold} Income: (+{player.Income}) Cost: (-{player.Cost})     Turn In Dept: {player.TurnInDept}\n\n".PadLeft(70,' '));
             Console.Write("  ");
             for (int x = 0; x < xLength; x++)
             {
@@ -86,6 +82,10 @@ namespace HugoLand
             }
             Console.Write("+\n");
 
+            if (player.Gold < 0)
+            {
+                Console.WriteLine("You are in dept! Pay your debts to avoid losing the game!");
+            }
         }
 
         private static string CreatePosition(int x, int y, Territory territory)

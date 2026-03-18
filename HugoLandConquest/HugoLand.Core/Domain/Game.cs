@@ -10,11 +10,8 @@ namespace HugoLand.Core.Domain
     {
         public Guid Id { get;  set; } 
         public string SaveName { get; set; }
-        public bool IsGameOver { get; set; }
-        public bool IsPlayer1Winner { get; set; }
         public int TurnNumber { get; set; }
         public int PlayerTurn { get; set; }
-
         public bool IsFinished { get; set; }
         public int? WinnerPlayerNumber { get; set; }
         public DateTime? EndedAt { get; set; }

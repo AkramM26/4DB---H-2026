@@ -163,13 +163,13 @@ namespace HugoLand.Core.Services
 
             if (MilitaryPlayer1 == 0)
             {
-                game.IsGameOver = true;
-                game.IsPlayer1Winner = false;
+                game.IsFinished = true;
+                game.WinnerPlayerNumber = 2;
             }
             if (MilitaryPlayer2 == 0)
             {
-                game.IsGameOver = true;
-                game.IsPlayer1Winner = true;
+                game.IsFinished = true;
+                game.WinnerPlayerNumber = 1;
             }
         }
     }

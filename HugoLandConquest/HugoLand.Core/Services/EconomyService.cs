@@ -34,7 +34,7 @@ namespace HugoLand.Core.Services
             cost = Math.Ceiling(cost);
 
             player.Gold -= (int)cost;
-            player.Income -= (int)cost;
+            player.Cost = (int)cost;
 
             if (player.Gold < 0)
                 player.TurnInDept++;

@@ -60,7 +60,7 @@ namespace HugoLand
                     bool showActionChoice = true;
                     bool showArmyAction = false;
 
-                    if (game.IsGameOver)
+                    if (game.IsFinished)
                     {
                         MenuDisplay.ShowVictoryScreen(game, Context);
                         showActionChoice = false;
