@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static HugoLand.Core.Services.ArmyService;
 
 namespace HugoLand
 {
@@ -342,6 +343,8 @@ namespace HugoLand
         }
         public static void ShowVictoryScreen(Game game, HugoLandContext context)
         {
+            GameDisplay.ShowGame(context);
+
             char player;
             if (game.WinnerPlayerNumber == 1)
                 player = 'A';
@@ -352,6 +355,40 @@ namespace HugoLand
             Console.WriteLine($"The player {player} has won the game.");
             Console.WriteLine($"=====================");
             Console.WriteLine("Press a key to go to the main menu.");
+            Console.ReadKey();
+        }
+
+        public static void ShowMoveResult(HugoLandContext context, MoveResult moveResult)
+        {
+            Console.WriteLine("=====================");
+            if (moveResult.Fusion)
+                Console.WriteLine("The two armies have fused together !");
+            else if (moveResult.Fight && moveResult.CombatResult != null)
+            {
+                Console.WriteLine($"Offensive army : {moveResult.CombatResult.AttackInitialForce} soldier");
+                Console.WriteLine($"Defensive army : {moveResult.CombatResult.DefenceInitialForce} soldier");
+                Console.WriteLine($"Territory multiplier : {moveResult.CombatResult.TerritoryMultiplier}");
+                Console.WriteLine($"Installation multiplier : {moveResult.CombatResult.InstallationMultiplier}");
+                Console.WriteLine($"Random attack multiplier : {moveResult.CombatResult.AttackRandomFactor}");
+                Console.WriteLine($"Random defence multiplier : {moveResult.CombatResult.DefenceRandomFactor}");
+
+                Console.WriteLine($"Attack effective force : {moveResult.CombatResult.EffectiveAttackForce}");
+                Console.WriteLine($"Defence effective force : {moveResult.CombatResult.EffectiveDefenceForce}");
+
+                if (moveResult.CombatResult!.DefenceVictory)
+                    Console.WriteLine("The defencive army has won");
+                else
+                    Console.WriteLine("The offencive army has won");
+                Console.WriteLine($"The victor has plundered {moveResult.CombatResult.GoldGain} gold");
+                Console.WriteLine($"Offensive army as : {moveResult.CombatResult.AttackForce} soldier");
+                Console.WriteLine($"Defensive army as : {moveResult.CombatResult.DefenceForce} soldier");
+            }
+            else if (moveResult.move)
+                Console.WriteLine("The army has moved to the new territory.");
+            else if (!moveResult.move && !moveResult.Fight)
+                Console.WriteLine("The move has been cancelled.");
+            Console.WriteLine("=====================");
+            Console.WriteLine("Press a key to continue.");
             Console.ReadKey();
         }
     }

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using static HugoLand.Core.Services.CombatService;
 
 namespace HugoLand.Core.Services
 {
@@ -32,7 +33,7 @@ namespace HugoLand.Core.Services
         private readonly HugoLandContext Context = context;
         private CombatService CombatService = new CombatService(context);
         private Random Rnd = new Random();
-        public record MoveResult(bool move, bool Fight, bool Fusion, bool DefenceVicory);
+        public record MoveResult(bool move, bool Fight, bool Fusion, CombatResult? CombatResult);
 
         /// <summary>
         /// Donne la liste des mouvements possibles 
@@ -105,7 +106,7 @@ namespace HugoLand.Core.Services
             var militaryDetachement = await Context.MilitaryDetachments
                 .Include(m => m.Territory)
                 .FirstAsync(m => m.Id == militaryDetachementId);
-            bool defenceVictory = false;
+            CombatResult combatResult = null;
             bool move = false;
             bool fight = false;
             bool fusion = false;
@@ -132,12 +133,29 @@ namespace HugoLand.Core.Services
                 default:
                     break;
             }
-            if (newX >= 15 || newX < 0 || newY >= 10 || newY < 0 || !militaryDetachement.CanMove)
-                return new MoveResult(move, fight, fusion, defenceVictory);
+            if (newX >= 15 || newX < 0 || newY >= 10 || newY < 0 || !militaryDetachement.CanMove )
+                return new MoveResult(move, fight, fusion, combatResult);
 
             var territory = await Context.Territories
                 .Include(t => t.MilitaryDetachment)
                 .FirstAsync(t => t.PositionX == newX && t.PositionY == newY);
+
+            int energyCost = 1;
+            switch (territory.TerritoryType)
+            {
+                case TerritoryType.Plain:
+                    energyCost = 1;
+                    break;
+                case TerritoryType.Forest:
+                    energyCost = 2;
+                    break;
+                case TerritoryType.Mountain:
+                    energyCost = 3;
+                    break;
+            }
+            if (militaryDetachement.Energy - energyCost < 0)
+                return new MoveResult(move, fight, fusion, combatResult);
+
             MilitaryDetachment otherMilitaryDetachment = territory.MilitaryDetachment;
 
             if (otherMilitaryDetachment == null)
@@ -154,11 +172,11 @@ namespace HugoLand.Core.Services
             }
             else if (otherMilitaryDetachment.PlayerId != militaryDetachement.PlayerId)
             {
-                defenceVictory = await CombatService.ResolveCombatAsync(otherMilitaryDetachment.Id, militaryDetachement.Id);
-                if (!defenceVictory)
+                combatResult = await CombatService.ResolveCombatAsync(otherMilitaryDetachment.Id, militaryDetachement.Id);
+                if (!combatResult.DefenceVictory)
                 {
-                    militaryDetachement.TerritoryId = territory.Id;
                     List<Territory> listTerritory = await TryMove(otherMilitaryDetachment, territory.PositionX, territory.PositionY);
+                    militaryDetachement.TerritoryId = territory.Id;
                     if (listTerritory.Count == 0)
                         Context.Remove(otherMilitaryDetachment);
                     else
@@ -177,7 +195,7 @@ namespace HugoLand.Core.Services
                 Context.Remove(militaryDetachement.Territory.Installation);
 
             await Context.SaveChangesAsync();
-            return new MoveResult(move, fight, fusion, defenceVictory);
+            return new MoveResult(move, fight, fusion, combatResult);
         }
 
         public async Task<MoveResult> Split(Guid militaryDetachementId, Movements movement, int splitNumber)
@@ -189,9 +207,9 @@ namespace HugoLand.Core.Services
             Territory territory = militaryDetachement.Territory;
 
             if (splitNumber < 10)
-                return new MoveResult(false, false, false, false);
+                return new MoveResult(false, false, false, null);
             if (remainingArmy <= 0)
-                return new MoveResult(false, false, false, false);
+                return new MoveResult(false, false, false, null);
 
             militaryDetachement.MilitaryForce = splitNumber;
             await Context.SaveChangesAsync();
@@ -201,7 +219,7 @@ namespace HugoLand.Core.Services
 
             if (!moveResult.move && !moveResult.Fight)
                 return moveResult;
-            else if (moveResult.Fight && moveResult.DefenceVicory)
+            else if (moveResult.Fight && moveResult.CombatResult!.DefenceVictory)
                 militaryDetachement.MilitaryForce = remainingArmy;
             else
             {

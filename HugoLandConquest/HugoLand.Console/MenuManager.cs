@@ -108,25 +108,26 @@ namespace HugoLand
                                         {
                                             List<Territory> lstTerritory = await _armyService.TryMove(militaryDetachment, militaryDetachment.Territory.PositionX, militaryDetachment.Territory.PositionY);
                                             moveChoice = MenuDisplay.ShowMoveMenu(lstTerritory, militaryDetachment, Context);
+                                            MoveResult moveResult = null;
                                             if (moveChoice == 'N')
                                             {
-                                                MoveResult moveResult = await _armyService.Move(militaryDetachment.Id, Movements.North);
-                                                // Show move result.
+                                                moveResult = await _armyService.Move(militaryDetachment.Id, Movements.North);
+                                                MenuDisplay.ShowMoveResult(Context, moveResult!);
                                             }
                                             else if (moveChoice == 'S')
                                             {
-                                                MoveResult moveResult = await _armyService.Move(militaryDetachment.Id, Movements.South);
-                                                // Show move result.
+                                                moveResult = await _armyService.Move(militaryDetachment.Id, Movements.South);
+                                                MenuDisplay.ShowMoveResult(Context, moveResult!);
                                             }
                                             else if (moveChoice == 'E')
                                             {
-                                                MoveResult moveResult = await _armyService.Move(militaryDetachment.Id, Movements.East);
-                                                // Show move result.
+                                                moveResult = await _armyService.Move(militaryDetachment.Id, Movements.East);
+                                                MenuDisplay.ShowMoveResult(Context, moveResult!);
                                             }
                                             else if (moveChoice == 'W')
                                             {
-                                                MoveResult moveResult = await _armyService.Move(militaryDetachment.Id, Movements.West);
-                                                // Show move result.
+                                                moveResult = await _armyService.Move(militaryDetachment.Id, Movements.West);
+                                                MenuDisplay.ShowMoveResult(Context, moveResult!);
                                             }
                                         }
                                         break;

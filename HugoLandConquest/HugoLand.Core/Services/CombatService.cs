@@ -14,11 +14,11 @@ namespace HugoLand.Core.Services
     public class CombatService(HugoLandContext context)
     {
         private readonly HugoLandContext Context = context;
-        private record CombatResult(bool DefenceVictory, int DefenceForce, int AttackForce,
-            int GoldGain, float DefenceRandomFactor, float AttackRandomFactor,
+        public record CombatResult(bool DefenceVictory, int DefenceForce, int AttackForce, int DefenceInitialForce,int AttackInitialForce,
+            int GoldGain, float DefenceRandomFactor, float AttackRandomFactor, float TerritoryMultiplier, float InstallationMultiplier,
             float EffectiveDefenceForce, float EffectiveAttackForce);
 
-        public async Task<bool> ResolveCombatAsync(Guid defenceId, Guid attackId)
+        public async Task<CombatResult> ResolveCombatAsync(Guid defenceId, Guid attackId)
         {
             var defence = await Context.MilitaryDetachments
                 .Include(d => d.Territory)
@@ -88,7 +88,7 @@ namespace HugoLand.Core.Services
 
             await Context.SaveChangesAsync();
 
-            return combatResult.DefenceVictory;
+            return combatResult;
 
         }
         private CombatResult InternalResolveCombat(int defenceForce, int attackForce, TerritoryType territoryType,
@@ -97,14 +97,13 @@ namespace HugoLand.Core.Services
             Random random = new Random();
             float installationMultiplayer = 1;
             float territoryMultiplayer = 1;
+            int attackInitialForce = attackForce;
+            int defenceInitialForce = defenceForce;
 
-            float attackRandomFactor = attackForce * random.Next(CombatConstants.MinMultiplayerAttack,
+            float attackRandomFactor = random.Next(CombatConstants.MinMultiplayerAttack,
                 CombatConstants.MaxMultiplayerAttack) / 10f;
-            float defenceRandomFactor = defenceForce * random.Next(CombatConstants.MinMultiplayerDefence,
+            float defenceRandomFactor = random.Next(CombatConstants.MinMultiplayerDefence,
                 CombatConstants.MaxMultiplayerDefence) / 10f;
-
-            //float defenceRandomFactor = defenceForce * random.Next(CombatConstants.MinMultiplayerDefence,
-            //    CombatConstants.MaxMultiplayerDefence) / 10f;
 
             if (territoryType == TerritoryType.Forest)
                 territoryMultiplayer = CombatConstants.ForestMultiplayer;
@@ -141,8 +140,8 @@ namespace HugoLand.Core.Services
                 loserForceloss = loserForceBeforeCombat - defenceForce;
             }
 
-            CombatResult combatResult = new CombatResult(defenceVictory, defenceForce, attackForce, (loserForceloss / 10) * 5,
-                defenceRandomFactor, attackRandomFactor, effectiveForceDefence, effectiveForceAttack);
+            CombatResult combatResult = new CombatResult(defenceVictory, defenceForce, attackForce,defenceInitialForce,attackInitialForce, (loserForceloss / 10) * 5,
+                defenceRandomFactor, attackRandomFactor, territoryMultiplayer, installationMultiplayer, effectiveForceDefence, effectiveForceAttack);
             return combatResult;
         }
 
