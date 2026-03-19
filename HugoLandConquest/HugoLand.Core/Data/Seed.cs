@@ -28,8 +28,8 @@ namespace HugoLand.Core.Data
         }
         private static async Task SeedMapAsync(HugoLandContext context, Guid gameId, Guid player1Id, Guid player2Id)
         {
-            int gamesizex = GameConstants.gamesizeX;
-            int gamesizey = GameConstants.gamesizeY;
+            int gamesizex = GameConstants.gameSizeX;
+            int gamesizey = GameConstants.gameSizeY;
             int player1initialx = GameConstants.player1intitialx;
             int player1initialy = GameConstants.player1intitialy;
             int player2initialx = GameConstants.player2intitialx;

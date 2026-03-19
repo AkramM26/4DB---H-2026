@@ -1,4 +1,5 @@
-﻿using HugoLand.Core.Data;
+﻿using HugoLand.Core.Constants;
+using HugoLand.Core.Data;
 using HugoLand.Core.Domain;
 using System;
 using System.Collections.Generic;
@@ -84,6 +85,8 @@ namespace HugoLand
         {
             bool validInputX = false;
             bool validInputY = false;
+            int gamesizex = GameConstants.gameSizeX;
+            int gamesizey = GameConstants.gameSizeY;
             int posX = 0;
             int posY = 0;
 
@@ -100,9 +103,9 @@ namespace HugoLand
 
                 validInputX = int.TryParse(inputX, out posX);
                 validInputY = int.TryParse(inputY, out posY);
-                if (posX > 14 || posX < 0)
+                if (posX > gamesizex-1 || posX < 0)
                     validInputX = false;
-                if (posY > 9 || posY < 0)
+                if (posY > gamesizey-1 || posY < 0)
                     validInputY = false;
 
                 MilitaryDetachment militaryDetachment = militaryDetachments.FirstOrDefault(m => m.Territory.PositionX == posX && m.Territory.PositionY == posY);

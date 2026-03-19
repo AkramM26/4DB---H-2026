@@ -20,8 +20,8 @@ namespace HugoLand
 
         public static void ShowGame(HugoLandContext context)
         {
-            int gamesizex = GameConstants.gamesizeX;
-            int gamesizey = GameConstants.gamesizeY;
+            int gamesizex = GameConstants.gameSizeX;
+            int gamesizey = GameConstants.gameSizeY;
             Game game = context.Games
                 .Include(g => g.Players)
                 .Include(g => g.Territories)

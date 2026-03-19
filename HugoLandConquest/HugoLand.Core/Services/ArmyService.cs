@@ -1,4 +1,5 @@
-﻿using HugoLand.Core.Data;
+﻿using HugoLand.Core.Constants;
+using HugoLand.Core.Data;
 using HugoLand.Core.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
@@ -29,7 +30,6 @@ namespace HugoLand.Core.Services
     /// <param name="context"></param>
     public class ArmyService(HugoLandContext context)
     {
-
         private readonly HugoLandContext Context = context;
         private CombatService CombatService = new CombatService(context);
         private Random Rnd = new Random();
@@ -62,7 +62,7 @@ namespace HugoLand.Core.Services
             int Sx = x;
             int Sy = y + 1;
 
-            if (Sy < 10)
+            if (Sy < GameConstants.gameSizeY)
             {
                 var STerritory = territories
                     .FirstOrDefault(t => t.PositionX == Sx && t.PositionY == Sy);
@@ -75,7 +75,7 @@ namespace HugoLand.Core.Services
             int Ex = x + 1;
             int Ey = y;
 
-            if (Ex < 15)
+            if (Ex < GameConstants.gameSizeX)
             {
                 var ETerritory = territories
                     .FirstOrDefault(t => t.PositionX == Ex && t.PositionY == Ey);
@@ -133,7 +133,7 @@ namespace HugoLand.Core.Services
                 default:
                     break;
             }
-            if (newX >= 15 || newX < 0 || newY >= 10 || newY < 0 || !militaryDetachement.CanMove )
+            if (newX >= GameConstants.gameSizeX || newX < 0 || newY >= GameConstants.gameSizeY || newY < 0 || !militaryDetachement.CanMove)
                 return new MoveResult(move, fight, fusion, combatResult);
 
             var territory = await Context.Territories
