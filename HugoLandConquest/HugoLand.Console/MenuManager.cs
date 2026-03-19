@@ -69,6 +69,7 @@ namespace HugoLand
                     }
 
                     while (showActionChoice)
+
                     {
                         choice = MenuDisplay.ShowActionChoice(Context);
                         switch (choice)

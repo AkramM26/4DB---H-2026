@@ -20,8 +20,8 @@ namespace HugoLand
 
         public static void ShowGame(HugoLandContext context)
         {
-            int xLength = 15;
-            int yLength = 10;
+            int gamesizex = GameConstants.gamesizeX;
+            int gamesizey = GameConstants.gamesizeY;
             Game game = context.Games
                 .Include(g => g.Players)
                 .Include(g => g.Territories)
@@ -32,11 +32,11 @@ namespace HugoLand
 
             Player player = game.Players.First(p => p.PlayerNumber == game.PlayerTurn);
 
-            Territory[,] territories = new Territory[xLength, yLength];
+            Territory[,] territories = new Territory[gamesizex, gamesizey];
 
-            for (int y = 0; y < yLength; y++)
+            for (int y = 0; y < gamesizey; y++)
             {
-                for (int x = 0; x < xLength; x++)
+                for (int x = 0; x < gamesizex; x++)
                 {
                     territories[x, y] = game.Territories.First(t => t.PositionX == x && t.PositionY == y);
                 }
@@ -52,7 +52,7 @@ namespace HugoLand
             Console.Write($"Turn {game.TurnNumber} - Player {playerLetter}");
             Console.Write($"Gold: {player.Gold} Income: (+{player.Income}) Cost: (-{player.Cost})     Turn In Dept: {player.TurnInDept}\n\n".PadLeft(70,' '));
             Console.Write("  ");
-            for (int x = 0; x < xLength; x++)
+            for (int x = 0; x < gamesizex; x++)
             {
                 if (x >= 10)
                     Console.Write("  " + x + "  ");
@@ -60,23 +60,23 @@ namespace HugoLand
                     Console.Write("   " + x + "  ");
             }
             Console.Write("\n");
-            for (int y = 0; y < yLength; y++)
+            for (int y = 0; y < gamesizey; y++)
             {
                 Console.Write("  ");
-                for (int x = 0; x < xLength; x++)
+                for (int x = 0; x < gamesizex; x++)
                 {
                     Console.Write("+-----");
                 }
                 Console.Write("+\n");
                 Console.Write(y + " ");
-                for (int x = 0; x < xLength; x++)
+                for (int x = 0; x < gamesizex; x++)
                 {
                     Console.Write(CreatePosition(x, y, territories[x, y]));
                 }
                 Console.Write("|\n");
             }
             Console.Write("  ");
-            for (int x = 0; x < xLength; x++)
+            for (int x = 0; x < gamesizex; x++)
             {
                 Console.Write("+-----");
             }
