@@ -24,8 +24,8 @@ namespace HugoLand.Core.Constants
         public const int player1intitialx = 1;
         public const int player1intitialy = 1;
 
-        public const int player2intitialx = 4;
-        public const int player2intitialy = 4;
+        public const int player2intitialx = 3;
+        public const int player2intitialy = 2;
 
 
 
