@@ -13,6 +13,7 @@ namespace HugoLand.Core.Domain
         public int TurnNumber { get; set; }
         public int PlayerTurn { get; set; }
         public bool IsFinished { get; set; }
+        public bool MilitaryVictory { get; set; }
         public int? WinnerPlayerNumber { get; set; }
         public DateTime? EndedAt { get; set; }
 
@@ -36,7 +37,8 @@ namespace HugoLand.Core.Domain
                 WinnerPlayerNumber = null,
                 EndedAt = null,
                 TurnNumber = 1,
-                PlayerTurn = 1
+                PlayerTurn = 1,
+                MilitaryVictory = false
             };
         }
     }

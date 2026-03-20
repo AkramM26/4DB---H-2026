@@ -182,7 +182,7 @@ namespace HugoLand
                     validInput = false;
                 else if ((choice == 2 && installationPresent) || (choice == 2 && !militaryDetachment.CanAct))
                     validInput = false;
-                else if ((choice == 3 && forticicationPresent) || (choice == 2 && !militaryDetachment.CanAct))
+                else if ((choice == 3 && forticicationPresent) || (choice == 3 && !militaryDetachment.CanAct))
                     validInput = false;
                 else if (choice == 4 && !installationPresent)
                     validInput = false;
@@ -239,7 +239,7 @@ namespace HugoLand
 
                 Console.WriteLine($"\n  --- Army at ({posX},{posY}) - Energy : {militaryDetachment.Energy} ---\n");
                 Console.WriteLine("    Adjacent territories :");
-                if (nTerritory != null)
+                if (nTerritory != null && militaryDetachment.Energy !=0)
                 {
                     Console.Write($"      [N] ({nTerritory.PositionX},{nTerritory.PositionY}) - {nArmy} " +
                         $"         Cost : 1 Energy      ");
@@ -250,7 +250,7 @@ namespace HugoLand
                     else
                         Console.Write("  Move\n");
                 }
-                if (sTerritory != null)
+                if (sTerritory != null && militaryDetachment.Energy != 0)
                 {
                     Console.Write($"      [S] ({sTerritory.PositionX},{sTerritory.PositionY}) - {sArmy} " +
                         $"         Cost : 1 Energy      ");
@@ -261,7 +261,7 @@ namespace HugoLand
                     else
                         Console.Write("  Move\n");
                 }
-                if (eTerritory != null)
+                if (eTerritory != null && militaryDetachment.Energy != 0)
                 {
                     Console.Write($"      [E] ({eTerritory.PositionX},{eTerritory.PositionY}) - {eArmy} " +
                         $"         Cost : 1 Energy      ");
@@ -272,7 +272,7 @@ namespace HugoLand
                     else
                         Console.Write("  Move\n");
                 }
-                if (wTerritory != null)
+                if (wTerritory != null && militaryDetachment.Energy != 0)
                 {
                     Console.Write($"      [W] ({wTerritory.PositionX},{wTerritory.PositionY}) - {wArmy} " +
                         $"         Cost : 1 Energy      ");
@@ -356,6 +356,10 @@ namespace HugoLand
             GameDisplay.ShowGame(context);
             Console.WriteLine($"=====================");
             Console.WriteLine($"The player {player} has won the game.");
+            if (game.MilitaryVictory)
+                Console.WriteLine("The victory condition is military victory.");
+            else
+                Console.WriteLine("The victory condition is economic victory.");
             Console.WriteLine($"=====================");
             Console.WriteLine("Press a key to go to the main menu.");
             Console.ReadKey();
@@ -394,5 +398,6 @@ namespace HugoLand
             Console.WriteLine("Press a key to continue.");
             Console.ReadKey();
         }
+
     }
 }
