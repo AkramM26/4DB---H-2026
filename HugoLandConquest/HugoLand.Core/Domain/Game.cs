@@ -8,11 +8,36 @@ namespace HugoLand.Core.Domain
 {
     public class Game
     {
+        private string? _gameDescription = string.Empty;
+        private string _gameName = string.Empty;
+
         public Guid Id { get;  set; } 
         public string SaveName { get; set; }
+        public string GameName {
+            get => _gameName;
+            set
+            {
+                if (value.Length <= 50)
+                    _gameName = value;
+                else
+                    _gameName = value.Substring(0, 50);
+            }
+        }
+        public string? GameDescription
+        {
+            get => _gameDescription;
+            set
+            {
+                if (value!.Length <= 500)
+                    _gameDescription = value;
+                else
+                    _gameDescription = value.Substring(0, 500);
+            }
+        }
         public int TurnNumber { get; set; }
         public int PlayerTurn { get; set; }
         public bool IsFinished { get; set; }
+        public bool IsTemplate { get; set; }
         public bool MilitaryVictory { get; set; }
         public int? WinnerPlayerNumber { get; set; }
         public DateTime? EndedAt { get; set; }
@@ -27,7 +52,7 @@ namespace HugoLand.Core.Domain
 
         protected Game() { }
 
-        public static Game Create()
+        public static Game Create(string gameName)
         {
             return new Game
             {
@@ -38,7 +63,9 @@ namespace HugoLand.Core.Domain
                 EndedAt = null,
                 TurnNumber = 1,
                 PlayerTurn = 1,
-                MilitaryVictory = false
+                MilitaryVictory = false,
+                GameName = gameName,
+                IsTemplate = true
             };
         }
     }

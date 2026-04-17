@@ -19,9 +19,9 @@ namespace HugoLand.Core.Services
         private int _currentPlayerNumber = 1;
         private EconomyService _economyService = new EconomyService(context);
 
-        public async Task CreateGameAsync()
+        public async Task CreateGameAsync(int gameSizeX, int gameSizeY, string gameName, string description)
         {
-            await Seed.SeedGameAsync(Context);
+            await Seed.SeedGameAsync(Context, gameSizeX, gameSizeY, gameName, description);
         }
 
         public async Task StartTurnAsync()
@@ -91,6 +91,7 @@ namespace HugoLand.Core.Services
             foreach (Territory t in gameClone.Territories)
                 CopyTerritoryAndSiblings(t, gameClone);
             gameClone.SaveName = DateTime.Now.ToString();
+            gameClone.IsTemplate = false;
             await Context.AddAsync(gameClone);
             await Context.SaveChangesAsync();
         }
