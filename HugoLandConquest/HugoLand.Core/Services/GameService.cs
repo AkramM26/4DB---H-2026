@@ -21,6 +21,12 @@ namespace HugoLand.Core.Services
 
         public async Task CreateGameAsync(int gameSizeX, int gameSizeY, string gameName, string description)
         {
+            var games = await Context.Games
+                .IgnoreQueryFilters()
+                .AnyAsync(g=> g.IsTemplate == true && g.GameName == gameName);
+            if (games)
+                throw new Exception("This template already exists : Cannot have 2 template with the same name");
+
             await Seed.SeedGameAsync(Context, gameSizeX, gameSizeY, gameName, description);
         }
 

@@ -25,10 +25,6 @@ namespace HugoLand.Core.Data
             modelBuilder.Entity<Game>()
                 .HasQueryFilter(g => g.Id == CurrentGameId);
 
-            modelBuilder.Entity<Game>()
-                .HasIndex(g => g.GameName)
-                .IsUnique();
-
             modelBuilder.Entity<Player>()
                 .HasQueryFilter(p => p.GameId == CurrentGameId);
 
