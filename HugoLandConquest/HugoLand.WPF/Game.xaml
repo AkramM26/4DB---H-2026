@@ -1,0 +1,163 @@
+﻿<Window x:Name="WinMain" x:Class="HugoLand.WPF.Game"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HugoLand.WPF"
+        mc:Ignorable="d"
+        Title="Game" Height="481" Width="800">
+    <Grid x:Name="grdMain" Initialized="grdMain_Initialized">
+        <Grid HorizontalAlignment="Center" Height="322" Margin="0,43,0,0" VerticalAlignment="Top" Width="638">
+
+            <!--First Line-->
+            <Border x:Name="bdrCase1" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="0,0,0,0"/>
+            <Border x:Name="bdrCase2" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="38,0,0,0" />
+            <Border x:Name="bdrCase3" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="78,0,0,0" />
+            <Border x:Name="bdrCase4" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="118,0,0,0" />
+            <Border x:Name="bdrCase5" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="158,0,0,0" />
+            <Border x:Name="bdrCase6" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="198,0,0,0" />
+            <Border x:Name="bdrCase7" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="238,0,0,0" />
+            <Border x:Name="bdrCase8" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="278,0,0,0" />
+            <Border x:Name="bdrCase9" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="318,0,0,0" />
+            <Border x:Name="bdrCase10" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="358,0,0,0" />
+            <Border x:Name="bdrCase11" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="398,0,0,0" />
+            <Border x:Name="bdrCase12" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="438,0,0,0" />
+            <Border x:Name="bdrCase13" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="478,0,0,0" />
+            <Border x:Name="bdrCase14" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="518,0,0,0" />
+            <Border x:Name="bdrCase15" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="558,0,0,0" />
+            <Border x:Name="bdrCase16" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="598,0,0,0" />
+
+            <!--Second Line-->
+            <Border x:Name="bdrCase17" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="0,40,0,0" />
+            <Border x:Name="bdrCase18" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="38,40,0,0" />
+            <Border x:Name="bdrCase19" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="78,40,0,0" />
+            <Border x:Name="bdrCase20" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="118,40,0,0" />
+            <Border x:Name="bdrCase21" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="158,40,0,0" />
+            <Border x:Name="bdrCase22" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="198,40,0,0" />
+            <Border x:Name="bdrCase23" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="238,40,0,0" />
+            <Border x:Name="bdrCase24" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="278,40,0,0" />
+            <Border x:Name="bdrCase25" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="318,40,0,0" />
+            <Border x:Name="bdrCase26" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="358,40,0,0" />
+            <Border x:Name="bdrCase27" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="398,40,0,0" />
+            <Border x:Name="bdrCase28" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="438,40,0,0" />
+            <Border x:Name="bdrCase29" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="478,40,0,0" />
+            <Border x:Name="bdrCase30" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="518,40,0,0" />
+            <Border x:Name="bdrCase31" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="558,40,0,0" />
+            <Border x:Name="bdrCase32" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="598,40,0,0" />
+
+            <!--Third Line-->
+            <Border x:Name="bdrCase33" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="0,80,0,0" />
+            <Border x:Name="bdrCase34" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="38,80,0,0" />
+            <Border x:Name="bdrCase35" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="78,80,0,0" />
+            <Border x:Name="bdrCase36" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="118,80,0,0" />
+            <Border x:Name="bdrCase37" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="158,80,0,0" />
+            <Border x:Name="bdrCase38" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="198,80,0,0" />
+            <Border x:Name="bdrCase39" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="238,80,0,0" />
+            <Border x:Name="bdrCase40" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="278,80,0,0" />
+            <Border x:Name="bdrCase41" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="318,80,0,0" />
+            <Border x:Name="bdrCase42" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="358,80,0,0" />
+            <Border x:Name="bdrCase43" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="398,80,0,0" />
+            <Border x:Name="bdrCase44" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="438,80,0,0" />
+            <Border x:Name="bdrCase45" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="478,80,0,0" />
+            <Border x:Name="bdrCase46" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="518,80,0,0" />
+            <Border x:Name="bdrCase47" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="558,80,0,0" />
+            <Border x:Name="bdrCase48" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="598,80,0,0" />
+
+            <!--Fourth Line-->
+            <Border x:Name="bdrCase49" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="0,120,0,0" />
+            <Border x:Name="bdrCase50" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="38,120,0,0" />
+            <Border x:Name="bdrCase51" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="78,120,0,0" />
+            <Border x:Name="bdrCase52" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="118,120,0,0" />
+            <Border x:Name="bdrCase53" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="158,120,0,0" />
+            <Border x:Name="bdrCase54" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="198,120,0,0" />
+            <Border x:Name="bdrCase55" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="238,120,0,0" />
+            <Border x:Name="bdrCase56" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="278,120,0,0" />
+            <Border x:Name="bdrCase57" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="318,120,0,0" />
+            <Border x:Name="bdrCase58" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="358,120,0,0" />
+            <Border x:Name="bdrCase59" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="398,120,0,0" />
+            <Border x:Name="bdrCase60" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="438,120,0,0" />
+            <Border x:Name="bdrCase61" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="478,120,0,0" />
+            <Border x:Name="bdrCase62" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="518,120,0,0" />
+            <Border x:Name="bdrCase63" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="558,120,0,0" />
+            <Border x:Name="bdrCase64" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="598,120,0,0" />
+
+
+            <!--Fifth Line-->
+            <Border x:Name="bdrCase65" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="0,160,0,0" />
+            <Border x:Name="bdrCase66" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="38,160,0,0" />
+            <Border x:Name="bdrCase67" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="78,160,0,0" />
+            <Border x:Name="bdrCase68" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="118,160,0,0" />
+            <Border x:Name="bdrCase69" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="158,160,0,0" />
+            <Border x:Name="bdrCase70" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="198,160,0,0" />
+            <Border x:Name="bdrCase71" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="238,160,0,0" />
+            <Border x:Name="bdrCase72" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="278,160,0,0" />
+            <Border x:Name="bdrCase73" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="318,160,0,0" />
+            <Border x:Name="bdrCase74" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="358,160,0,0" />
+            <Border x:Name="bdrCase75" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="398,160,0,0" />
+            <Border x:Name="bdrCase76" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="438,160,0,0" />
+            <Border x:Name="bdrCase77" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="478,160,0,0" />
+            <Border x:Name="bdrCase78" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="518,160,0,0" />
+            <Border x:Name="bdrCase79" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="558,160,0,0" />
+            <Border x:Name="bdrCase80" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="598,160,0,0" />
+
+
+            <!--Sixtth Line-->
+            <Border x:Name="bdrCase81" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="0,200,0,0" />
+            <Border x:Name="bdrCase82" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="38,200,0,0" />
+            <Border x:Name="bdrCase83" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="78,200,0,0" />
+            <Border x:Name="bdrCase84" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="118,200,0,0" />
+            <Border x:Name="bdrCase85" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="158,200,0,0" />
+            <Border x:Name="bdrCase86" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="198,200,0,0" />
+            <Border x:Name="bdrCase87" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="238,200,0,0" />
+            <Border x:Name="bdrCase88" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="278,200,0,0" />
+            <Border x:Name="bdrCase89" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="318,200,0,0" />
+            <Border x:Name="bdrCase90" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="358,200,0,0" />
+            <Border x:Name="bdrCase91" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="398,200,0,0" />
+            <Border x:Name="bdrCase92" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="438,200,0,0" />
+            <Border x:Name="bdrCase93" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="478,200,0,0" />
+            <Border x:Name="bdrCase94" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="518,200,0,0" />
+            <Border x:Name="bdrCase95" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="558,200,0,0" />
+            <Border x:Name="bdrCase96" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="598,200,0,0" />
+
+            <!--Seventh Line-->
+            <Border x:Name="bdrCase97" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="0,240,0,0" />
+            <Border x:Name="bdrCase98" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="38,240,0,0" />
+            <Border x:Name="bdrCase99" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="78,240,0,0" />
+            <Border x:Name="bdrCase100" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="118,240,0,0" />
+            <Border x:Name="bdrCase101" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="158,240,0,0" />
+            <Border x:Name="bdrCase102" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="198,240,0,0" />
+            <Border x:Name="bdrCase103" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="238,240,0,0" />
+            <Border x:Name="bdrCase104" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="278,240,0,0" />
+            <Border x:Name="bdrCase105" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="318,240,0,0" />
+            <Border x:Name="bdrCase106" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="358,240,0,0" />
+            <Border x:Name="bdrCase107" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="398,240,0,0" />
+            <Border x:Name="bdrCase108" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="438,240,0,0" />
+            <Border x:Name="bdrCase109" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="478,240,0,0" />
+            <Border x:Name="bdrCase110" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="518,240,0,0" />
+            <Border x:Name="bdrCase111" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="558,240,0,0" />
+            <Border x:Name="bdrCase112" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="598,240,0,0" />
+
+            <!--Eighth Line-->
+            <Border x:Name="bdrCase113" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="0,280,0,0" />
+            <Border x:Name="bdrCase114" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="38,280,0,0" />
+            <Border x:Name="bdrCase115" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="78,280,0,0" />
+            <Border x:Name="bdrCase116" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="118,280,0,0" />
+            <Border x:Name="bdrCase117" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="158,280,0,0" />
+            <Border x:Name="bdrCase118" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="198,280,0,0" />
+            <Border x:Name="bdrCase119" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="238,280,0,0" />
+            <Border x:Name="bdrCase120" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="278,280,0,0" />
+            <Border x:Name="bdrCase121" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="318,280,0,0" />
+            <Border x:Name="bdrCase122" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="358,280,0,0" />
+            <Border x:Name="bdrCase123" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="398,280,0,0" />
+            <Border x:Name="bdrCase124" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="438,280,0,0" />
+            <Border x:Name="bdrCase125" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="478,280,0,0" />
+            <Border x:Name="bdrCase126" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="518,280,0,0" />
+            <Border x:Name="bdrCase127" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="558,280,0,0" />
+            <Border x:Name="bdrCase128" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" Margin="598,280,0,0" />
+
+
+
+        </Grid>
+
+    </Grid>
+</Window>
