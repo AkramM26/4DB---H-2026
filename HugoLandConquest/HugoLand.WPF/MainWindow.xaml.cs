@@ -20,5 +20,17 @@ namespace HugoLand.WPF
         {
             InitializeComponent();
         }
+
+        private void btnOpenGame_Click(object sender, RoutedEventArgs e)
+        {
+            Game fenetreJeu = new Game();
+            fenetreJeu.Show();
+        }
+
+        private void btnNewGame_Click(object sender, RoutedEventArgs e)
+        {
+            Game fenetreJeu = new Game();
+            fenetreJeu.Show();
+        }
     }
 }
