@@ -14,44 +14,58 @@ namespace HugoLand.Core.Services
     {
         private readonly HugoLandContext Context = context;
 
-
-        public async Task ChangeTerritoryTypeAsync(int x, int y, TerritoryType territoryType)
-        {
-            var territory = await Context.Territories
-                .Include(t => t.MilitaryDetachment)
-                .FirstOrDefaultAsync(t => t.PositionX == x && t.PositionY == y);
-
-            if (territory == null)
-                throw new Exception("The territory has not been found");
-            if (territory.MilitaryDetachment != null)
-                throw new Exception("Cannot change the type of a territory that has a military detachment on it.");
-
-            territory.TerritoryType = territoryType;
-            await Context.SaveChangesAsync();
-        }
-
-        public async Task ChangeStartPositionAsync(int playerNumber, int x, int y)
+        public async Task<Game?> GetGameAsync()
         {
             var game = await Context.Games
-                .Include(g => g.Players)
-                .Include(g => g.Territories)
-                .ThenInclude(t => t.MilitaryDetachment)
-                .FirstOrDefaultAsync(g => g.Players.Any(p => p.PlayerNumber == playerNumber));
+            .Include(g => g.Players)
+            .Include(g => g.Territories)
+            .ThenInclude(t => t.MilitaryDetachment)
+            .FirstOrDefaultAsync();
 
-            var player = game!.Players.FirstOrDefault(p => p.PlayerNumber == playerNumber);
+            return game;
+        }
+
+        public ResultService ChangeTerritoryType(int x, int y, TerritoryType territoryType, Game game)
+        {
+            var territory = game.Territories.FirstOrDefault(t => t.PositionX == x && t.PositionY == y);
+
+            //var territory = await Context.Territories
+            //    .Include(t => t.MilitaryDetachment)
+            //    .FirstOrDefaultAsync(t => t.PositionX == x && t.PositionY == y);
+
+            if (territory == null)
+                return ResultService.FailureResult("The territory has not been found");
+            if (territory.MilitaryDetachment != null)
+                return ResultService.FailureResult("Cannot change the type of a territory that has a military detachment on it.");
+
+            territory.TerritoryType = territoryType;
+            //await Context.SaveChangesAsync();
+
+            return ResultService.SuccessResult();
+        }
+
+        public ResultService ChangeStartPosition(int playerNumber, int x, int y, Game game)
+        {
+            //var game = await Context.Games
+            //    .Include(g => g.Players)
+            //    .Include(g => g.Territories)
+            //    .ThenInclude(t => t.MilitaryDetachment)
+            //    .FirstAsync();
+
+            var player = game.Players.FirstOrDefault(p => p.PlayerNumber == playerNumber);
 
             if (player == null)
-                throw new Exception($"Player with number {playerNumber} not found in the game.");
+                return ResultService.FailureResult($"Player with number {playerNumber} not found in the game.");
 
             var oldTerritory = game.Territories.FirstOrDefault(t => t.MilitaryDetachment != null && t.MilitaryDetachment!.PlayerId == player!.Id);
             var newTerritory = game.Territories.FirstOrDefault(t => t.PositionX == x && t.PositionY == y);
 
             if (newTerritory == null)
-                throw new Exception($"Territory at position ({x}, {y}) not found in the game.");
+                return ResultService.FailureResult($"Territory at position ({x}, {y}) not found in the game.");
             if (oldTerritory == null)
-                throw new Exception($"Current territory for player {playerNumber} not found in the game.");
+                return ResultService.FailureResult($"Current territory for player {playerNumber} not found in the game.");
             if (newTerritory.TerritoryType != TerritoryType.Plain)
-                throw new Exception($"New territory at position ({x}, {y}) is not a plain and cannot be used as a starting position.");
+                return ResultService.FailureResult($"New territory at position ({x}, {y}) is not a plain and cannot be used as a starting position.");
 
             oldTerritory.MilitaryDetachment = null;
             newTerritory.MilitaryDetachment = MilitaryDetachment.Create(5, GameConstants.baseMilitaryForce, player.Id, newTerritory.Id, game.Id);
@@ -59,9 +73,16 @@ namespace HugoLand.Core.Services
             oldTerritory.Installation = null;
             newTerritory.Installation = Installation.Create(InstallationType.Fortification, newTerritory.Id, player.Id, game.Id);
 
-            game.SaveName = DateTime.Now.ToString();
+            //await Context.SaveChangesAsync();
 
+            return ResultService.SuccessResult();
+        }
+
+        public async Task<ResultService> SaveGameAsync(Game game)
+        {
+            game.SaveName = DateTime.Now.ToString();
             await Context.SaveChangesAsync();
+            return ResultService.SuccessResult();
         }
     }
 }
