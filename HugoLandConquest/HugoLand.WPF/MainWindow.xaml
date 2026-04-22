@@ -32,7 +32,7 @@
 
     <Grid>
         <Button x:Name="btnOpenGame" Content="Open Game" HorizontalAlignment="Left" Height="30" Margin="64,148,0,0" VerticalAlignment="Top" Width="114" Click="btnOpenGame_Click"/>
-        
+
         <!--ENTETE-->
         <Border x:Name="bdrTitle" Height="60" VerticalAlignment="Top" Margin="10,5,10,0" CornerRadius="10">
             <Border.Background>
@@ -65,9 +65,9 @@
                    VerticalAlignment="Center"/>
             </StackPanel>
         </Border>
-        
+
         <!--Boutons du menu-->
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Height="211">
             <Button Content="New Game" Style="{StaticResource MenuButtonStyle}" x:Name="btnNewGame" Click="btnNewGame_Click">
                 <Button.Effect>
                     <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="2"/>
@@ -89,6 +89,7 @@
                 </Button.Background>
             </Button>
         </StackPanel>
+        <Button x:Name="btnMapTemplate" Content="Create map template" HorizontalAlignment="Left" Margin="592,112,0,0" VerticalAlignment="Top" Height="45" Width="157" Click="btnMapTemplate_Click"/>
 
 
 
