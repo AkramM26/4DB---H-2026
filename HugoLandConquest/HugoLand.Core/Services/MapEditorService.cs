@@ -13,14 +13,17 @@ namespace HugoLand.Core.Services
     public class MapEditorService(HugoLandContext context)
     {
         private readonly HugoLandContext Context = context;
+        private readonly GameService GameService = new GameService(context);
 
-        public async Task<Game?> GetGameAsync()
+        public async Task<Game> CreateGameTemplateAsync(int gameSizeX, int gameSizeY, string gameName, string description)
         {
+            await GameService.CreateGameAsync(gameSizeX, gameSizeY, gameName, description);
+
             var game = await Context.Games
             .Include(g => g.Players)
             .Include(g => g.Territories)
             .ThenInclude(t => t.MilitaryDetachment)
-            .FirstOrDefaultAsync();
+            .FirstAsync();
 
             return game;
         }
@@ -77,7 +80,6 @@ namespace HugoLand.Core.Services
 
             return ResultService.SuccessResult();
         }
-
         public async Task<ResultService> SaveGameAsync(Game game)
         {
             game.SaveName = DateTime.Now.ToString();

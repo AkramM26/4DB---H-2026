@@ -9,7 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HugoLand.Console\HugoLand.Console.csproj" />
     <ProjectReference Include="..\HugoLand.Core\HugoLand.Core.csproj" />
   </ItemGroup>
 

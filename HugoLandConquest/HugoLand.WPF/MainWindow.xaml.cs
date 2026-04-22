@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using HugoLand.Core.Data;
+using HugoLand.WPF.Views;
+using Microsoft.EntityFrameworkCore;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -16,21 +19,35 @@ namespace HugoLand.WPF
     /// </summary>
     public partial class MainWindow : Window
     {
+        private HugoLandContext Context;
         public MainWindow()
         {
             InitializeComponent();
+            var context = new HugoLandContextFactory().CreateDbContext([]);
+            // need to be changed when installing to a db not in memory!!!
+            context.Database.OpenConnection();
+            context.Database.EnsureCreated();
+            Context = context;
         }
 
         private void btnOpenGame_Click(object sender, RoutedEventArgs e)
         {
-            Game fenetreJeu = new Game();
+            GameDisplay fenetreJeu = new GameDisplay();
             fenetreJeu.Show();
         }
 
         private void btnNewGame_Click(object sender, RoutedEventArgs e)
         {
-            Game fenetreJeu = new Game();
+            GameDisplay fenetreJeu = new GameDisplay();
             fenetreJeu.Show();
         }
+
+        private void btnMapTemplate_Click(object sender, RoutedEventArgs e)
+        {
+            var window = new MapEditorOptions(Context);
+            window.Show();
+            this.Close();
+        }
+
     }
 }
