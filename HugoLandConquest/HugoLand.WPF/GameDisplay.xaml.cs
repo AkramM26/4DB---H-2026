@@ -21,7 +21,7 @@ namespace HugoLand.WPF
     /// <summary>
     /// Logique d'interaction pour Game.xaml
     /// </summary>
-    public partial class Game : Window
+    public partial class GameDisplay : Window
     {
         #region Champs
         //public int _X = GameConstants.gameSizeY;
@@ -31,7 +31,7 @@ namespace HugoLand.WPF
 
 
         #endregion
-        public Game()
+        public GameDisplay()
         {
             InitializeComponent();
             InitialiserLaGrille();

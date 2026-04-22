@@ -1,4 +1,4 @@
-﻿<Window x:Name="WinMain" x:Class="HugoLand.WPF.Game"
+﻿<Window x:Name="WinMain" x:Class="HugoLand.WPF.GameDisplay"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -270,7 +270,7 @@
         <Grid HorizontalAlignment="Left" Height="99" Margin="177,442,0,0" VerticalAlignment="Top" Width="205">
             <Label x:Name="lblPositionInX" Content="Position in x : " HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0"/>
             <Label x:Name="lblPositionInY" Content="Position in y: " HorizontalAlignment="Left" Margin="13,0,0,0" VerticalAlignment="Center"/>
-            <TextBox x:Name="txtPositionInX" HorizontalAlignment="Left" Margin="98,14,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="97" TextChanged="TextBox_TextChanged"/>
+            <TextBox x:Name="txtPositionInX" HorizontalAlignment="Left" Margin="98,14,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="97"/>
             <TextBox  x:Name="txtPositionInY" HorizontalAlignment="Left" Margin="98,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" Width="98"/>
         </Grid>
         <Button x:Name="btnMove_Copy1" Content="Move" HorizontalAlignment="Left" Margin="10,17,0,0" VerticalAlignment="Top"/>
