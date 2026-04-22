@@ -15,7 +15,7 @@ namespace HugoLand.Core.Services
         private readonly HugoLandContext Context = context;
         private readonly GameService GameService = new GameService(context);
 
-        public async Task<Game> CreateGameTemplateAsync(int gameSizeX, int gameSizeY, string gameName, string description)
+        public async Task<Game> CreateGameTemplateAsync(int gameSizeX, int gameSizeY, string gameName, string description = "")
         {
             await GameService.CreateGameAsync(gameSizeX, gameSizeY, gameName, description);
 
@@ -83,6 +83,13 @@ namespace HugoLand.Core.Services
         public async Task<ResultService> SaveGameAsync(Game game)
         {
             game.SaveName = DateTime.Now.ToString();
+            await Context.SaveChangesAsync();
+            return ResultService.SuccessResult();
+        }
+
+        public async Task<ResultService> DeleteGameAsync(Game game)
+        {
+            Context.Games.Remove(game);
             await Context.SaveChangesAsync();
             return ResultService.SuccessResult();
         }
