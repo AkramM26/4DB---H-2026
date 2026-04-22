@@ -7,13 +7,16 @@
         mc:Ignorable="d"
         Title="MapEditorOptions" Height="450" Width="800">
     <Grid>
-        <Button x:Name="btnCreateMap" Content="Create Map" HorizontalAlignment="Center" Height="66" Margin="0,287,0,0" VerticalAlignment="Top" Width="224" Click="btnCreateMap_Click"/>
+        <Button x:Name="btnCreateMap" Content="Create Map" HorizontalAlignment="Left" Height="66" Margin="288,287,0,0" VerticalAlignment="Top" Width="224" Click="btnCreateMap_Click"/>
         <TextBox x:Name="txtGameSizeX" HorizontalAlignment="Left" Height="25" Margin="491,75,0,0" TextWrapping="Wrap" Text="10" VerticalAlignment="Top" Width="41"/>
-        <Label Content="Game size X (Max 50, Min 10)" HorizontalAlignment="Center" Height="25" Margin="0,75,0,0" VerticalAlignment="Top" Width="178"/>
-        <Label Content="Game size Y (Max 50, Min 10):" HorizontalAlignment="Center" Height="25" Margin="0,115,0,0" VerticalAlignment="Top" Width="177"/>
+        <Label Content="Game size X (Max 50, Min 10)" Height="25" Margin="311,75,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="178"/>
+        <Label Content="Game size Y (Max 50, Min 10):" Height="25" Margin="312,115,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="176"/>
         <TextBox x:Name="txtGameSizeY" HorizontalAlignment="Left" Height="25" Margin="491,115,0,0" TextWrapping="Wrap" Text="10" VerticalAlignment="Top" Width="41"/>
-        <Label Content="Unique Template Name :" HorizontalAlignment="Center" Height="25" Margin="0,145,0,0" VerticalAlignment="Top" Width="151"/>
+        <Label Content="Unique Template Name :" Height="25" Margin="324,145,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="152"/>
         <TextBox x:Name="txtGameName" HorizontalAlignment="Left" Height="25" Margin="491,145,0,0" TextWrapping="Wrap" Text="Game Name" VerticalAlignment="Top" Width="174"/>
+        <Label Content="Description (optional) :" HorizontalAlignment="Left" Height="25" Margin="324,175,0,0" VerticalAlignment="Top" Width="152"/>
+        <TextBox x:Name="txtGameDescription" HorizontalAlignment="Left" Height="25" Margin="491,175,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="174"/>
+        <Button Content="Cancel" HorizontalAlignment="Left" Height="66" Margin="561,287,0,0" VerticalAlignment="Top" Width="185" Click="Button_Click"/>
 
     </Grid>
 </Window>

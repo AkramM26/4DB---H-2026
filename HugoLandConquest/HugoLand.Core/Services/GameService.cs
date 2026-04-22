@@ -19,7 +19,7 @@ namespace HugoLand.Core.Services
         private int _currentPlayerNumber = 1;
         private EconomyService _economyService = new EconomyService(context);
 
-        public async Task CreateGameAsync(int gameSizeX, int gameSizeY, string gameName, string description)
+        public async Task CreateGameAsync(int gameSizeX, int gameSizeY, string gameName, string description = "")
         {
             var games = await Context.Games
                 .IgnoreQueryFilters()

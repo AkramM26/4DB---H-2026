@@ -29,6 +29,7 @@ namespace HugoLand.WPF.Views
 
         private void btnCreateMap_Click(object sender, RoutedEventArgs e)
         {
+            string gameDescription = txtGameDescription.Text;
             int gameSizeX;
             if (int.TryParse(txtGameSizeX.Text, out gameSizeX))
             {
@@ -60,7 +61,14 @@ namespace HugoLand.WPF.Views
             }
 
             string gameName = txtGameName.Text;
-            var window  = new MapEditor( gameSizeX, gameSizeY, gameName , Context);
+            var window  = new MapEditor( gameSizeX, gameSizeY, gameName ,gameDescription, Context);
+            window.Show();
+            this.Close();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var window = new MainWindow();
             window.Show();
             this.Close();
         }
