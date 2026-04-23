@@ -1,4 +1,4 @@
-﻿using HugoLand.Core.Domain;
+using HugoLand.Core.Domain;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -19,6 +19,7 @@ namespace HugoLand.Core.Data
         public DbSet<Installation> Installations => Set<Installation>();
         public DbSet<PlayerAction> PlayerActions => Set<PlayerAction>();
         public DbSet<TurnSnapShot> TurnSnapShots => Set<TurnSnapShot>();
+        public DbSet<CombatEvent> CombatEvents => Set<CombatEvent>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -44,6 +45,9 @@ namespace HugoLand.Core.Data
                 .HasQueryFilter(t => t.GameId == CurrentGameId);
 
             modelBuilder.Entity<CombatEvent>()
+                .HasQueryFilter(c => c.GameId == CurrentGameId);
+
+            modelBuilder.Entity<CombatEvent>()
                 .HasOne(c => c.Game)
                 .WithMany(g => g.CombatEvents)
                 .HasForeignKey(c => c.GameId)
@@ -55,6 +59,33 @@ namespace HugoLand.Core.Data
                 .HasForeignKey(p => p.GameId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Territory>()
+                .HasIndex(t => new { t.GameId, t.PositionX, t.PositionY })
+                .IsUnique();
+
+            modelBuilder.Entity<MilitaryDetachment>()
+                .HasOne(m => m.Game)
+                .WithMany(g => g.MilitaryDetachments)
+                .HasForeignKey(m => m.GameId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<MilitaryDetachment>()
+                .HasOne(m => m.Territory)
+                .WithOne(t => t.MilitaryDetachment)
+                .HasForeignKey<MilitaryDetachment>(m => m.TerritoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Installation>()
+                .HasOne(i => i.Game)
+                .WithMany(g => g.Installations)
+                .HasForeignKey(i => i.GameId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Installation>()
+                .HasOne(i => i.Territory)
+                .WithOne(t => t.Installation)
+                .HasForeignKey<Installation>(i => i.TerritoryId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
         }

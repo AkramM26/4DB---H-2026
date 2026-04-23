@@ -1,53 +1,95 @@
-﻿using HugoLand.Core.Data;
+using HugoLand.Core.Constants;
+using HugoLand.Core.Data;
+using HugoLand.Core.Services;
 using HugoLand.WPF.Views;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace HugoLand.WPF
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        private HugoLandContext Context;
+        private readonly HugoLandContext _context;
+        private readonly GameService _gameService;
+
         public MainWindow()
         {
             InitializeComponent();
-            var context = new HugoLandContextFactory().CreateDbContext([]);
-            // need to be changed when installing to a db not in memory!!!
-            context.Database.OpenConnection();
-            context.Database.EnsureCreated();
-            Context = context;
+
+            var config = new ConfigurationBuilder()
+                .SetBasePath(AppContext.BaseDirectory)
+                .AddJsonFile("appsettings.json", optional: false)
+                .Build();
+
+            var connectionString = config.GetConnectionString("HugoLand")
+                ?? throw new InvalidOperationException("Missing connection string 'HugoLand' in appsettings.json");
+
+            _context = HugoLandContextFactory.Create(connectionString);
+            _context.Database.Migrate();
+            _gameService = new GameService(_context);
+
+            Closed += (_, _) => _context.Dispose();
         }
 
-        private void btnOpenGame_Click(object sender, RoutedEventArgs e)
+        private async void btnNewGame_Click(object sender, RoutedEventArgs e)
         {
-            GameDisplay fenetreJeu = new GameDisplay();
-            fenetreJeu.Show();
+            var dlg = new NewGameDialog { Owner = this };
+            if (dlg.ShowDialog() != true) return;
+
+            try
+            {
+                await _gameService.CreateGameAsync(
+                    GameConstants.gameSizeX, GameConstants.gameSizeY,
+                    dlg.GameName, dlg.GameDescription);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Could not create game",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var gameId = _context.CurrentGameId;
+            await LaunchGameAsync(gameId, startTurnOnOpen: true);
         }
 
-        private void btnNewGame_Click(object sender, RoutedEventArgs e)
+        private async void btnLoadGame_Click(object sender, RoutedEventArgs e)
         {
-            GameDisplay fenetreJeu = new GameDisplay();
-            fenetreJeu.Show();
+            var dlg = new LoadGame(_context) { Owner = this };
+            if (dlg.ShowDialog() != true || dlg.SelectedGameId is null) return;
+
+            _gameService.LoadGame(dlg.SelectedGameId.Value);
+            await LaunchGameAsync(dlg.SelectedGameId.Value, startTurnOnOpen: false);
+        }
+
+        private async System.Threading.Tasks.Task LaunchGameAsync(Guid gameId, bool startTurnOnOpen)
+        {
+            var gameWindow = new GameDisplay(_context, gameId, startTurnOnOpen) { Owner = this };
+            Hide();
+            try
+            {
+                gameWindow.ShowDialog();
+            }
+            finally
+            {
+                Show();
+            }
+            await System.Threading.Tasks.Task.CompletedTask;
         }
 
         private void btnMapTemplate_Click(object sender, RoutedEventArgs e)
         {
-            var window = new MapEditorOptions(Context);
+            var window = new MapEditorOptions(_context) { Owner = this };
             window.Show();
             this.Close();
         }
 
+        private void btnQuit_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
     }
 }
