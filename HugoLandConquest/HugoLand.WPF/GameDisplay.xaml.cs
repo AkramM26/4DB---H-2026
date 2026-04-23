@@ -9,7 +9,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 using static HugoLand.Core.Services.ArmyService;
 using static HugoLand.Core.Services.CombatService;
 
@@ -26,6 +28,10 @@ namespace HugoLand.WPF
 
         private Border[,]? _cells;
         private TextBlock[,]? _cellLabels;
+        private readonly HashSet<Guid> _playableArmyIds = new HashSet<Guid>();
+        private Guid? _selectedArmyId;
+        private bool _isArmySelectionMode;
+        private string _turnPrompt = "Select an army or choose an action";
 
         private TaskCompletionSource<int>? _mainActionTcs;
         private TaskCompletionSource<MilitaryDetachment?>? _armySelectTcs;
@@ -121,6 +127,8 @@ namespace HugoLand.WPF
                                 return;
 
                             case 4: // End turn
+                                _selectedArmyId = null;
+                                ClearArmySelectionState();
                                 await _gameService.EndTurnAsync();
                                 await _gameService.StartTurnAsync();
                                 await RefreshBoardAsync();
@@ -240,6 +248,8 @@ namespace HugoLand.WPF
                     break;
             }
 
+            _selectedArmyId = null;
+            _turnPrompt = "Select an army or choose an action";
             await RefreshBoardAsync();
         }
 
@@ -308,6 +318,7 @@ namespace HugoLand.WPF
                         BorderBrush = Brushes.Black,
                         BorderThickness = new Thickness(1),
                         Background = Brushes.White,
+                        Cursor = Cursors.Arrow,
                         Child = tb,
                     };
                     Grid.SetColumn(border, x + 1);
@@ -330,11 +341,11 @@ namespace HugoLand.WPF
             if (game == null || _cells == null || _cellLabels == null) return;
 
             var currentPlayer = game.Players.First(p => p.PlayerNumber == game.PlayerTurn);
-            char letter = game.PlayerTurn == 1 ? 'A' : 'B';
             txtStatus.Text =
-                $"Turn {game.TurnNumber} - Player {letter}   |   " +
+                $"Turn {game.TurnNumber} - Player {game.PlayerTurn}   |   " +
                 $"Gold: {currentPlayer.Gold}   Income: +{currentPlayer.Income}   Cost: -{currentPlayer.Cost}   " +
                 $"Debt turns: {currentPlayer.TurnInDept}";
+            UpdateTurnBanner(game);
 
             int w = GameConstants.gameSizeX;
             int h = GameConstants.gameSizeY;
@@ -355,11 +366,27 @@ namespace HugoLand.WPF
                         TerritoryType.Mountain => Brushes.LightGray,
                         _ => Brushes.PapayaWhip,
                     };
+                    cell.BorderBrush = Brushes.Black;
+                    cell.BorderThickness = new Thickness(1);
+                    cell.Effect = null;
+                    cell.Cursor = Cursors.Arrow;
 
                     label.Text = FormatCell(t);
                     label.Foreground = t.MilitaryDetachment?.Player.PlayerNumber == 1
                         ? Brushes.DarkBlue
                         : t.MilitaryDetachment != null ? Brushes.DarkRed : Brushes.Black;
+
+                    if (t.MilitaryDetachment == null)
+                        continue;
+
+                    bool isPlayable = _isArmySelectionMode && _playableArmyIds.Contains(t.MilitaryDetachment.Id);
+                    bool isSelected = _selectedArmyId == t.MilitaryDetachment.Id;
+
+                    if (isPlayable)
+                        ApplyCellHighlight(cell, false);
+
+                    if (isSelected)
+                        ApplyCellHighlight(cell, true);
                 }
             }
         }
@@ -387,41 +414,172 @@ namespace HugoLand.WPF
             return $"{open}{armyStr}{close}";
         }
 
-        private Task<int> AwaitMainActionAsync()
+        private void UpdateTurnBanner(Game game)
         {
-            _mainActionTcs = new TaskCompletionSource<int>();
-            ShowPanel(pnlMainActions);
-            return _mainActionTcs.Task;
+            bool isPlayerOne = game.PlayerTurn == 1;
+            brdTurnBanner.Background = isPlayerOne
+                ? new SolidColorBrush(Color.FromRgb(47, 111, 219))
+                : new SolidColorBrush(Color.FromRgb(181, 54, 72));
+            txtTurnBanner.Text = $"Player {game.PlayerTurn} turn";
+            txtTurnPrompt.Text = _turnPrompt;
         }
 
-        private Task<MilitaryDetachment?> AwaitArmySelectionAsync()
+        private bool IsPlayableArmy(MilitaryDetachment army, Game game)
+            => army.Player.PlayerNumber == game.PlayerTurn
+                && army.MilitaryForce >= GameConstants.MinimumArmyForceForActions;
+
+        private void SetPlayableArmyState(Game game)
+        {
+            _playableArmyIds.Clear();
+            foreach (var army in game.MilitaryDetachments)
+            {
+                if (IsPlayableArmy(army, game))
+                    _playableArmyIds.Add(army.Id);
+            }
+        }
+
+        private void ClearArmySelectionState()
+        {
+            _isArmySelectionMode = false;
+            _playableArmyIds.Clear();
+        }
+
+        private void ApplyCellHighlight(Border cell, bool isSelected)
+        {
+            cell.BorderBrush = isSelected ? Brushes.Gold : Brushes.Goldenrod;
+            cell.BorderThickness = isSelected ? new Thickness(3) : new Thickness(2);
+            cell.Cursor = Cursors.Hand;
+            cell.Effect = new DropShadowEffect
+            {
+                Color = isSelected ? Colors.Gold : Colors.Khaki,
+                BlurRadius = isSelected ? 18 : 12,
+                ShadowDepth = 0,
+                Opacity = isSelected ? 0.95 : 0.8
+            };
+        }
+
+        private async Task<MilitaryDetachment?> TryGetPlayableArmyAtAsync(int x, int y, bool logFailures)
+        {
+            var game = await _context.Games
+                .Include(g => g.MilitaryDetachments).ThenInclude(m => m.Territory)
+                .Include(g => g.MilitaryDetachments).ThenInclude(m => m.Player)
+                .FirstOrDefaultAsync();
+            if (game == null)
+            {
+                if (logFailures)
+                    Log("Game state missing.");
+                return null;
+            }
+
+            var army = game.MilitaryDetachments.FirstOrDefault(m =>
+                m.Territory.PositionX == x && m.Territory.PositionY == y);
+
+            if (army == null)
+            {
+                if (logFailures)
+                    Log($"No army at ({x},{y}).");
+                return null;
+            }
+
+            if (!IsPlayableArmy(army, game))
+            {
+                if (logFailures)
+                    Log($"Army at ({x},{y}) cannot be selected right now.");
+                return null;
+            }
+
+            return army;
+        }
+
+        private async Task UpdateArmyActionButtonsAsync(MilitaryDetachment army)
+        {
+            var player = (await FetchGameGraphAsync())?.Players.FirstOrDefault(p => p.Id == army.PlayerId);
+            var moveTargets = await _armyService.TryMove(army, army.Territory.PositionX, army.Territory.PositionY);
+            bool hasCamp = army.Territory.Installation?.InstallationType == InstallationType.Camp;
+            bool hasAnyInstallation = army.Territory.Installation != null;
+
+            btnMoveAction.IsEnabled = army.CanMove && army.Energy > 0 && moveTargets.Count > 0;
+            btnBuildCampAction.IsEnabled = army.CanAct
+                && army.MilitaryForce >= GameConstants.MinimumArmyForceForActions
+                && !hasAnyInstallation
+                && player != null
+                && player.Gold >= GameConstants.CampConstructionCost;
+            btnUpgradeCampAction.IsEnabled = army.CanAct
+                && army.MilitaryForce >= GameConstants.MinimumArmyForceForActions
+                && hasCamp
+                && army.Territory.Installation!.PlayerId == army.PlayerId
+                && player != null
+                && player.Gold >= GameConstants.FortificationUpgradeCost;
+            btnReinforceAction.IsEnabled = army.MilitaryForce >= GameConstants.MinimumArmyForceForActions
+                && hasAnyInstallation
+                && player != null
+                && player.Gold > 2;
+            btnSplitArmyAction.IsEnabled = army.CanMove && army.Energy > 0 && army.MilitaryForce >= 20 && moveTargets.Count > 0;
+            btnPassArmyAction.IsEnabled = true;
+        }
+
+        private async Task<int> AwaitMainActionAsync()
+        {
+            _mainActionTcs = new TaskCompletionSource<int>();
+            _turnPrompt = "Select an army or choose an action";
+            _selectedArmyId = null;
+            ClearArmySelectionState();
+            ShowPanel(pnlMainActions);
+            await RefreshBoardAsync();
+            return await _mainActionTcs.Task;
+        }
+
+        private async Task<MilitaryDetachment?> AwaitArmySelectionAsync()
         {
             _armySelectTcs = new TaskCompletionSource<MilitaryDetachment?>();
             txtArmyX.Text = string.Empty;
             txtArmyY.Text = string.Empty;
+
+            var game = await FetchGameGraphAsync();
+            _isArmySelectionMode = true;
+            _selectedArmyId = null;
+            _turnPrompt = "Choose an army to play";
+            _playableArmyIds.Clear();
+            if (game != null)
+                SetPlayableArmyState(game);
+
             ShowPanel(pnlArmySelect);
-            return _armySelectTcs.Task;
+            await RefreshBoardAsync();
+            return await _armySelectTcs.Task;
         }
 
-        private Task<int> AwaitArmyActionAsync(MilitaryDetachment army)
+        private async Task<int> AwaitArmyActionAsync(MilitaryDetachment army)
         {
             _armyActionTcs = new TaskCompletionSource<int>();
+            army = await _context.MilitaryDetachments
+                .Include(m => m.Player)
+                .Include(m => m.Territory)
+                .ThenInclude(t => t.Installation)
+                .FirstAsync(m => m.Id == army.Id);
+
             string inst = army.Territory.Installation?.InstallationType.ToString() ?? "None";
+            _selectedArmyId = army.Id;
+            ClearArmySelectionState();
+            _turnPrompt = "Choose an action for the selected army";
             txtArmyInfo.Text =
                 $"Army at ({army.Territory.PositionX},{army.Territory.PositionY})\n" +
                 $"Force: {army.MilitaryForce}   Energy: {army.Energy}\n" +
                 $"Can act: {army.CanAct}   Can move: {army.CanMove}\n" +
                 $"Installation: {inst}";
+            await UpdateArmyActionButtonsAsync(army);
             ShowPanel(pnlArmyActions);
-            return _armyActionTcs.Task;
+            await RefreshBoardAsync();
+            return await _armyActionTcs.Task;
         }
 
-        private Task<char> AwaitMoveDirectionAsync(MilitaryDetachment army, List<Territory> adjacents)
+        private async Task<char> AwaitMoveDirectionAsync(MilitaryDetachment army, List<Territory> adjacents)
         {
             _moveDirTcs = new TaskCompletionSource<char>();
+            _turnPrompt = "Choose a direction";
             txtMoveInfo.Text = BuildMoveInfo(army, adjacents);
             ShowPanel(pnlMove);
-            return _moveDirTcs.Task;
+            await RefreshBoardAsync();
+            return await _moveDirTcs.Task;
         }
 
         private static string BuildMoveInfo(MilitaryDetachment army, List<Territory> adjacents)
@@ -454,15 +612,17 @@ namespace HugoLand.WPF
             return string.Join("\n", lines);
         }
 
-        private Task<int?> AwaitNumberAsync(string prompt, int min)
+        private async Task<int?> AwaitNumberAsync(string prompt, int min)
         {
             _numberTcs = new TaskCompletionSource<int?>();
+            _turnPrompt = prompt;
             txtNumberPrompt.Text = prompt;
             txtNumber.Text = string.Empty;
             txtNumber.Tag = min;
             ShowPanel(pnlNumber);
+            await RefreshBoardAsync();
             txtNumber.Focus();
-            return _numberTcs.Task;
+            return await _numberTcs.Task;
         }
 
         private Task ShowVictoryAsync(Game game)
@@ -519,53 +679,43 @@ namespace HugoLand.WPF
         private void btnMainMenu_Click(object sender, RoutedEventArgs e) => _mainActionTcs?.TrySetResult(3);
         private void btnEndTurn_Click(object sender, RoutedEventArgs e) => _mainActionTcs?.TrySetResult(4);
 
-        private void btnArmySelectConfirm_Click(object sender, RoutedEventArgs e)
+        private async void btnArmySelectConfirm_Click(object sender, RoutedEventArgs e)
         {
             if (!int.TryParse(txtArmyX.Text, out int x) || !int.TryParse(txtArmyY.Text, out int y))
             {
                 Log("Invalid coordinates.");
                 return;
             }
-            TrySelectArmyAt(x, y);
+
+            var army = await TryGetPlayableArmyAtAsync(x, y, true);
+            if (army == null) return;
+
+            _selectedArmyId = army.Id;
+            await RefreshBoardAsync();
+            _armySelectTcs?.TrySetResult(army);
         }
 
         private void btnArmySelectCancel_Click(object sender, RoutedEventArgs e)
-            => _armySelectTcs?.TrySetResult(null);
-
-        private void OnCellClick(int x, int y)
         {
-            if (_armySelectTcs != null && !_armySelectTcs.Task.IsCompleted)
-                TrySelectArmyAt(x, y);
+            ClearArmySelectionState();
+            _selectedArmyId = null;
+            _armySelectTcs?.TrySetResult(null);
+            _ = RefreshBoardAsync();
         }
 
-        private void TrySelectArmyAt(int x, int y)
+        private async void OnCellClick(int x, int y)
         {
-            if (_armySelectTcs == null || _armySelectTcs.Task.IsCompleted) return;
+            if (_armySelectTcs == null || _armySelectTcs.Task.IsCompleted)
+                return;
 
-            var game = _context.Games
-                .Include(g => g.MilitaryDetachments).ThenInclude(m => m.Territory)
-                .Include(g => g.MilitaryDetachments).ThenInclude(m => m.Player)
-                .FirstOrDefault();
-            if (game == null) { Log("Game state missing."); return; }
-
-            var army = game.MilitaryDetachments.FirstOrDefault(m =>
-                m.Territory.PositionX == x && m.Territory.PositionY == y);
-
+            var army = await TryGetPlayableArmyAtAsync(x, y, false);
             if (army == null)
-            {
-                Log($"No army at ({x},{y}).");
                 return;
-            }
-            if (army.Player.PlayerNumber != game.PlayerTurn)
-            {
-                Log($"Army at ({x},{y}) belongs to the other player.");
-                return;
-            }
-            if (army.MilitaryForce < 10)
-            {
-                Log($"Army at ({x},{y}) has less than 10 soldiers (isolated).");
-                return;
-            }
+
+            txtArmyX.Text = x.ToString();
+            txtArmyY.Text = y.ToString();
+            _selectedArmyId = army.Id;
+            await RefreshBoardAsync();
             _armySelectTcs.TrySetResult(army);
         }
 
