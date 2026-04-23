@@ -35,6 +35,12 @@ namespace HugoLand.Core.Data
             modelBuilder.Entity<Installation>()
                 .HasQueryFilter(i => i.GameId == CurrentGameId);
 
+                modelBuilder.Entity<Installation>()
+                    .HasOne(i => i.Game)
+                    .WithMany(g => g.Installations)
+                    .HasForeignKey(i => i.GameId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<Territory>()
                 .HasQueryFilter(t => t.GameId == CurrentGameId);
 

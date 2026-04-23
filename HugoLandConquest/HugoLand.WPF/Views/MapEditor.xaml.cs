@@ -25,11 +25,13 @@ namespace HugoLand.WPF.Views
         private HugoLandContext Context;
         private Game Game;
         private MapEditorService MapEditorService;
+        private string ConnectionString;
 
-        public MapEditor(int gameSizeX, int gameSizeY, string gameName, string gameDescription, HugoLandContext context)
+        public MapEditor(int gameSizeX, int gameSizeY, string gameName, string gameDescription, string connectionString)
         {
             InitializeComponent();
-            Context = context;
+            Context = HugoLandContextFactory.Create(connectionString);
+            ConnectionString = connectionString;
             MapEditorService = new MapEditorService(Context);
             CreateGrid(gameSizeX, gameSizeY, gameName, gameDescription);
         }
@@ -81,7 +83,17 @@ namespace HugoLand.WPF.Views
 
                     button.Click += (s, e) =>
                     {
-                        MessageBox.Show($"Clicked: {x},{y}");
+                        if (radioForest.IsChecked == true)
+                            MapEditorService.ChangeTerritoryType(x, y, TerritoryType.Forest, Game);
+                        else if (radioMountain.IsChecked == true)
+                            MapEditorService.ChangeTerritoryType(x, y, TerritoryType.Mountain, Game);
+                        else if (radioPlain.IsChecked == true)
+                            MapEditorService.ChangeTerritoryType(x, y, TerritoryType.Plain, Game);
+                        else if (radioPlayer1.IsChecked == true)
+                            MapEditorService.ChangeStartPosition(x, y, 1, Game);
+                        else if (radioPlayer2.IsChecked == true)
+                            MapEditorService.ChangeStartPosition(x, y, 2, Game);
+                        UpdateGrid();
                     };
 
                     Grid.SetRow(button, i);
@@ -94,10 +106,41 @@ namespace HugoLand.WPF.Views
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            await MapEditorService.DeleteGameAsync(Game);
-            var window = new MapEditorOptions(Context);
+            //await MapEditorService.DeleteGameAsync(Game);
+            var window = new MapEditorOptions(ConnectionString);
             window.Show();
             this.Close();
+        }
+
+        private void UpdateGrid()
+        {
+            foreach (var child in grdMap.Children)
+            {
+                if (child is Button button)
+                {
+                    int x = Grid.GetRow(button);
+                    int y = Grid.GetColumn(button);
+                    var territory = Game.Territories.First(t => t.PositionX == x && t.PositionY == y);
+                    if (territory.TerritoryType == TerritoryType.Plain)
+                        button.Background = Brushes.LightGreen;
+                    else if (territory.TerritoryType == TerritoryType.Forest)
+                        button.Background = Brushes.ForestGreen;
+                    else if (territory.TerritoryType == TerritoryType.Mountain)
+                        button.Background = Brushes.Gray;
+                    if (territory.MilitaryDetachment != null)
+                    {
+                        button.Content = territory.MilitaryDetachment.MilitaryForce;
+                        if (territory.MilitaryDetachment.Player.PlayerNumber == 1)
+                            button.Foreground = Brushes.Red;
+                        else if (territory.MilitaryDetachment.Player.PlayerNumber == 2)
+                            button.Foreground = Brushes.Blue;
+                    }
+                    else
+                    {
+                        button.Content = null;
+                    }
+                }
+            }
         }
     }
 }

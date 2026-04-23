@@ -20,11 +20,14 @@ namespace HugoLand.WPF.Views
     /// </summary>
     public partial class MapEditorOptions : Window
     {
-        HugoLandContext Context;
-        public MapEditorOptions(HugoLandContext context)
+        private HugoLandContext Context;
+        private string ConnectionString;
+
+        public MapEditorOptions(string connectionString)
         {
             InitializeComponent();
-            Context = context;
+            Context = HugoLandContextFactory.Create(connectionString);
+            ConnectionString = connectionString;
         }
 
         private void btnCreateMap_Click(object sender, RoutedEventArgs e)
@@ -61,7 +64,7 @@ namespace HugoLand.WPF.Views
             }
 
             string gameName = txtGameName.Text;
-            var window  = new MapEditor( gameSizeX, gameSizeY, gameName ,gameDescription, Context);
+            var window = new MapEditor(gameSizeX, gameSizeY, gameName, gameDescription, ConnectionString);
             window.Show();
             this.Close();
         }

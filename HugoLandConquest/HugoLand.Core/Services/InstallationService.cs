@@ -34,9 +34,9 @@ namespace HugoLand.Core.Services
 
             var camp = Installation.Create(
                 InstallationType.Camp,
-                militaryDetachment.TerritoryId,
-                militaryDetachment.PlayerId,
-                militaryDetachment.GameId);
+                militaryDetachment.Territory,
+                militaryDetachment.Player,
+                militaryDetachment.Game);
 
             militaryDetachment.Player.Gold -= GameConstants.CampConstructionCost;
             militaryDetachment.CanAct = false;
