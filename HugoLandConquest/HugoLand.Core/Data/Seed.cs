@@ -12,7 +12,7 @@ namespace HugoLand.Core.Data
     {
         public static async Task SeedGameAsync(HugoLandContext context, int gameSizeX, int gameSizeY, string gameName, string description)
         {
-            Game game = Game.Create(gameName);
+            Game game = Game.Create(gameName, gameSizeX, gameSizeY);
             if (!string.IsNullOrEmpty(description))
                 game.GameDescription = description;
 

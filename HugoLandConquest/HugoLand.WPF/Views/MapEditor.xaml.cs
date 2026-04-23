@@ -27,18 +27,28 @@ namespace HugoLand.WPF.Views
         private MapEditorService MapEditorService;
         private string ConnectionString;
 
-        public MapEditor(int gameSizeX, int gameSizeY, string gameName, string gameDescription, string connectionString)
+        public MapEditor(Game? game,int gameSizeX, int gameSizeY, string gameName, string gameDescription, string connectionString)
         {
             InitializeComponent();
             Context = HugoLandContextFactory.Create(connectionString);
             ConnectionString = connectionString;
             MapEditorService = new MapEditorService(Context);
-            CreateGrid(gameSizeX, gameSizeY, gameName, gameDescription);
+            if (game == null)
+                CreateGame(gameSizeX, gameSizeY, gameName, gameDescription);
+            else
+                Game = game;
+            CreateGrid(/*gameSizeX, gameSizeY,*/ gameName, gameDescription);
         }
 
-        private async void CreateGrid(int gameSizeX, int gameSizeY, string gameName, string gameDescription)
+        private async void CreateGame(int gameSizeX, int gameSizeY, string gameName, string gameDescription)
         {
             Game = await MapEditorService.CreateGameTemplateAsync(gameSizeX, gameSizeY, gameName, gameDescription);
+        }
+        private async void CreateGrid(/*int gameSizeX, int gameSizeY,*/ string gameName, string gameDescription)
+        {
+            //Game = await MapEditorService.CreateGameTemplateAsync(gameSizeX, gameSizeY, gameName, gameDescription);
+            int gameSizeX = Game.GameSizeX;
+            int gameSizeY = Game.GameSizeY;
 
             for (int i = 0; i < gameSizeY; i++)
             {
@@ -54,8 +64,8 @@ namespace HugoLand.WPF.Views
             {
                 for (int j = 0; j < gameSizeX; j++)
                 {
-                    int x = i;
-                    int y = j;
+                    int x = j;
+                    int y = i;
 
                     var territory = Game.Territories.First(t => t.PositionX == x && t.PositionY == y);
 
@@ -107,7 +117,7 @@ namespace HugoLand.WPF.Views
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
             //await MapEditorService.DeleteGameAsync(Game);
-            var window = new MapEditorOptions(ConnectionString);
+            var window = new MainWindow();
             window.Show();
             this.Close();
         }

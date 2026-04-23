@@ -12,15 +12,19 @@
         <TextBlock Grid.Row="0" Text="HugoLand: Conquest"
                    FontSize="26" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
 
-        <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Height="290">
             <Button x:Name="btnNewGame" Content="New Game" Width="220" Height="40"
                     Margin="0,4" Click="btnNewGame_Click"/>
             <Button x:Name="btnLoadGame" Content="Load Game" Width="220" Height="40"
                     Margin="0,4" Click="btnLoadGame_Click"/>
             <Button x:Name="btnMapTemplate" Content="Create Map Template" Width="220" Height="40"
                     Margin="0,4" Click="btnMapTemplate_Click"/>
+            <Button x:Name="btnMapTemplateList" Content="Edit Map Template" Width="220" Height="40" Click="btnMapTemplateList_Click"
+               />
             <Button x:Name="btnQuit" Content="Quit" Width="220" Height="40"
                     Margin="0,4" Click="btnQuit_Click"/>
+            <Button x:Name="btnNewGameWithTemplate" Content="New Game With Template" Width="220" Height="40" Click="btnNewGameWithTemplate_Click"></Button>
+                
         </StackPanel>
     </Grid>
 </Window>

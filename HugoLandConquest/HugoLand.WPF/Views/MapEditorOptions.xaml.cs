@@ -64,7 +64,7 @@ namespace HugoLand.WPF.Views
             }
 
             string gameName = txtGameName.Text;
-            var window = new MapEditor(gameSizeX, gameSizeY, gameName, gameDescription, ConnectionString);
+            var window = new MapEditor(null,gameSizeX, gameSizeY, gameName, gameDescription, ConnectionString);
             window.Show();
             this.Close();
         }
