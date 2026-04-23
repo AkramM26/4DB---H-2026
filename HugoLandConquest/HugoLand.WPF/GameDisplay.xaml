@@ -67,6 +67,7 @@
             <!-- Move direction -->
             <StackPanel x:Name="pnlMove" Visibility="Collapsed">
                 <TextBlock x:Name="txtMoveInfo" FontWeight="Bold" Margin="0,0,0,6" TextWrapping="Wrap"/>
+                <TextBlock Text="Shortcuts: WASD / Arrow keys, Esc to cancel" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
                 <Button Content="North" Margin="0,2" Padding="4" Click="btnMoveDir_Click" Tag="N"/>
                 <Button Content="South" Margin="0,2" Padding="4" Click="btnMoveDir_Click" Tag="S"/>
                 <Button Content="East" Margin="0,2" Padding="4" Click="btnMoveDir_Click" Tag="E"/>
