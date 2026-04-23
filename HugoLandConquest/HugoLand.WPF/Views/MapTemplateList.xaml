@@ -1,0 +1,43 @@
+﻿<Window x:Class="HugoLand.WPF.Views.MapTemplateList"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HugoLand.WPF.Views"
+        mc:Ignorable="d"
+        Title="MapTemplateList" Height="450" Width="800">
+    <Grid>
+        <Grid>
+            <ListBox x:Name="lstMap" Width="780" Margin="10,10,10,118" d:ItemsSource="{d:SampleData ItemCount=5}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="Gray" BorderThickness="1" Margin="5" Padding="8">
+                            <DockPanel>
+
+                                <!-- Right side buttons -->
+                                <StackPanel DockPanel.Dock="Right">
+                                    <Button Content="Delete"
+                                Click="Delete_Click"
+                                Tag="{Binding Id}"
+                                Margin="5"/>
+                                    <Button Content="Edit"
+                                Click="Edit_Click"
+                                Tag="{Binding Id}"
+                                Margin="5"/>
+                                </StackPanel>
+
+                                <!-- Left side content -->
+                                <StackPanel>
+                                    <TextBlock Text="{Binding GameName}" FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding GameDescription}" TextWrapping="Wrap"/>
+                                </StackPanel>
+
+                            </DockPanel>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+
+    </Grid>
+</Window>

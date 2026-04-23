@@ -41,6 +41,8 @@ namespace HugoLand.Core.Domain
         public bool MilitaryVictory { get; set; }
         public int? WinnerPlayerNumber { get; set; }
         public DateTime? EndedAt { get; set; }
+        public int GameSizeX { get; set; }
+        public int GameSizeY { get; set; }
 
         public virtual ICollection<Player> Players { get; set; } = [];
         public virtual ICollection<Territory> Territories { get; set; } = [];
@@ -52,12 +54,14 @@ namespace HugoLand.Core.Domain
 
         protected Game() { }
 
-        public static Game Create(string gameName)
+        public static Game Create(string gameName, int gameSizeX, int gameSizeY)
         {
             return new Game
             {
                 Id = Guid.NewGuid(),
                 SaveName = DateTime.Now.ToString(),
+                GameSizeX = gameSizeX,
+                GameSizeY = gameSizeY,
                 IsFinished = false,
                 WinnerPlayerNumber = null,
                 EndedAt = null,

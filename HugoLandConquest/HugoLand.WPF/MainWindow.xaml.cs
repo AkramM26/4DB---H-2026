@@ -30,6 +30,7 @@ namespace HugoLand.WPF
 
             _context = HugoLandContextFactory.Create(ConnectionString);
             _context.Database.Migrate();
+
             _gameService = new GameService(_context);
 
             Closed += (_, _) => _context.Dispose();
@@ -91,6 +92,23 @@ namespace HugoLand.WPF
         private void btnQuit_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        private void btnMapTemplateList_Click(object sender, RoutedEventArgs e)
+        {
+            var window = new MapTemplateList(ConnectionString);
+            window.Show();
+            this.Close();
+        }
+
+        private async void btnNewGameWithTemplate_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new CreateGame(_context) { Owner = this };
+            if (dlg.ShowDialog() != true || dlg.SelectedGameId is null) return;
+
+            _gameService.LoadGame(dlg.SelectedGameId.Value);
+            await _gameService.SaveGameAsync();
+            await LaunchGameAsync(dlg.SelectedGameId.Value, startTurnOnOpen: false);
         }
     }
 }
