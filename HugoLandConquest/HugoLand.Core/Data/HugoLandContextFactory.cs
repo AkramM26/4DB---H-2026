@@ -16,6 +16,7 @@ namespace HugoLand.Core.Data
             var options = new DbContextOptionsBuilder<HugoLandContext>()
                 .UseSqlite(resolved)
                 .UseLazyLoadingProxies()
+                .EnableSensitiveDataLogging()
                 .Options;
 
             return new HugoLandContext(options);

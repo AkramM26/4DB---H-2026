@@ -14,6 +14,7 @@ namespace HugoLand.WPF
     {
         private readonly HugoLandContext _context;
         private readonly GameService _gameService;
+        private string ConnectionString;
 
         public MainWindow()
         {
@@ -24,10 +25,10 @@ namespace HugoLand.WPF
                 .AddJsonFile("appsettings.json", optional: false)
                 .Build();
 
-            var connectionString = config.GetConnectionString("HugoLand")
+            ConnectionString = config.GetConnectionString("HugoLand")
                 ?? throw new InvalidOperationException("Missing connection string 'HugoLand' in appsettings.json");
 
-            _context = HugoLandContextFactory.Create(connectionString);
+            _context = HugoLandContextFactory.Create(ConnectionString);
             _context.Database.Migrate();
             _gameService = new GameService(_context);
 
@@ -82,7 +83,7 @@ namespace HugoLand.WPF
 
         private void btnMapTemplate_Click(object sender, RoutedEventArgs e)
         {
-            var window = new MapEditorOptions(_context) { Owner = this };
+            var window = new MapEditorOptions(ConnectionString);
             window.Show();
             this.Close();
         }

@@ -42,7 +42,7 @@ namespace HugoLand.Core.Services
                 return ResultService.FailureResult("Cannot change the type of a territory that has a military detachment on it.");
 
             territory.TerritoryType = territoryType;
-            //await Context.SaveChangesAsync();
+            // Context.SaveChanges();
 
             return ResultService.SuccessResult();
         }
@@ -71,12 +71,12 @@ namespace HugoLand.Core.Services
                 return ResultService.FailureResult($"New territory at position ({x}, {y}) is not a plain and cannot be used as a starting position.");
 
             oldTerritory.MilitaryDetachment = null;
-            newTerritory.MilitaryDetachment = MilitaryDetachment.Create(5, GameConstants.baseMilitaryForce, player.Id, newTerritory.Id, game.Id);
+            newTerritory.MilitaryDetachment = MilitaryDetachment.Create(5, GameConstants.baseMilitaryForce, player, newTerritory, game);
 
             oldTerritory.Installation = null;
-            newTerritory.Installation = Installation.Create(InstallationType.Fortification, newTerritory.Id, player.Id, game.Id);
+            newTerritory.Installation = Installation.Create(InstallationType.Fortification, newTerritory, player, game);
 
-            //await Context.SaveChangesAsync();
+             //Context.SaveChanges();
 
             return ResultService.SuccessResult();
         }
