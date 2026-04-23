@@ -25,8 +25,10 @@ namespace HugoLand.Core.Domain
             return new PlayerAction
             {
                 Id = Guid.NewGuid(),
-                GameId = gameId
-               
+                GameId = gameId,
+                ActionType = actionType,
+                Description = desc ?? string.Empty,
+                CreateAt = DateTime.UtcNow,
             };
         }
     }

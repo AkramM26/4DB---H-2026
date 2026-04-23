@@ -1,8 +1,9 @@
-﻿using HugoLand.Core.Data;
-using HugoLand.Core.Domain;
-using HugoLand.Core.Services;
+using HugoLand.Core.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace HugoLand;
 
@@ -10,10 +11,16 @@ internal class Program
 {
     static async Task Main(string[] args)
     {
-        using var context = new HugoLandContextFactory().CreateDbContext([]);
-        // need to be changed when installing to a db not in memory!!!
-        await context.Database.OpenConnectionAsync();
-        await context.Database.EnsureCreatedAsync();
+        var config = new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("appsettings.json", optional: false)
+            .Build();
+
+        var connectionString = config.GetConnectionString("HugoLand")
+            ?? throw new InvalidOperationException("Missing connection string 'HugoLand' in appsettings.json");
+
+        using var context = HugoLandContextFactory.Create(connectionString);
+        await context.Database.MigrateAsync();
 
         MenuManager menuManager = new MenuManager(context);
         menuManager.GameLoop();

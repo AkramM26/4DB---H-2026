@@ -1,14 +1,9 @@
-﻿using Castle.Components.DictionaryAdapter.Xml;
-using HugoLand.Core.Constants;
+﻿using HugoLand.Core.Constants;
 using HugoLand.Core.Data;
 using HugoLand.Core.Domain;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace HugoLand.Core.Services
@@ -16,8 +11,12 @@ namespace HugoLand.Core.Services
     public class GameService(HugoLandContext context)
     {
         private readonly HugoLandContext Context = context;
-        private int _currentPlayerNumber = 1;
-        private EconomyService _economyService = new EconomyService(context);
+        private readonly EconomyService _economyService = new(context);
+
+        private async Task<Game> GetCurrentGameAsync()
+        {
+            return await Context.Games.FirstAsync();
+        }
 
         public async Task CreateGameAsync(int gameSizeX, int gameSizeY, string gameName, string description = "")
         {
@@ -32,24 +31,21 @@ namespace HugoLand.Core.Services
 
         public async Task StartTurnAsync()
         {
-            var game = await Context.Games.FirstAsync();
+            var game = await GetCurrentGameAsync();
             if (game.IsFinished)
                 return;
 
-
-            // Récupérer le joueur actuel
             var player = await Context.Players
                 .Include(p => p.MilitaryDetachments)
-                .FirstAsync(p => p.PlayerNumber == _currentPlayerNumber);
-
+                .FirstAsync(p => p.PlayerNumber == game.PlayerTurn);
 
             foreach (MilitaryDetachment m in player.MilitaryDetachments)
             {
-                // Recupération d'énergie pour chaque armée
-                m.Energy += Constants.GameConstants.energyRecuperation;
+                m.Energy += GameConstants.energyRecuperation;
                 m.CanAct = true;
                 m.CanMove = true;
             }
+
             await _economyService.CollectRevenue(player);
             await _economyService.PayMaintenance(player);
             await Context.SaveChangesAsync();
@@ -130,54 +126,53 @@ namespace HugoLand.Core.Services
 
         public async Task EndTurnAsync()
         {
+            var game = await GetCurrentGameAsync();
+            var currentPlayerNumber = game.PlayerTurn;
+
             var player = await Context.Players
                 .Include(p => p.MilitaryDetachments)
                 .Include(p => p.Installations)
-                .FirstAsync(p => p.PlayerNumber == _currentPlayerNumber);
+                .FirstAsync(p => p.PlayerNumber == currentPlayerNumber);
 
             var snapshot = TurnSnapShot.Create(player.GameId, player.PlayerNumber, player.Gold,
                 player.MilitaryDetachments.Count, player.MilitaryDetachments.Sum(m => m.MilitaryForce),
                 player.Installations.Count(i => i.InstallationType == InstallationType.Fortification));
 
             await Context.TurnSnapShots.AddAsync(snapshot);
-            var otherPlayerNumber = _currentPlayerNumber == 1 ? 2 : 1;
+            var otherPlayerNumber = currentPlayerNumber == 1 ? 2 : 1;
 
             var otherPlayer = await Context.Players
                 .Include(p => p.MilitaryDetachments)
                 .FirstAsync(p => p.PlayerNumber == otherPlayerNumber);
 
-            var game = await Context.Games.FirstAsync(g => g.Id == player.GameId);
-
             if (!otherPlayer.MilitaryDetachments.Any())
             {
                 game.IsFinished = true;
-                game.WinnerPlayerNumber = _currentPlayerNumber;
+                game.MilitaryVictory = true;
+                game.WinnerPlayerNumber = currentPlayerNumber;
                 game.EndedAt = DateTime.UtcNow;
             }
             else if (player.TurnInDept >= 5)
             {
                 game.IsFinished = true;
+                game.MilitaryVictory = false;
                 game.WinnerPlayerNumber = otherPlayerNumber;
                 game.EndedAt = DateTime.UtcNow;
             }
             else if (otherPlayer.TurnInDept >= 5)
             {
                 game.IsFinished = true;
-                game.WinnerPlayerNumber = _currentPlayerNumber;
+                game.MilitaryVictory = false;
+                game.WinnerPlayerNumber = currentPlayerNumber;
                 game.EndedAt = DateTime.UtcNow;
             }
             else
             {
-                _currentPlayerNumber = otherPlayerNumber;
+                game.PlayerTurn = otherPlayerNumber;
             }
+
             game.TurnNumber++;
-            if (game.PlayerTurn ==1)
-                game.PlayerTurn = 2;
-            else
-                game.PlayerTurn = 1;
-
-                await Context.SaveChangesAsync();
-
+            await Context.SaveChangesAsync();
         }
     }
 }
