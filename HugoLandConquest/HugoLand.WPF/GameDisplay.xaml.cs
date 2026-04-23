@@ -55,6 +55,7 @@ namespace HugoLand.WPF
             _installationService = new InstallationService(context);
 
             Closing += GameDisplay_Closing;
+            PreviewKeyDown += GameDisplay_PreviewKeyDown;
             Loaded += async (_, _) => await RunGameAsync();
         }
 
@@ -575,7 +576,7 @@ namespace HugoLand.WPF
         private async Task<char> AwaitMoveDirectionAsync(MilitaryDetachment army, List<Territory> adjacents)
         {
             _moveDirTcs = new TaskCompletionSource<char>();
-            _turnPrompt = "Choose a direction";
+            _turnPrompt = "Choose a direction (WASD or Arrow keys)";
             txtMoveInfo.Text = BuildMoveInfo(army, adjacents);
             ShowPanel(pnlMove);
             await RefreshBoardAsync();
@@ -589,6 +590,7 @@ namespace HugoLand.WPF
             var lines = new List<string>
             {
                 $"Army at ({x},{y}) - Energy: {army.Energy}",
+                "Use WASD or Arrow keys, or click a direction.",
                 "Adjacent territories:",
             };
             foreach (var t in adjacents)
@@ -644,6 +646,36 @@ namespace HugoLand.WPF
             pnlNumber.Visibility = Visibility.Collapsed;
             pnlVictory.Visibility = Visibility.Collapsed;
             panel.Visibility = Visibility.Visible;
+        }
+
+        private bool IsMoveDirectionPromptActive()
+            => _moveDirTcs != null
+                && !_moveDirTcs.Task.IsCompleted
+                && pnlMove.Visibility == Visibility.Visible;
+
+        private void SubmitMoveDirection(char direction)
+            => _moveDirTcs?.TrySetResult(direction);
+
+        private void GameDisplay_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (!IsMoveDirectionPromptActive())
+                return;
+
+            char? direction = e.Key switch
+            {
+                Key.W or Key.Up => 'N',
+                Key.S or Key.Down => 'S',
+                Key.D or Key.Right => 'E',
+                Key.A or Key.Left => 'W',
+                Key.Escape => 'X',
+                _ => null,
+            };
+
+            if (direction == null)
+                return;
+
+            SubmitMoveDirection(direction.Value);
+            e.Handled = true;
         }
 
         private void Log(string line)
@@ -728,7 +760,7 @@ namespace HugoLand.WPF
         private void btnMoveDir_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button b && b.Tag is string tag && tag.Length == 1)
-                _moveDirTcs?.TrySetResult(tag[0]);
+                SubmitMoveDirection(tag[0]);
         }
 
         private void btnNumberOk_Click(object sender, RoutedEventArgs e)
