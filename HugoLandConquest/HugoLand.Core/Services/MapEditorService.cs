@@ -71,10 +71,10 @@ namespace HugoLand.Core.Services
                 return ResultService.FailureResult($"New territory at position ({x}, {y}) is not a plain and cannot be used as a starting position.");
 
             oldTerritory.MilitaryDetachment = null;
-            newTerritory.MilitaryDetachment = MilitaryDetachment.Create(5, GameConstants.baseMilitaryForce, player, newTerritory, game);
+            newTerritory.MilitaryDetachment = MilitaryDetachment.Create(5, GameConstants.baseMilitaryForce, player.Id, newTerritory.Id, game.Id);
 
             oldTerritory.Installation = null;
-            newTerritory.Installation = Installation.Create(InstallationType.Fortification, newTerritory, player, game);
+            newTerritory.Installation = Installation.Create(InstallationType.Fortification, newTerritory.Id, player.Id, game.Id);
 
              //Context.SaveChanges();
 

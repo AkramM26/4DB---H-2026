@@ -224,7 +224,7 @@ namespace HugoLand.Core.Services
             else
             {
                 MilitaryDetachment stationaryMilitaryDetachment = MilitaryDetachment.Create(militaryDetachement.Energy, remainingArmy,
-                    militaryDetachement.Player, territory, militaryDetachement.Game);
+                    militaryDetachement.Player.Id, territory.Id, militaryDetachement.Game.Id);
                 await Context.AddAsync(stationaryMilitaryDetachment);
                 stationaryMilitaryDetachment.CanMove = false;
                 stationaryMilitaryDetachment.CanAct = false;
