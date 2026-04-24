@@ -127,7 +127,13 @@ namespace HugoLand.WPF.Views
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            await MapEditorService.SaveGameAsync(Game!);
+            ResultService result = await MapEditorService.SaveGameAsync(Game!);
+            if (!result.Success)
+            {
+                MessageBox.Show(result.Message);
+                return;
+            }
+            Context.Dispose();
             var window = new MainWindow();
             window.Show();
             this.Close();

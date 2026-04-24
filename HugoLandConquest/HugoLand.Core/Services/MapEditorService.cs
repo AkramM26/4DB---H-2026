@@ -18,7 +18,7 @@ namespace HugoLand.Core.Services
 
         public async Task<ResultService> CreateGameTemplateAsync(int gameSizeX, int gameSizeY, string gameName, string description = "")
         {
-            ResultService result =  await GameService.CreateGameAsync(gameSizeX, gameSizeY, gameName,true, description);
+            ResultService result = await GameService.CreateGameAsync(gameSizeX, gameSizeY, gameName, true, description);
 
             return result;
         }
@@ -37,28 +37,18 @@ namespace HugoLand.Core.Services
         {
             var territory = game.Territories.FirstOrDefault(t => t.PositionX == x && t.PositionY == y);
 
-            //var territory = await Context.Territories
-            //    .Include(t => t.MilitaryDetachment)
-            //    .FirstOrDefaultAsync(t => t.PositionX == x && t.PositionY == y);
-
             if (territory == null)
                 return ResultService.FailureResult("The territory has not been found");
             if (territory.MilitaryDetachment != null)
                 return ResultService.FailureResult("Cannot change the type of a territory that has a military detachment on it.");
 
             territory.TerritoryType = territoryType;
-            // Context.SaveChanges();
 
             return ResultService.SuccessResult();
         }
 
         public ResultService ChangeStartPosition(int playerNumber, int x, int y, Game game)
         {
-            //var game = await Context.Games
-            //    .Include(g => g.Players)
-            //    .Include(g => g.Territories)
-            //    .ThenInclude(t => t.MilitaryDetachment)
-            //    .FirstAsync();
 
             var player = game.Players.FirstOrDefault(p => p.PlayerNumber == playerNumber);
 
@@ -106,12 +96,22 @@ namespace HugoLand.Core.Services
             newTerritory.MilitaryDetachment = newDetachment;
             newTerritory.Installation = newInstallation;
 
-             //Context.SaveChanges();
-
             return ResultService.SuccessResult();
         }
         public async Task<ResultService> SaveGameAsync(Game game)
         {
+            int NumberOfTerritories = game.GameSizeX * game.GameSizeY;
+            if ((double)game.Territories.Where(t => t.TerritoryType != TerritoryType.Ocean).Count() / NumberOfTerritories <= 0.6)
+                return ResultService.FailureResult("The map must have at least 60% of accessible territories.");
+            else if (!game.MilitaryDetachments.Any(m => m.Player.PlayerNumber == 1) || !game.MilitaryDetachments.Any(m => m.Player.PlayerNumber == 2))
+                return ResultService.FailureResult("The map must have at least one starting position for each player.");
+
+
+            if (Context.Entry(game).State == EntityState.Detached)
+            {
+                Context.Games.Update(game);
+            }
+
             game.SaveName = DateTime.Now.ToString();
             await Context.SaveChangesAsync();
             return ResultService.SuccessResult();
@@ -121,6 +121,7 @@ namespace HugoLand.Core.Services
         {
             // Detach all tracked entities to avoid conflicts with unsaved in-memory changes,
             // then reload the game fresh from the DB before deleting.
+
             Context.ChangeTracker.Clear();
 
             var trackedGame = await Context.Games
