@@ -1,4 +1,5 @@
 ﻿using HugoLand.Core.Data;
+using HugoLand.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,15 +23,17 @@ namespace HugoLand.WPF.Views
     {
         private HugoLandContext Context;
         private string ConnectionString;
+        private MapEditorService MapEditorService;
 
         public MapEditorOptions(string connectionString)
         {
             InitializeComponent();
             Context = HugoLandContextFactory.Create(connectionString);
+            MapEditorService = new MapEditorService(Context);
             ConnectionString = connectionString;
         }
 
-        private void btnCreateMap_Click(object sender, RoutedEventArgs e)
+        private async void btnCreateMap_Click(object sender, RoutedEventArgs e)
         {
             string gameDescription = txtGameDescription.Text;
             int gameSizeX;
@@ -64,13 +67,20 @@ namespace HugoLand.WPF.Views
             }
 
             string gameName = txtGameName.Text.Trim();
+            var result = await MapEditorService.CreateGameTemplateAsync(gameSizeX, gameSizeY, gameName, gameDescription);
+            if (!result.Success)
+            {
+                MessageBox.Show(result.Message);
+                return;
+            }
             if (string.IsNullOrEmpty(gameName))
             {
                 MessageBox.Show("Please enter a name for the map template.");
                 return;
             }
 
-            var window = new MapEditor(null,gameSizeX, gameSizeY, gameName, gameDescription, ConnectionString);
+            var game = await MapEditorService.GetGame();
+            var window = new MapEditor(game, ConnectionString);
             window.Show();
             this.Close();
         }

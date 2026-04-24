@@ -31,26 +31,23 @@ namespace HugoLand.WPF.Views
         private readonly string InitialGameName;
         private readonly string InitialGameDescription;
 
-        public MapEditor(Game? game,int gameSizeX, int gameSizeY, string gameName, string gameDescription, string connectionString)
+        public MapEditor(Game game, string connectionString)
         {
             InitializeComponent();
             Context = HugoLandContextFactory.Create(connectionString);
             ConnectionString = connectionString;
             MapEditorService = new MapEditorService(Context);
             Game = game;
-            InitialGameSizeX = gameSizeX;
-            InitialGameSizeY = gameSizeY;
-            InitialGameName = gameName;
-            InitialGameDescription = gameDescription;
+            InitialGameSizeX = Game.GameSizeX;
+            InitialGameSizeY = Game.GameSizeY;
+            InitialGameName = Game.GameName;
+            InitialGameDescription = Game.GameDescription;
             Loaded += MapEditor_Loaded;
         }
 
-        private async void MapEditor_Loaded(object sender, RoutedEventArgs e)
+        private void MapEditor_Loaded(object sender, RoutedEventArgs e)
         {
             Loaded -= MapEditor_Loaded;
-
-            if (Game == null)
-                Game = await MapEditorService.CreateGameTemplateAsync(InitialGameSizeX, InitialGameSizeY, InitialGameName, InitialGameDescription);
 
             CreateGrid();
         }

@@ -16,10 +16,14 @@ namespace HugoLand.Core.Services
         private readonly HugoLandContext Context = context;
         private readonly GameService GameService = new GameService(context);
 
-        public async Task<Game> CreateGameTemplateAsync(int gameSizeX, int gameSizeY, string gameName, string description = "")
+        public async Task<ResultService> CreateGameTemplateAsync(int gameSizeX, int gameSizeY, string gameName, string description = "")
         {
-            await GameService.CreateGameAsync(gameSizeX, gameSizeY, gameName,true, description);
+            ResultService result =  await GameService.CreateGameAsync(gameSizeX, gameSizeY, gameName,true, description);
 
+            return result;
+        }
+        public async Task<Game> GetGame()
+        {
             var game = await Context.Games
             .Include(g => g.Players)
             .Include(g => g.Territories)
