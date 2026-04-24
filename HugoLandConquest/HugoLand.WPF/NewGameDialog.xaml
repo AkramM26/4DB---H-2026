@@ -24,71 +24,11 @@
 
         <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button x:Name="btnOk" Content="OK" Width="80" Margin="0,0,8,0"
-                    Click="btnOk_Click" IsDefault="True">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="FontWeight" Value="Bold" />
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="Button">
-                                    <Border x:Name="MyBorder"                                     
-                                BorderThickness="3"
-                                CornerRadius="15"
-                                Background="Transparent">
-                                        <Border.BorderBrush>
-                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                                <GradientStop Color="Black"/>
-                                                <GradientStop Color="White" Offset="1"/>
-                                            </LinearGradientBrush>
-                                        </Border.BorderBrush>
-                                        <ContentPresenter
-                                VerticalAlignment="Center"
-                                HorizontalAlignment="Center"/>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" TargetName="MyBorder" Value="Green"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </Button.Style>
-            </Button>
+                    Style="{StaticResource GameButtonConfirm}"
+                    Click="btnOk_Click" IsDefault="True"/>
             <Button x:Name="btnCancel" Content="Cancel" Width="80"
-                    Click="btnCancel_Click" IsCancel="True">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="FontWeight" Value="Bold" />
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="Button">
-                                    <Border x:Name="MyBorder"                                     
-                                BorderThickness="3"
-                                CornerRadius="15"
-                                Background="Transparent">
-                                        <Border.BorderBrush>
-                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                                <GradientStop Color="Black"/>
-                                                <GradientStop Color="White" Offset="1"/>
-                                            </LinearGradientBrush>
-                                        </Border.BorderBrush>
-                                        <ContentPresenter
-                                VerticalAlignment="Center"
-                                HorizontalAlignment="Center"/>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" TargetName="MyBorder" Value="Red"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </Button.Style>
-            </Button>
+                    Style="{StaticResource GameButtonCancel}"
+                    Click="btnCancel_Click" IsCancel="True"/>
         </StackPanel>
     </Grid>
 </Window>
