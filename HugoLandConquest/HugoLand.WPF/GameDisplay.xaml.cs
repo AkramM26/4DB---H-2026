@@ -185,17 +185,25 @@ namespace HugoLand.WPF
                             'W' => Movements.West,
                             _ => Movements.North,
                         };
-                        var result = await _armyService.Move(army.Id, dir);
-                        LogMoveResult(result);
-                        await RefreshBoardAsync();
-                        var refreshed = await _context.MilitaryDetachments
-                            .Include(m => m.Territory).FirstOrDefaultAsync(m => m.Id == army.Id);
-                        if (refreshed == null)
+                        try
                         {
-                            Log("Army no longer exists.");
+                            var result = await _armyService.Move(army.Id, dir);
+                            LogMoveResult(result);
+                            await RefreshBoardAsync();
+                            var refreshed = await _context.MilitaryDetachments
+                                .Include(m => m.Territory).FirstOrDefaultAsync(m => m.Id == army.Id);
+                            if (refreshed == null)
+                            {
+                                Log("Army no longer exists.");
+                                return;
+                            }
+                            army = refreshed;
+                        }
+                        catch (Exception ex)
+                        {
+                            Log($"Move failed: {ex.Message}");
                             return;
                         }
-                        army = refreshed;
                     }
                     break;
                 }

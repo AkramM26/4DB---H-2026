@@ -1,4 +1,5 @@
 ﻿using HugoLand.Core.Constants;
+using HugoLand.Core.Constants;
 using HugoLand.Core.Data;
 using HugoLand.Core.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -65,16 +66,41 @@ namespace HugoLand.Core.Services
 
             if (newTerritory == null)
                 return ResultService.FailureResult($"Territory at position ({x}, {y}) not found in the game.");
-            if (oldTerritory == null)
-                return ResultService.FailureResult($"Current territory for player {playerNumber} not found in the game.");
             if (newTerritory.TerritoryType != TerritoryType.Plain)
                 return ResultService.FailureResult($"New territory at position ({x}, {y}) is not a plain and cannot be used as a starting position.");
 
-            oldTerritory.MilitaryDetachment = null;
-            newTerritory.MilitaryDetachment = MilitaryDetachment.Create(5, GameConstants.baseMilitaryForce, player.Id, newTerritory.Id, game.Id);
+            if (oldTerritory != null)
+            {
+                if (oldTerritory.MilitaryDetachment != null)
+                {
+                    var entry = Context.Entry(oldTerritory.MilitaryDetachment);
+                    if (entry.State == EntityState.Added)
+                        entry.State = EntityState.Detached;
+                    else
+                        Context.Remove(oldTerritory.MilitaryDetachment);
+                    oldTerritory.MilitaryDetachment = null;
+                }
+                if (oldTerritory.Installation != null)
+                {
+                    var entry = Context.Entry(oldTerritory.Installation);
+                    if (entry.State == EntityState.Added)
+                        entry.State = EntityState.Detached;
+                    else
+                        Context.Remove(oldTerritory.Installation);
+                    oldTerritory.Installation = null;
+                }
+            }
 
-            oldTerritory.Installation = null;
-            newTerritory.Installation = Installation.Create(InstallationType.Fortification, newTerritory.Id, player.Id, game.Id);
+            var newDetachment = MilitaryDetachment.Create(5, GameConstants.baseMilitaryForce, player.Id, newTerritory.Id, game.Id);
+            newDetachment.Player = player;
+            var newInstallation = Installation.Create(InstallationType.Fortification, newTerritory.Id, player.Id, game.Id);
+            newInstallation.Player = player;
+
+            Context.MilitaryDetachments.Add(newDetachment);
+            Context.Installations.Add(newInstallation);
+
+            newTerritory.MilitaryDetachment = newDetachment;
+            newTerritory.Installation = newInstallation;
 
              //Context.SaveChanges();
 
@@ -89,7 +115,17 @@ namespace HugoLand.Core.Services
 
         public async Task<ResultService> DeleteGameAsync(Game game)
         {
-            Context.Games.Remove(game);
+            // Detach all tracked entities to avoid conflicts with unsaved in-memory changes,
+            // then reload the game fresh from the DB before deleting.
+            Context.ChangeTracker.Clear();
+
+            var trackedGame = await Context.Games
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(g => g.Id == game.Id);
+
+            if (trackedGame != null)
+                Context.Games.Remove(trackedGame);
+
             await Context.SaveChangesAsync();
             return ResultService.SuccessResult();
         }
