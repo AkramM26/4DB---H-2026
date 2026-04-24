@@ -5,40 +5,42 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HugoLand.WPF.Views"
         mc:Ignorable="d"
-        Title="MapTemplateList" Height="450" Width="800">
-    <Grid>
-        <Grid>
-            <ListBox x:Name="lstMap" Width="780" Margin="10,10,10,118" d:ItemsSource="{d:SampleData ItemCount=5}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Border BorderBrush="Gray" BorderThickness="1" Margin="5" Padding="8">
-                            <DockPanel>
+        Title="Map Templates" Height="500" Width="700"
+        WindowStartupLocation="CenterScreen"
+        Background="#121212"
+        TextElement.Foreground="#E0E0E0">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-                                <!-- Right side buttons -->
-                                <StackPanel DockPanel.Dock="Right">
-                                    <Button Content="Delete"
-                                Click="Delete_Click"
-                                Tag="{Binding Id}"
-                                Margin="5"/>
-                                    <Button Content="Edit"
-                                Click="Edit_Click"
-                                Tag="{Binding Id}"
-                                Margin="5"/>
-                                </StackPanel>
+        <TextBlock Grid.Row="0" Text="Map Templates"
+                   FontFamily="Segoe UI" FontSize="18" FontWeight="Light"
+                   Foreground="#FFFFFF" Margin="0,0,0,14"/>
 
-                                <!-- Left side content -->
-                                <StackPanel>
-                                    <TextBlock Text="{Binding GameName}" FontWeight="Bold"/>
-                                    <TextBlock Text="{Binding GameDescription}" TextWrapping="Wrap"/>
-                                </StackPanel>
+        <ListBox Grid.Row="1" x:Name="lstMap" d:ItemsSource="{d:SampleData ItemCount=5}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderBrush="#333333" BorderThickness="1" CornerRadius="3" Margin="2,3" Padding="10,8">
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Button Content="Edit"   Click="Edit_Click"   Tag="{Binding Id}" Margin="6,0,0,0" Width="70"/>
+                                <Button Content="Delete" Click="Delete_Click" Tag="{Binding Id}" Margin="6,0,0,0" Width="70"
+                                        Foreground="#CC6666"/>
+                            </StackPanel>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="{Binding GameName}"        FontWeight="SemiBold" FontSize="13"/>
+                                <TextBlock Text="{Binding GameDescription}" Foreground="#888888"  FontSize="11" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
 
-                            </DockPanel>
-                        </Border>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <Button Content="Go To Main Menu" HorizontalAlignment="Left" Margin="88,363,0,0" VerticalAlignment="Top" Height="46" Width="153" Click="Button_Click"/>
-        </Grid>
-
+        <Button Grid.Row="2" Content="Go to Main Menu" HorizontalAlignment="Left"
+                Width="160" Margin="0,12,0,0" Click="Button_Click"/>
     </Grid>
 </Window>

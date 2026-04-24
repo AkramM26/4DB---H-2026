@@ -262,19 +262,45 @@ namespace HugoLand.WPF
             var game = _context.Games.FirstOrDefault();
             int w = game.GameSizeX;
             int h = game.GameSizeY;
-            //int w = GameConstants.gameSizeX;
-            //int h = GameConstants.gameSizeY;
 
             grdBoard.RowDefinitions.Clear();
             grdBoard.ColumnDefinitions.Clear();
             grdBoard.Children.Clear();
 
-            grdBoard.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(26) });
+            const int RightReserve  = 288;
+            const int TopReserve    = 110;
+            const int BotReserve    = 132;
+            const int ChromeReserve = 40;
+            const int Margins       = 32;
+            const int RowHeaderW    = 26;
+            const int ColHeaderH    = 22;
+
+            var screen   = SystemParameters.WorkArea;
+            double availW = screen.Width  - RightReserve - RowHeaderW - Margins;
+            double availH = screen.Height - TopReserve  - BotReserve - ColHeaderH - Margins - ChromeReserve;
+
+            int cellSize = (int)Math.Floor(Math.Min(availW / w, availH / h));
+            cellSize = Math.Clamp(cellSize, 20, 64);
+
+            // Resize and re-centre the window on the current screen
+            double newW = Math.Min(RowHeaderW  + cellSize * w + RightReserve + Margins, screen.Width);
+            double newH = Math.Min(ColHeaderH + cellSize * h + TopReserve + BotReserve + Margins + ChromeReserve, screen.Height);
+            Width  = newW;
+            Height = newH;
+            Left   = screen.Left + (screen.Width  - newW) / 2;
+            Top    = screen.Top  + (screen.Height - newH) / 2;
+
+            grdBoard.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(RowHeaderW) });
             for (int i = 0; i < w; i++)
-                grdBoard.ColumnDefinitions.Add(new ColumnDefinition());
-            grdBoard.RowDefinitions.Add(new RowDefinition { Height = new GridLength(22) });
+                grdBoard.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+            grdBoard.RowDefinitions.Add(new RowDefinition { Height = new GridLength(ColHeaderH) });
             for (int i = 0; i < h; i++)
-                grdBoard.RowDefinitions.Add(new RowDefinition());
+                grdBoard.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+
+            // Hide axis-header labels on very dense maps to avoid clutter
+            bool showHeaders = cellSize >= 24;
+            var headerFg = new SolidColorBrush(Color.FromRgb(0x88, 0x88, 0x88));
 
             for (int x = 0; x < w; x++)
             {
@@ -282,8 +308,10 @@ namespace HugoLand.WPF
                 {
                     Text = x.ToString(),
                     HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    FontWeight = FontWeights.Bold,
+                    VerticalAlignment   = VerticalAlignment.Center,
+                    FontSize            = 10,
+                    Foreground          = headerFg,
+                    Visibility          = showHeaders ? Visibility.Visible : Visibility.Hidden,
                 };
                 Grid.SetRow(header, 0);
                 Grid.SetColumn(header, x + 1);
@@ -295,16 +323,21 @@ namespace HugoLand.WPF
                 {
                     Text = y.ToString(),
                     HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    FontWeight = FontWeights.Bold,
+                    VerticalAlignment   = VerticalAlignment.Center,
+                    FontSize            = 10,
+                    Foreground          = headerFg,
+                    Visibility          = showHeaders ? Visibility.Visible : Visibility.Hidden,
                 };
                 Grid.SetRow(header, y + 1);
                 Grid.SetColumn(header, 0);
                 grdBoard.Children.Add(header);
             }
 
-            _cells = new Border[w, h];
+            _cells      = new Border[w, h];
             _cellLabels = new TextBlock[w, h];
+
+            var cellBorder = new SolidColorBrush(Color.FromRgb(0x33, 0x33, 0x33));
+            var cellBg     = new SolidColorBrush(Color.FromRgb(0x1E, 0x1E, 0x1E));
 
             for (int x = 0; x < w; x++)
             {
@@ -313,17 +346,18 @@ namespace HugoLand.WPF
                     var tb = new TextBlock
                     {
                         HorizontalAlignment = HorizontalAlignment.Center,
-                        VerticalAlignment = VerticalAlignment.Center,
-                        FontFamily = new FontFamily("Consolas"),
-                        FontSize = 11,
+                        VerticalAlignment   = VerticalAlignment.Center,
+                        FontFamily          = new FontFamily("Consolas"),
+                        FontSize            = 11,
+                        Foreground          = new SolidColorBrush(Color.FromRgb(0xE0, 0xE0, 0xE0)),
                     };
                     var border = new Border
                     {
-                        BorderBrush = Brushes.Black,
-                        BorderThickness = new Thickness(1),
-                        Background = Brushes.White,
-                        Cursor = Cursors.Arrow,
-                        Child = tb,
+                        BorderBrush     = cellBorder,
+                        BorderThickness = new Thickness(0.5),
+                        Background      = cellBg,
+                        Cursor          = Cursors.Arrow,
+                        Child           = tb,
                     };
                     Grid.SetColumn(border, x + 1);
                     Grid.SetRow(border, y + 1);
@@ -333,7 +367,7 @@ namespace HugoLand.WPF
                     border.MouseLeftButtonUp += (_, _) => OnCellClick(capturedX, capturedY);
 
                     grdBoard.Children.Add(border);
-                    _cells[x, y] = border;
+                    _cells[x, y]      = border;
                     _cellLabels[x, y] = tb;
                 }
             }
