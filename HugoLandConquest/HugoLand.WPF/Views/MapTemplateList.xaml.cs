@@ -73,6 +73,8 @@ namespace HugoLand.WPF.Views
                 var id = (Guid)btn.Tag;
                 var map = Context.Games.IgnoreQueryFilters()
                     .Include(g => g.Territories)
+                    .Include(g=> g.MilitaryDetachments)
+                    .ThenInclude(m=> m.Player)
                     .FirstOrDefault(m => m.Id == id);
 
                 int gameSizeX = map.Territories.Max(t => t.PositionX) -1;
@@ -87,6 +89,13 @@ namespace HugoLand.WPF.Views
                     this.Close();
                 }
             }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var window = new MainWindow();
+            window.Show();
+            this.Close();
         }
     }
 }

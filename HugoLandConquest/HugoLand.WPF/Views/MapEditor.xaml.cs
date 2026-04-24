@@ -128,8 +128,8 @@ namespace HugoLand.WPF.Views
             {
                 if (child is Button button)
                 {
-                    int x = Grid.GetRow(button);
-                    int y = Grid.GetColumn(button);
+                    int y = Grid.GetRow(button);
+                    int x = Grid.GetColumn(button);
                     var territory = Game.Territories.First(t => t.PositionX == x && t.PositionY == y);
                     if (territory.TerritoryType == TerritoryType.Plain)
                         button.Background = Brushes.LightGreen;
@@ -151,6 +151,14 @@ namespace HugoLand.WPF.Views
                     }
                 }
             }
+        }
+
+        private async void btnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            await MapEditorService.DeleteGameAsync(Game);
+            var window = new MainWindow();
+            window.Show();
+            this.Close();
         }
     }
 }

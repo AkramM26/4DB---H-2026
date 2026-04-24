@@ -3,6 +3,7 @@ using System;
 using HugoLand.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HugoLand.Core.Migrations
 {
     [DbContext(typeof(HugoLandContext))]
-    partial class HugoLandContextModelSnapshot : ModelSnapshot
+    [Migration("20260423234329_AddCascadeOnDelete")]
+    partial class AddCascadeOnDelete
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -318,7 +321,7 @@ namespace HugoLand.Core.Migrations
                     b.HasOne("HugoLand.Core.Domain.Game", "Game")
                         .WithMany("Installations")
                         .HasForeignKey("GameId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("HugoLand.Core.Domain.Player", "Player")
@@ -328,7 +331,7 @@ namespace HugoLand.Core.Migrations
                     b.HasOne("HugoLand.Core.Domain.Territory", "Territory")
                         .WithOne("Installation")
                         .HasForeignKey("HugoLand.Core.Domain.Installation", "TerritoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Game");
@@ -343,7 +346,7 @@ namespace HugoLand.Core.Migrations
                     b.HasOne("HugoLand.Core.Domain.Game", "Game")
                         .WithMany("MilitaryDetachments")
                         .HasForeignKey("GameId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("HugoLand.Core.Domain.Player", "Player")
@@ -355,7 +358,7 @@ namespace HugoLand.Core.Migrations
                     b.HasOne("HugoLand.Core.Domain.Territory", "Territory")
                         .WithOne("MilitaryDetachment")
                         .HasForeignKey("HugoLand.Core.Domain.MilitaryDetachment", "TerritoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Game");

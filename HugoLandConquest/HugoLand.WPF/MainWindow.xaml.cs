@@ -45,7 +45,7 @@ namespace HugoLand.WPF
             {
                 await _gameService.CreateGameAsync(
                     GameConstants.gameSizeX, GameConstants.gameSizeY,
-                    dlg.GameName, dlg.GameDescription);
+                    dlg.GameName,false, dlg.GameDescription);
             }
             catch (Exception ex)
             {

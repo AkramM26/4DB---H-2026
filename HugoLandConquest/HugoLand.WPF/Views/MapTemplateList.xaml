@@ -37,6 +37,7 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+            <Button Content="Go To Main Menu" HorizontalAlignment="Left" Margin="88,363,0,0" VerticalAlignment="Top" Height="46" Width="153" Click="Button_Click"/>
         </Grid>
 
     </Grid>

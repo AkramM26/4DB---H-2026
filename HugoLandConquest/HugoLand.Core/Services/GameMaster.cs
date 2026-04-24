@@ -27,7 +27,7 @@ namespace HugoLand.Core.Services
                 {
                     case 1:
                         var (name, desc) = await _view.ShowNewGameInputAsync();
-                        await _gameService.CreateGameAsync(GameConstants.gameSizeX, GameConstants.gameSizeY, name, desc);
+                        await _gameService.CreateGameAsync(GameConstants.gameSizeX, GameConstants.gameSizeY, name, false, desc);
                         break;
                     case 2:
                         List<Game> games = await _context.Games.IgnoreQueryFilters().ToListAsync();
