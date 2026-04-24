@@ -35,11 +35,11 @@ namespace HugoLand.Core.Data
             modelBuilder.Entity<Installation>()
                 .HasQueryFilter(i => i.GameId == CurrentGameId);
 
-                modelBuilder.Entity<Installation>()
-                    .HasOne(i => i.Game)
-                    .WithMany(g => g.Installations)
-                    .HasForeignKey(i => i.GameId)
-                    .OnDelete(DeleteBehavior.Cascade);
+            //modelBuilder.Entity<Installation>()
+            //    .HasOne(i => i.Game)
+            //    .WithMany(g => g.Installations)
+            //    .HasForeignKey(i => i.GameId)
+            //    .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Territory>()
                 .HasQueryFilter(t => t.GameId == CurrentGameId);
@@ -69,29 +69,29 @@ namespace HugoLand.Core.Data
                 .HasIndex(t => new { t.GameId, t.PositionX, t.PositionY })
                 .IsUnique();
 
-            modelBuilder.Entity<MilitaryDetachment>()
-                .HasOne(m => m.Game)
-                .WithMany(g => g.MilitaryDetachments)
-                .HasForeignKey(m => m.GameId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //modelBuilder.Entity<MilitaryDetachment>()
+            //    .HasOne(m => m.Game)
+            //    .WithMany(g => g.MilitaryDetachments)
+            //    .HasForeignKey(m => m.GameId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<MilitaryDetachment>()
-                .HasOne(m => m.Territory)
-                .WithOne(t => t.MilitaryDetachment)
-                .HasForeignKey<MilitaryDetachment>(m => m.TerritoryId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //modelBuilder.Entity<MilitaryDetachment>()
+            //    .HasOne(m => m.Territory)
+            //    .WithOne(t => t.MilitaryDetachment)
+            //    .HasForeignKey<MilitaryDetachment>(m => m.TerritoryId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Installation>()
-                .HasOne(i => i.Game)
-                .WithMany(g => g.Installations)
-                .HasForeignKey(i => i.GameId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //modelBuilder.Entity<Installation>()
+            //    .HasOne(i => i.Game)
+            //    .WithMany(g => g.Installations)
+            //    .HasForeignKey(i => i.GameId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Installation>()
-                .HasOne(i => i.Territory)
-                .WithOne(t => t.Installation)
-                .HasForeignKey<Installation>(i => i.TerritoryId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //modelBuilder.Entity<Installation>()
+            //    .HasOne(i => i.Territory)
+            //    .WithOne(t => t.Installation)
+            //    .HasForeignKey<Installation>(i => i.TerritoryId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
         }

@@ -10,13 +10,14 @@ namespace HugoLand.Core.Data
 {
     public class Seed
     {
-        public static async Task SeedGameAsync(HugoLandContext context, int gameSizeX, int gameSizeY, string gameName, string description)
+        public static async Task SeedGameAsync(HugoLandContext context, int gameSizeX, int gameSizeY, string gameName,bool isTemplate, string description)
         {
             Game game = Game.Create(gameName, gameSizeX, gameSizeY);
             if (!string.IsNullOrEmpty(description))
                 game.GameDescription = description;
 
             context.CurrentGameId = game.Id;
+            game.IsTemplate = isTemplate;
 
             Player player1 = Player.Create(50, game.Id, 1);
             Player player2 = Player.Create(50, game.Id, 2);

@@ -29,7 +29,7 @@ namespace HugoLand
                 switch (choice)
                 {
                     case 1:
-                        await _gameService.CreateGameAsync(15,15,"GameName","description");
+                        await _gameService.CreateGameAsync(15,15,"GameName",false,"description");
                         break;
                     case 2:
                         List<Game> games = await Context.Games.IgnoreQueryFilters().ToListAsync();
