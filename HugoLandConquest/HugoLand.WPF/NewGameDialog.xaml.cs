@@ -13,10 +13,15 @@ namespace HugoLand.WPF
             txtName.Text = $"Game-{System.DateTime.Now:yyyyMMdd-HHmmss}";
             txtName.Focus();
             txtName.SelectAll();
+            //Stop musique Menu
+            AudioManager.MenuSound.Stop();
         }
 
         private void btnOk_Click(object sender, RoutedEventArgs e)
         {
+            //Button sound 
+            AudioManager.MenuSound.Play();
+
             if (string.IsNullOrWhiteSpace(txtName.Text))
             {
                 MessageBox.Show("Game name cannot be empty.", "Invalid input",
@@ -31,6 +36,8 @@ namespace HugoLand.WPF
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
+            //Button sound 
+            AudioManager.MenuSound.Play();
             DialogResult = false;
         }
     }

@@ -20,6 +20,7 @@ namespace HugoLand.WPF
             InitializeComponent();
             _context = context;
             Loaded += async (_, _) => await PopulateAsync();
+
         }
 
         private async System.Threading.Tasks.Task PopulateAsync()
@@ -44,8 +45,18 @@ namespace HugoLand.WPF
                 lstGames.SelectedIndex = 0;
         }
 
-        private void btnLoad_Click(object sender, RoutedEventArgs e) => ConfirmSelection();
-        private void lstGames_DoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) => ConfirmSelection();
+        private void btnLoad_Click(object sender, RoutedEventArgs e)
+        {
+            //Button sound 
+            AudioManager.MenuSound.Play();
+            ConfirmSelection();
+        }
+        private void lstGames_DoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            //Button sound 
+            AudioManager.MenuSound.Play();
+            ConfirmSelection();
+        }
 
         private void ConfirmSelection()
         {
@@ -63,6 +74,8 @@ namespace HugoLand.WPF
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
+            //Button sound 
+            AudioManager.MenuSound.Play();
             DialogResult = false;
         }
 

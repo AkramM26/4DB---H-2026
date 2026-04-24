@@ -15,15 +15,15 @@ namespace HugoLand.Core.Constants
         public const int FortificationUpgradeCost = 50;
 
         //taille de la grille
-        public const int gameSizeX = 15;
-        public const int gameSizeY = 10;
+        public const int gameSizeX = 5;
+        public const int gameSizeY = 5;
 
         //Position initial des camps des joueurs
         public const int player1intitialx = 0;
         public const int player1intitialy = 0;
 
-        public const int player2intitialx = 9;
-        public const int player2intitialy = 9;
+        public const int player2intitialx = 4;
+        public const int player2intitialy = 4;
 
         public const int baseMilitaryForce = 30;
 

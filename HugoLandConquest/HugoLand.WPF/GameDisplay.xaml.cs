@@ -15,6 +15,8 @@ using System.Windows.Media.Effects;
 using static HugoLand.Core.Services.ArmyService;
 using static HugoLand.Core.Services.CombatService;
 
+
+
 namespace HugoLand.WPF
 {
     public partial class GameDisplay : Window
@@ -42,9 +44,17 @@ namespace HugoLand.WPF
 
         private bool _windowClosing;
 
+
+
+
+
+
+
+
         public GameDisplay(HugoLandContext context, Guid gameId, bool startTurnOnOpen)
         {
             InitializeComponent();
+
             _context = context;
             _gameId = gameId;
             _startTurnOnOpen = startTurnOnOpen;
@@ -57,6 +67,11 @@ namespace HugoLand.WPF
             Closing += GameDisplay_Closing;
             PreviewKeyDown += GameDisplay_PreviewKeyDown;
             Loaded += async (_, _) => await RunGameAsync();
+
+
+
+
+
         }
 
         private async Task StartTurnIfNeededAsync()
@@ -112,6 +127,7 @@ namespace HugoLand.WPF
                         switch (action)
                         {
                             case 1: // Select army
+                                AudioManager.Movements.Play();
                                 var army = await AwaitArmySelectionAsync();
                                 if (_windowClosing) return;
                                 if (army != null)
@@ -119,15 +135,18 @@ namespace HugoLand.WPF
                                 break;
 
                             case 2: // Save game
+                                AudioManager.Movements.Play();    
                                 await _gameService.SaveGameAsync();
                                 Log("Game saved.");
                                 break;
 
                             case 3: // Main menu
+                                AudioManager.Movements.Play();
                                 Close();
                                 return;
 
                             case 4: // End turn
+                                AudioManager.Movements.Play();
                                 _selectedArmyId = null;
                                 ClearArmySelectionState();
                                 await _gameService.EndTurnAsync();
@@ -168,14 +187,17 @@ namespace HugoLand.WPF
             switch (choice)
             {
                 case 1: // Move
-                {
-                    char moveChoice = ' ';
-                    while (moveChoice != 'X' && !_windowClosing)
                     {
-                        var territories = await _armyService.TryMove(army, army.Territory.PositionX, army.Territory.PositionY);
-                        moveChoice = await AwaitMoveDirectionAsync(army, territories);
-                        if (_windowClosing) return;
-                        if (moveChoice == 'X' || moveChoice == 'Q') break;
+                        //Button sound 
+                        AudioManager.Movements.Play();
+
+                        char moveChoice = ' ';
+                        while (moveChoice != 'X' && !_windowClosing)
+                        {
+                            var territories = await _armyService.TryMove(army, army.Territory.PositionX, army.Territory.PositionY);
+                            moveChoice = await AwaitMoveDirectionAsync(army, territories);
+                            if (_windowClosing) return;
+                            if (moveChoice == 'X' || moveChoice == 'Q') break;
 
                         Movements dir = moveChoice switch
                         {
@@ -208,51 +230,59 @@ namespace HugoLand.WPF
                     break;
                 }
                 case 2:
-                {
-                    var result = await _installationService.BuildCampAsync(army.Id);
-                    Log(result.Success ? "Camp built." : $"Cannot build camp: {result.Message}");
-                    break;
-                }
-                case 3:
-                {
-                    var result = await _installationService.UpgradeCampToFortificationAsync(army.Id);
-                    Log(result.Success ? "Upgraded to fortification." : $"Cannot upgrade: {result.Message}");
-                    break;
-                }
-                case 4:
-                {
-                    int? n = await AwaitNumberAsync("Number of soldiers to buy (2g each):", 1);
-                    if (_windowClosing) return;
-                    if (n == null || n <= 0) break;
-                    var player = (await FetchGameGraphAsync())!.Players.First(p => p.Id == army.PlayerId);
-                    var result = await _armyService.Reinforce(army, n.Value, player);
-                    Log(result.Success ? $"Reinforced by {n}." : $"Cannot reinforce: {result.Message}");
-                    break;
-                }
-                case 5:
-                {
-                    int? splitNumber = await AwaitNumberAsync("Soldiers to split off (min 10, 0 to cancel):", 10);
-                    if (_windowClosing) return;
-                    if (splitNumber == null || splitNumber == 0) break;
-
-                    var territories = await _armyService.TryMove(army, army.Territory.PositionX, army.Territory.PositionY);
-                    char moveChoice = await AwaitMoveDirectionAsync(army, territories);
-                    if (_windowClosing) return;
-                    if (moveChoice == 'X' || moveChoice == 'Q') break;
-
-                    Movements dir = moveChoice switch
                     {
-                        'N' => Movements.North,
-                        'S' => Movements.South,
-                        'E' => Movements.East,
-                        'W' => Movements.West,
-                        _ => Movements.North,
-                    };
-                    var result = await _armyService.Split(army.Id, dir, splitNumber.Value);
-                    LogMoveResult(result);
-                    break;
-                }
+                        //Button sound 
+                        AudioManager.Movements.Play();
+                        var result = await _installationService.BuildCampAsync(army.Id);
+                        Log(result.Success ? "Camp built." : $"Cannot build camp: {result.Message}");
+                        break;
+                    }
+                case 3:
+                    {
+                        //Button sound 
+                        AudioManager.Movements.Play();
+                        var result = await _installationService.UpgradeCampToFortificationAsync(army.Id);
+                        Log(result.Success ? "Upgraded to fortification." : $"Cannot upgrade: {result.Message}");
+                        break;
+                    }
+                case 4:
+                    {
+                        int? n = await AwaitNumberAsync("Number of soldiers to buy (2g each):", 1);
+                        if (_windowClosing) return;
+                        if (n == null || n <= 0) break;
+                        var player = (await FetchGameGraphAsync())!.Players.First(p => p.Id == army.PlayerId);
+                        var result = await _armyService.Reinforce(army, n.Value, player);
+                        Log(result.Success ? $"Reinforced by {n}." : $"Cannot reinforce: {result.Message}");
+                        break;
+                    }
+                case 5:
+                    {
+                        //Button sound 
+                        AudioManager.Movements.Play();
+                        int? splitNumber = await AwaitNumberAsync("Soldiers to split off (min 10, 0 to cancel):", 10);
+                        if (_windowClosing) return;
+                        if (splitNumber == null || splitNumber == 0) break;
+
+                        var territories = await _armyService.TryMove(army, army.Territory.PositionX, army.Territory.PositionY);
+                        char moveChoice = await AwaitMoveDirectionAsync(army, territories);
+                        if (_windowClosing) return;
+                        if (moveChoice == 'X' || moveChoice == 'Q') break;
+
+                        Movements dir = moveChoice switch
+                        {
+                            'N' => Movements.North,
+                            'S' => Movements.South,
+                            'E' => Movements.East,
+                            'W' => Movements.West,
+                            _ => Movements.North,
+                        };
+                        var result = await _armyService.Split(army.Id, dir, splitNumber.Value);
+                        LogMoveResult(result);
+                        break;
+                    }
                 case 6:
+                    //Button sound 
+                    AudioManager.Movements.Play();
                     Log("Pass.");
                     break;
             }

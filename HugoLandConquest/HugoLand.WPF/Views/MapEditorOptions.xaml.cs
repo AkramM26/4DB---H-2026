@@ -13,6 +13,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Media;
+
 
 namespace HugoLand.WPF.Views
 {
@@ -25,16 +27,24 @@ namespace HugoLand.WPF.Views
         private string ConnectionString;
         private MapEditorService MapEditorService;
 
+        private MediaPlayer smpnoise = new MediaPlayer();
+
+
         public MapEditorOptions(string connectionString)
         {
             InitializeComponent();
             Context = HugoLandContextFactory.Create(connectionString);
             MapEditorService = new MapEditorService(Context);
             ConnectionString = connectionString;
+
+            smpnoise.Open(new Uri(@"sound/menubutton.mp3", UriKind.Relative));
+
         }
 
         private async void btnCreateMap_Click(object sender, RoutedEventArgs e)
         {
+            smpnoise.Play();
+
             string gameDescription = txtGameDescription.Text;
             int gameSizeX;
             if (int.TryParse(txtGameSizeX.Text, out gameSizeX))
@@ -86,6 +96,7 @@ namespace HugoLand.WPF.Views
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            smpnoise.Play();
             var window = new MainWindow();
             window.Show();
             this.Close();

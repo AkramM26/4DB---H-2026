@@ -15,6 +15,9 @@
         <TextBlock Grid.Row="0" Text="Select a saved game:" FontWeight="Bold" Margin="0,0,0,8"/>
 
         <ListBox Grid.Row="1" x:Name="lstGames" MouseDoubleClick="lstGames_DoubleClick">
+            <ListBox.Background>
+                <ImageBrush ImageSource="/img/loading.jpg"/>
+            </ListBox.Background>
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Vertical" Margin="4">
@@ -27,9 +30,71 @@
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
             <Button x:Name="btnLoad" Content="Load" Width="80" Margin="0,0,8,0"
-                    Click="btnLoad_Click" IsDefault="True"/>
+                    Click="btnLoad_Click" IsDefault="True">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="FontWeight" Value="Bold" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="MyBorder"                                     
+                                BorderThickness="3"
+                                CornerRadius="15"
+                                Background="Transparent">
+                                        <Border.BorderBrush>
+                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                <GradientStop Color="Black"/>
+                                                <GradientStop Color="White" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Border.BorderBrush>
+                                        <ContentPresenter
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" TargetName="MyBorder" Value="Green"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Style>
+            </Button>
             <Button x:Name="btnCancel" Content="Cancel" Width="80"
-                    Click="btnCancel_Click" IsCancel="True"/>
+                    Click="btnCancel_Click" IsCancel="True">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="FontWeight" Value="Bold" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="MyBorder"                                     
+                                BorderThickness="3"
+                                CornerRadius="15"
+                                Background="Transparent">
+                                        <Border.BorderBrush>
+                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                <GradientStop Color="Black"/>
+                                                <GradientStop Color="White" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Border.BorderBrush>
+                                        <ContentPresenter
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" TargetName="MyBorder" Value="Red"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Style>
+            </Button>
         </StackPanel>
     </Grid>
 </Window>
