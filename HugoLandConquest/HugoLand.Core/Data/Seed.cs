@@ -35,7 +35,7 @@ namespace HugoLand.Core.Data
             else if (gameSizeY > 50)
                 gameSizeY = 50;
 
-            await SeedMapAsync(context, game.Id, player1.Id, player2.Id, gameSizeX, gameSizeY);
+            await SeedMapAsync(context, game.Id, player1.Id, player2.Id, gameSizeX, gameSizeY, isTemplate);
 
             await context.SaveChangesAsync();
         }
@@ -53,7 +53,7 @@ namespace HugoLand.Core.Data
             return Math.Abs(x - startX) <= radius && Math.Abs(y - startY) <= radius;
         }
 
-        private static async Task SeedMapAsync(HugoLandContext context, Guid gameId, Guid player1Id, Guid player2Id, int gameSizeX, int gameSizeY)
+        private static async Task SeedMapAsync(HugoLandContext context, Guid gameId, Guid player1Id, Guid player2Id, int gameSizeX, int gameSizeY, bool isTemplate = false)
         {
             int gamesizex = gameSizeX;
             int gamesizey = gameSizeY;
@@ -85,15 +85,18 @@ namespace HugoLand.Core.Data
                 }
             }
 
-            MilitaryDetachment militaryDetachment1 = MilitaryDetachment.Create(5, 30, player1Id, territories[player1initialx, player1initialy].Id, gameId);
-            MilitaryDetachment militaryDetachment2 = MilitaryDetachment.Create(5, 30, player2Id, territories[player2initialx, player2initialy].Id, gameId);
-            Installation installation1 = Installation.Create(InstallationType.Fortification, territories[player1initialx, player1initialy].Id, player1Id, gameId);
-            Installation installation2 = Installation.Create(InstallationType.Fortification, territories[player2initialx, player2initialy].Id, player2Id, gameId);
+            if (!isTemplate)
+            {
+                MilitaryDetachment militaryDetachment1 = MilitaryDetachment.Create(5, 30, player1Id, territories[player1initialx, player1initialy].Id, gameId);
+                MilitaryDetachment militaryDetachment2 = MilitaryDetachment.Create(5, 30, player2Id, territories[player2initialx, player2initialy].Id, gameId);
+                Installation installation1 = Installation.Create(InstallationType.Fortification, territories[player1initialx, player1initialy].Id, player1Id, gameId);
+                Installation installation2 = Installation.Create(InstallationType.Fortification, territories[player2initialx, player2initialy].Id, player2Id, gameId);
 
-            await context.AddAsync(militaryDetachment1);
-            await context.AddAsync(militaryDetachment2);
-            await context.AddAsync(installation1);
-            await context.AddAsync(installation2);
+                await context.AddAsync(militaryDetachment1);
+                await context.AddAsync(militaryDetachment2);
+                await context.AddAsync(installation1);
+                await context.AddAsync(installation2);
+            }
         }
     }
 }

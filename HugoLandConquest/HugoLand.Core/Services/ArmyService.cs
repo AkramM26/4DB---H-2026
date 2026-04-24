@@ -110,13 +110,15 @@ namespace HugoLand.Core.Services
         {
             var militaryDetachement = await Context.MilitaryDetachments
                 .Include(m => m.Territory)
+                .ThenInclude(t => t.Installation)
                 .FirstAsync(m => m.Id == militaryDetachementId);
             CombatResult combatResult = null;
             bool move = false;
             bool fight = false;
             bool fusion = false;
-            int oldX = militaryDetachement.Territory.PositionX;
-            int oldY = militaryDetachement.Territory.PositionY;
+            Territory oldTerritory = militaryDetachement.Territory;
+            int oldX = oldTerritory.PositionX;
+            int oldY = oldTerritory.PositionY;
             int newX = oldX;
             int newY = oldY;
 
@@ -172,15 +174,24 @@ namespace HugoLand.Core.Services
                 combatResult = await CombatService.ResolveCombatAsync(otherMilitaryDetachment.Id, militaryDetachement.Id);
                 if (!combatResult.DefenceVictory)
                 {
-                    List<Territory> listTerritory = await TryMove(otherMilitaryDetachment, territory.PositionX, territory.PositionY);
-                    militaryDetachement.TerritoryId = territory.Id;
-                    if (listTerritory.Count == 0)
-                        Context.Remove(otherMilitaryDetachment);
-                    else
+                    if (combatResult.DefenceForce >= GameConstants.MinimumArmyForceForActions)
                     {
-                        Territory newTerritory = listTerritory[Rnd.Next(listTerritory.Count)];
-                        otherMilitaryDetachment.TerritoryId = newTerritory.Id;
+                        List<Territory> listTerritory = (await TryMove(otherMilitaryDetachment, territory.PositionX, territory.PositionY))
+                            .Where(t => t.MilitaryDetachment == null
+                                || (t.Id == militaryDetachement.TerritoryId && t.MilitaryDetachment?.Id == militaryDetachement.Id))
+                            .ToList();
+
+                        if (listTerritory.Count == 0)
+                            Context.Remove(otherMilitaryDetachment);
+                        else
+                        {
+                            Territory newTerritory = listTerritory[Rnd.Next(listTerritory.Count)];
+                            otherMilitaryDetachment.TerritoryId = newTerritory.Id;
+                        }
                     }
+
+                    militaryDetachement.TerritoryId = territory.Id;
+                    move = true;
                 }
                 else
                     move = false;
@@ -188,8 +199,8 @@ namespace HugoLand.Core.Services
             }
             militaryDetachement.CanAct = false;
 
-            if (militaryDetachement.Territory.Installation != null && militaryDetachement.Territory.Installation.InstallationType == InstallationType.Camp)
-                Context.Remove(militaryDetachement.Territory.Installation);
+            if (oldTerritory.Installation != null && oldTerritory.Installation.InstallationType == InstallationType.Camp)
+                Context.Remove(oldTerritory.Installation);
 
             await Context.SaveChangesAsync();
             return new MoveResult(move, fight, fusion, combatResult);

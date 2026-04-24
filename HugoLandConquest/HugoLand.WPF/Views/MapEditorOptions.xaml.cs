@@ -63,7 +63,13 @@ namespace HugoLand.WPF.Views
                 return;
             }
 
-            string gameName = txtGameName.Text;
+            string gameName = txtGameName.Text.Trim();
+            if (string.IsNullOrEmpty(gameName))
+            {
+                MessageBox.Show("Please enter a name for the map template.");
+                return;
+            }
+
             var window = new MapEditor(null,gameSizeX, gameSizeY, gameName, gameDescription, ConnectionString);
             window.Show();
             this.Close();

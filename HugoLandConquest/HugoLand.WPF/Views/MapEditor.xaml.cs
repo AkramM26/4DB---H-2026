@@ -23,9 +23,13 @@ namespace HugoLand.WPF.Views
     public partial class MapEditor : Window
     {
         private HugoLandContext Context;
-        private Game Game;
-        private MapEditorService MapEditorService;
-        private string ConnectionString;
+        private Game? Game;
+        private readonly MapEditorService MapEditorService;
+        private readonly string ConnectionString;
+        private readonly int InitialGameSizeX;
+        private readonly int InitialGameSizeY;
+        private readonly string InitialGameName;
+        private readonly string InitialGameDescription;
 
         public MapEditor(Game? game,int gameSizeX, int gameSizeY, string gameName, string gameDescription, string connectionString)
         {
@@ -33,21 +37,27 @@ namespace HugoLand.WPF.Views
             Context = HugoLandContextFactory.Create(connectionString);
             ConnectionString = connectionString;
             MapEditorService = new MapEditorService(Context);
-            if (game == null)
-                CreateGame(gameSizeX, gameSizeY, gameName, gameDescription);
-            else
-                Game = game;
-            CreateGrid(/*gameSizeX, gameSizeY,*/ gameName, gameDescription);
+            Game = game;
+            InitialGameSizeX = gameSizeX;
+            InitialGameSizeY = gameSizeY;
+            InitialGameName = gameName;
+            InitialGameDescription = gameDescription;
+            Loaded += MapEditor_Loaded;
         }
 
-        private async void CreateGame(int gameSizeX, int gameSizeY, string gameName, string gameDescription)
+        private async void MapEditor_Loaded(object sender, RoutedEventArgs e)
         {
-            Game = await MapEditorService.CreateGameTemplateAsync(gameSizeX, gameSizeY, gameName, gameDescription);
+            Loaded -= MapEditor_Loaded;
+
+            if (Game == null)
+                Game = await MapEditorService.CreateGameTemplateAsync(InitialGameSizeX, InitialGameSizeY, InitialGameName, InitialGameDescription);
+
+            CreateGrid();
         }
-        private async void CreateGrid(/*int gameSizeX, int gameSizeY,*/ string gameName, string gameDescription)
+
+        private void CreateGrid()
         {
-            //Game = await MapEditorService.CreateGameTemplateAsync(gameSizeX, gameSizeY, gameName, gameDescription);
-            int gameSizeX = Game.GameSizeX;
+            int gameSizeX = Game!.GameSizeX;
             int gameSizeY = Game.GameSizeY;
 
             for (int i = 0; i < gameSizeY; i++)
@@ -67,7 +77,7 @@ namespace HugoLand.WPF.Views
                     int x = j;
                     int y = i;
 
-                    var territory = Game.Territories.First(t => t.PositionX == x && t.PositionY == y);
+                    var territory = Game!.Territories.First(t => t.PositionX == x && t.PositionY == y);
 
                     var button = new Button
                     {
@@ -96,17 +106,17 @@ namespace HugoLand.WPF.Views
                     button.Click += (s, e) =>
                     {
                         if (radioForest.IsChecked == true)
-                            MapEditorService.ChangeTerritoryType(x, y, TerritoryType.Forest, Game);
+                            MapEditorService.ChangeTerritoryType(x, y, TerritoryType.Forest, Game!);
                         else if (radioMountain.IsChecked == true)
-                            MapEditorService.ChangeTerritoryType(x, y, TerritoryType.Mountain, Game);
+                            MapEditorService.ChangeTerritoryType(x, y, TerritoryType.Mountain, Game!);
                         else if (radioPlain.IsChecked == true)
-                            MapEditorService.ChangeTerritoryType(x, y, TerritoryType.Plain, Game);
+                            MapEditorService.ChangeTerritoryType(x, y, TerritoryType.Plain, Game!);
                         else if (radioOcean.IsChecked == true)
-                            MapEditorService.ChangeTerritoryType(x, y, TerritoryType.Ocean, Game);
+                            MapEditorService.ChangeTerritoryType(x, y, TerritoryType.Ocean, Game!);
                         else if (radioPlayer1.IsChecked == true)
-                            MapEditorService.ChangeStartPosition(x, y, 1, Game);
+                            MapEditorService.ChangeStartPosition(1, x, y, Game!);
                         else if (radioPlayer2.IsChecked == true)
-                            MapEditorService.ChangeStartPosition(x, y, 2, Game);
+                            MapEditorService.ChangeStartPosition(2, x, y, Game!);
                         UpdateGrid();
                     };
 
@@ -120,7 +130,7 @@ namespace HugoLand.WPF.Views
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            await MapEditorService.SaveGameAsync(Game);
+            await MapEditorService.SaveGameAsync(Game!);
             var window = new MainWindow();
             window.Show();
             this.Close();
@@ -134,7 +144,7 @@ namespace HugoLand.WPF.Views
                 {
                     int y = Grid.GetRow(button);
                     int x = Grid.GetColumn(button);
-                    var territory = Game.Territories.First(t => t.PositionX == x && t.PositionY == y);
+                    var territory = Game!.Territories.First(t => t.PositionX == x && t.PositionY == y);
                     if (territory.TerritoryType == TerritoryType.Plain)
                         button.Background = Brushes.LightGreen;
                     else if (territory.TerritoryType == TerritoryType.Forest)
@@ -161,7 +171,7 @@ namespace HugoLand.WPF.Views
 
         private async void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            await MapEditorService.DeleteGameAsync(Game);
+            await MapEditorService.DeleteGameAsync(Game!);
             var window = new MainWindow();
             window.Show();
             this.Close();
