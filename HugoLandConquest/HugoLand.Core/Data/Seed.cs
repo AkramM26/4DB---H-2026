@@ -56,10 +56,10 @@ namespace HugoLand.Core.Data
         {
             int gamesizex = gameSizeX;
             int gamesizey = gameSizeY;
-            int player1initialx = GameConstants.player1intitialx;
-            int player1initialy = GameConstants.player1intitialy;
-            int player2initialx = GameConstants.player2intitialx;
-            int player2initialy = GameConstants.player2intitialy;
+            int player1initialx = 0;
+            int player1initialy = 0;
+            int player2initialx = gamesizex - 1;
+            int player2initialy = gamesizey - 1;
 
             var rng = new Random();
             Territory[,] territories = new Territory[gamesizex, gamesizey];

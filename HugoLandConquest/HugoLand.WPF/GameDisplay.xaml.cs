@@ -259,8 +259,11 @@ namespace HugoLand.WPF
         // ============================================================
         private void BuildBoard()
         {
-            int w = GameConstants.gameSizeX;
-            int h = GameConstants.gameSizeY;
+            var game = _context.Games.FirstOrDefault();
+            int w = game.GameSizeX;
+            int h = game.GameSizeY;
+            //int w = GameConstants.gameSizeX;
+            //int h = GameConstants.gameSizeY;
 
             grdBoard.RowDefinitions.Clear();
             grdBoard.ColumnDefinitions.Clear();
@@ -348,8 +351,10 @@ namespace HugoLand.WPF
                 $"Debt turns: {currentPlayer.TurnInDept}";
             UpdateTurnBanner(game);
 
-            int w = GameConstants.gameSizeX;
-            int h = GameConstants.gameSizeY;
+            int w = game.GameSizeX;
+            int h = game.GameSizeY;
+            //int w = GameConstants.gameSizeX;
+            //int h = GameConstants.gameSizeY;
 
             for (int x = 0; x < w; x++)
             {
