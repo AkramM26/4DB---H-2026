@@ -6,6 +6,8 @@
         Background="#121212"
         ResizeMode="NoResize">
 
+
+
     <Window.Resources>
         <!-- Base button style -->
         <Style x:Key="MenuButton" TargetType="Button">
@@ -52,37 +54,11 @@
             <Setter Property="FontWeight" Value="Normal"/>
             <Setter Property="Margin" Value="0,16,0,0"/>
         </Style>
-    </Window.Resources>
-
-    <Grid>
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-
-            <!-- Title -->
-            <TextBlock Text="HUGOLAND"
-                       FontFamily="Segoe UI"
-                       FontSize="28"
-                       FontWeight="Light"
-                       Foreground="#FFFFFF"
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,4"/>
-            <TextBlock Text="CONQUEST"
-                       FontFamily="Segoe UI"
-                       FontSize="11"
-                       FontWeight="SemiBold"
-                       Foreground="#555555"
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,40"/>
-        Title="HugoLand Conquest" Height="420" Width="500"
-        WindowStartupLocation="CenterScreen">
 
 
-    <Window.Background>
-        <ImageBrush ImageSource="/img/MainWidowImg.png"/>
-    </Window.Background>
 
-    <Window.Resources>
         <Style TargetType="Button">
-                <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="Template">
                 <Setter.Value >
                     <ControlTemplate TargetType="Button">
@@ -109,23 +85,52 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
     </Window.Resources>
 
+    <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="/img/MainWidowImg.png"/>
+        </Grid.Background>
+        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,10,0,0" Height="491">
+
+            <!-- Title -->
+            <TextBlock Text="HUGOLAND"
+                       FontFamily="Segoe UI"
+                       FontSize="28"
+                       FontWeight="Light"
+                       Foreground="#FFFFFF"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,4"/>
+            <TextBlock Text="CONQUEST"
+                       FontFamily="Segoe UI"
+                       FontSize="11"
+                       FontWeight="SemiBold"
+                       Foreground="#555555"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,40"/>
 
 
-    <Grid Margin="10,20,10,20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
 
-            <!-- Menu buttons -->
-            <Button x:Name="btnNewGame"            Content="New Game"                Style="{StaticResource MenuButton}" Click="btnNewGame_Click"/>
-            <Button x:Name="btnNewGameWithTemplate" Content="New Game With Template"  Style="{StaticResource MenuButton}" Click="btnNewGameWithTemplate_Click"/>
-            <Button x:Name="btnLoadGame"           Content="Load Game"               Style="{StaticResource MenuButton}" Click="btnLoadGame_Click"/>
-            <Button x:Name="btnMapTemplate"        Content="Create Map Template"      Style="{StaticResource MenuButton}" Click="btnMapTemplate_Click"/>
-            <Button x:Name="btnMapTemplateList"    Content="Edit Map Template"        Style="{StaticResource MenuButton}" Click="btnMapTemplateList_Click"/>
-            <Button x:Name="btnQuit"               Content="Quit"                     Style="{StaticResource QuitButton}" Click="btnQuit_Click"/>
+
+
+
+
+
+            <Grid Margin="10,20,10,20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Menu buttons -->
+                <Button x:Name="btnNewGame"            Content="New Game"                Style="{StaticResource MenuButton}" Click="btnNewGame_Click" Margin="0,36,0,-20" Grid.Row="1"/>
+                <Button x:Name="btnNewGameWithTemplate" Content="New Game With Template"  Style="{StaticResource MenuButton}" Click="btnNewGameWithTemplate_Click" Margin="0,196,0,-180" Grid.RowSpan="2"/>
+                <Button x:Name="btnLoadGame"           Content="Load Game"               Style="{StaticResource MenuButton}" Click="btnLoadGame_Click" Margin="0,92,0,-76" Grid.Row="1"/>
+                <Button x:Name="btnMapTemplate"        Content="Create Map Template"      Style="{StaticResource MenuButton}" Click="btnMapTemplate_Click" Margin="0,249,0,-233" Grid.Row="1"/>
+                <Button x:Name="btnMapTemplateList"    Content="Edit Map Template"        Style="{StaticResource MenuButton}" Click="btnMapTemplateList_Click" Margin="0,144,0,-128" Grid.RowSpan="2"/>
+                <Button x:Name="btnQuit"               Content="Quit"                     Style="{StaticResource QuitButton}" Click="btnQuit_Click" Margin="0,303,0,-287" Grid.Row="1"/>
+            </Grid>
 
         </StackPanel>
     </Grid>
