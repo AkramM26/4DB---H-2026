@@ -21,18 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="img\charfight.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\loading.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\MainWidowImg.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\vs.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Resource Include="img\charfight.jpg" />
+    <Resource Include="img\loading.jpg" />
+    <Resource Include="img\MainWidowImg.png" />
+    <Resource Include="img\vs.jpg" />
     <Content Include="sound\GameBeginning.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

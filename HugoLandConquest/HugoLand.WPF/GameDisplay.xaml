@@ -7,35 +7,7 @@
         TextElement.Foreground="#E0E0E0">
 
     <Window.Resources>
-        <Style TargetType="Button">
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="MyBorder"
-                                BorderThickness="3"
-                                CornerRadius="15"
-                                Background="Transparent">
-                            <Border.BorderBrush>
-                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                    <GradientStop Color="Black"/>
-                                    <GradientStop Color="White" Offset="1"/>
-                                </LinearGradientBrush>
-                            </Border.BorderBrush>
-                            <ContentPresenter
-                                VerticalAlignment="Center"
-                                HorizontalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" TargetName="MyBorder" Value="Gray"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+        <Style TargetType="Button" BasedOn="{StaticResource GameButton}"/>
     </Window.Resources>
 
     <DockPanel Margin="8">
@@ -67,10 +39,10 @@
         <!-- Right action panel -->
         <Border DockPanel.Dock="Right" Width="280" Margin="8,0,0,0" BorderBrush="#333333" BorderThickness="1" CornerRadius="3" Padding="10">
             <Border.Background>
-                <ImageBrush ImageSource="/img/vs.jpg"/>
+                <ImageBrush ImageSource="/img/vs.jpg" Stretch="UniformToFill" Opacity="0.3"/>
             </Border.Background>
             <StackPanel>
-                <StackPanel Width="280" Margin="8,0,0,0" TextElement.Foreground="White">
+                <StackPanel TextElement.Foreground="White">
 
 
                     <!-- Main actions -->
