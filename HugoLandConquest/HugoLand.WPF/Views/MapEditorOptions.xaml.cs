@@ -79,8 +79,7 @@ namespace HugoLand.WPF.Views
                 return;
             }
 
-            var game = await MapEditorService.GetGame();
-            var window = new MapEditor(game, ConnectionString);
+            var window = new MapEditor(Context.CurrentGameId, ConnectionString);
             window.Show();
             this.Close();
         }
