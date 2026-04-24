@@ -5,17 +5,38 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HugoLand.WPF.Views"
         mc:Ignorable="d"
-        Title="MapEditor" Height="450" Width="800">
+        Title="Map Editor" Height="560" Width="800"
+        WindowStartupLocation="CenterScreen"
+        Background="#121212"
+        TextElement.Foreground="#E0E0E0">
     <Grid>
-        <Grid x:Name="grdMap" Margin="10,10,10,132"/>
-        <RadioButton x:Name="radioPlain" Content="Plain" HorizontalAlignment="Left" Margin="53,0,0,91" Height="15" VerticalAlignment="Bottom"/>
-        <RadioButton x:Name="radioForest" Content="Forest" HorizontalAlignment="Left" Margin="53,0,0,71" Height="15" VerticalAlignment="Bottom"/>
-        <RadioButton x:Name="radioMountain" Content="Mountain" HorizontalAlignment="Left" Margin="53,0,0,56" Height="15" VerticalAlignment="Bottom"/>
-        <RadioButton x:Name="radioOcean" Content="Ocean" HorizontalAlignment="Left" Margin="153,0,0,56" Height="15" VerticalAlignment="Bottom"/>
-        <RadioButton x:Name="radioPlayer1" Content="Set position player 1" HorizontalAlignment="Left" Margin="53,0,0,36" Height="15" VerticalAlignment="Bottom"/>
-        <RadioButton x:Name="radioPlayer2" Content="Set position player 2" HorizontalAlignment="Left" Margin="53,0,0,16" Height="15" VerticalAlignment="Bottom"/>
-        <Button Content="Confirm" HorizontalAlignment="Left" Margin="379,0,0,36" Width="114" Click="Button_Click" Height="27" VerticalAlignment="Bottom"/>
-        <Button x:Name="btnCancel" Content="DeleteTemplate" HorizontalAlignment="Left" Margin="498,0,0,36" Width="114"  Height="27" VerticalAlignment="Bottom" Click="btnCancel_Click"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
+        <!-- Map canvas -->
+        <Grid x:Name="grdMap" Grid.Row="0" Margin="10"/>
+
+        <!-- Bottom toolbar -->
+        <Border Grid.Row="1" Background="#1A1A1A" BorderBrush="#333333" BorderThickness="0,1,0,0" Padding="12,10">
+            <DockPanel>
+                <!-- Action buttons on the right -->
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="Confirm"        Width="100" Margin="0,0,8,0" Click="Button_Click"/>
+                    <Button x:Name="btnCancel" Content="Delete Template" Width="120" Foreground="#CC6666" Click="btnCancel_Click"/>
+                </StackPanel>
+
+                <!-- Terrain / player radio buttons -->
+                <WrapPanel VerticalAlignment="Center">
+                    <RadioButton x:Name="radioPlain"    Content="Plain"           Margin="0,0,14,0"/>
+                    <RadioButton x:Name="radioForest"   Content="Forest"          Margin="0,0,14,0"/>
+                    <RadioButton x:Name="radioMountain" Content="Mountain"        Margin="0,0,14,0"/>
+                    <RadioButton x:Name="radioOcean"    Content="Ocean"           Margin="0,0,14,0"/>
+                    <RadioButton x:Name="radioPlayer1"  Content="Player 1 start"  Margin="0,0,14,0"/>
+                    <RadioButton x:Name="radioPlayer2"  Content="Player 2 start"  Margin="0,0,0,0"/>
+                </WrapPanel>
+            </DockPanel>
+        </Border>
     </Grid>
 </Window>

@@ -5,7 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HugoLand.WPF.Views"
         mc:Ignorable="d"
-        Title="CreateGame" Height="450" Width="800">
+        Title="Create Game" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen"
+        Background="#121212"
+        TextElement.Foreground="#E0E0E0">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -20,7 +23,7 @@
                 <DataTemplate>
                     <StackPanel Orientation="Vertical" Margin="4">
                         <TextBlock Text="{Binding SaveName}" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding Summary}" Foreground="Gray" FontSize="11"/>
+                        <TextBlock Text="{Binding Summary}" Foreground="#888888" FontSize="11"/>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>

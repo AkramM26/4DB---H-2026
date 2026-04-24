@@ -5,18 +5,52 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HugoLand.WPF.Views"
         mc:Ignorable="d"
-        Title="MapEditorOptions" Height="450" Width="800">
-    <Grid>
-        <Button x:Name="btnCreateMap" Content="Create Map" HorizontalAlignment="Left" Height="66" Margin="288,287,0,0" VerticalAlignment="Top" Width="224" Click="btnCreateMap_Click"/>
-        <TextBox x:Name="txtGameSizeX" HorizontalAlignment="Left" Height="25" Margin="491,75,0,0" TextWrapping="Wrap" Text="10" VerticalAlignment="Top" Width="41"/>
-        <Label Content="Game size X (Max 50, Min 10)" Height="25" Margin="311,75,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="178"/>
-        <Label Content="Game size Y (Max 50, Min 10):" Height="25" Margin="312,115,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="176"/>
-        <TextBox x:Name="txtGameSizeY" HorizontalAlignment="Left" Height="25" Margin="491,115,0,0" TextWrapping="Wrap" Text="10" VerticalAlignment="Top" Width="41"/>
-        <Label Content="Unique Template Name :" Height="25" Margin="324,145,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="152"/>
-        <TextBox x:Name="txtGameName" HorizontalAlignment="Left" Height="25" Margin="491,145,0,0" TextWrapping="Wrap" Text="Game Name" VerticalAlignment="Top" Width="174"/>
-        <Label Content="Description (optional) :" HorizontalAlignment="Left" Height="25" Margin="324,175,0,0" VerticalAlignment="Top" Width="152"/>
-        <TextBox x:Name="txtGameDescription" HorizontalAlignment="Left" Height="25" Margin="491,175,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="174"/>
-        <Button Content="Cancel" HorizontalAlignment="Left" Height="66" Margin="561,287,0,0" VerticalAlignment="Top" Width="185" Click="Button_Click"/>
+        Title="New Map Template" Height="360" Width="460"
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
+        Background="#121212"
+        TextElement.Foreground="#E0E0E0">
+    <Grid Margin="28,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
+        <!-- Title -->
+        <TextBlock Grid.Row="0" Text="New Map Template"
+                   FontFamily="Segoe UI" FontSize="18" FontWeight="Light"
+                   Foreground="#FFFFFF" Margin="0,0,0,20"/>
+
+        <!-- Form -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="120"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Label Grid.Row="0" Grid.Column="0" Content="Width  (10 – 50)" VerticalAlignment="Center"/>
+            <TextBox x:Name="txtGameSizeX" Grid.Row="0" Grid.Column="1" Text="10" Margin="0,4"/>
+
+            <Label Grid.Row="1" Grid.Column="0" Content="Height  (10 – 50)" VerticalAlignment="Center"/>
+            <TextBox x:Name="txtGameSizeY" Grid.Row="1" Grid.Column="1" Text="10" Margin="0,4"/>
+
+            <Label Grid.Row="2" Grid.Column="0" Content="Template name" VerticalAlignment="Center"/>
+            <TextBox x:Name="txtGameName" Grid.Row="2" Grid.Column="1" Text="" Margin="0,4"/>
+
+            <Label Grid.Row="3" Grid.Column="0" Content="Description  (optional)" VerticalAlignment="Center"/>
+            <TextBox x:Name="txtGameDescription" Grid.Row="3" Grid.Column="1" Text="" Margin="0,4"/>
+        </Grid>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button Content="Cancel"     Width="90" Margin="0,0,10,0" Click="Button_Click"/>
+            <Button x:Name="btnCreateMap" Content="Create Map" Width="110" Click="btnCreateMap_Click"/>
+        </StackPanel>
     </Grid>
 </Window>
