@@ -72,6 +72,52 @@
                        Foreground="#555555"
                        HorizontalAlignment="Center"
                        Margin="0,0,0,40"/>
+        Title="HugoLand Conquest" Height="420" Width="500"
+        WindowStartupLocation="CenterScreen">
+
+
+    <Window.Background>
+        <ImageBrush ImageSource="/img/MainWidowImg.png"/>
+    </Window.Background>
+
+    <Window.Resources>
+        <Style TargetType="Button">
+                <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Template">
+                <Setter.Value >
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="MyBorder"                                     
+                            BorderThickness="3"
+                            CornerRadius="15"
+                            Background="Transparent">
+                            <Border.BorderBrush>
+                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                    <GradientStop Color="Black"/>
+                                    <GradientStop Color="White" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.BorderBrush>
+                            <ContentPresenter
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" TargetName="MyBorder" Value="Gray"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+
+
+    <Grid Margin="10,20,10,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
             <!-- Menu buttons -->
             <Button x:Name="btnNewGame"            Content="New Game"                Style="{StaticResource MenuButton}" Click="btnNewGame_Click"/>

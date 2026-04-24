@@ -1,12 +1,15 @@
 using HugoLand.Core.Constants;
 using HugoLand.Core.Data;
+using HugoLand.Core.Domain;
 using HugoLand.Core.Services;
 using HugoLand.WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
+using System.Media;
 using System.Windows;
+using System.Windows.Media;
 
 namespace HugoLand.WPF
 {
@@ -14,7 +17,11 @@ namespace HugoLand.WPF
     {
         private readonly HugoLandContext _context;
         private readonly GameService _gameService;
+
         private string ConnectionString;
+
+
+
 
         public MainWindow()
         {
@@ -34,10 +41,17 @@ namespace HugoLand.WPF
             _gameService = new GameService(_context);
 
             Closed += (_, _) => _context.Dispose();
+            AudioManager.MusiqueFond.Play();
+
+
         }
 
         private async void btnNewGame_Click(object sender, RoutedEventArgs e)
         {
+            AudioManager.MenuSound.Play();
+
+
+
             var dlg = new NewGameDialog { Owner = this };
             if (dlg.ShowDialog() != true) return;
 
@@ -60,6 +74,10 @@ namespace HugoLand.WPF
 
         private async void btnLoadGame_Click(object sender, RoutedEventArgs e)
         {
+            //Button sound 
+            AudioManager.MenuSound.Play();
+
+
             var dlg = new LoadGame(_context) { Owner = this };
             if (dlg.ShowDialog() != true || dlg.SelectedGameId is null) return;
 
@@ -84,6 +102,9 @@ namespace HugoLand.WPF
 
         private void btnMapTemplate_Click(object sender, RoutedEventArgs e)
         {
+            //Button sound 
+            AudioManager.MenuSound.Play();    
+
             var window = new MapEditorOptions(ConnectionString);
             window.Show();
             this.Close();
@@ -91,6 +112,9 @@ namespace HugoLand.WPF
 
         private void btnQuit_Click(object sender, RoutedEventArgs e)
         {
+            //Button sound 
+            AudioManager.MenuSound.Play();
+
             Application.Current.Shutdown();
         }
 
