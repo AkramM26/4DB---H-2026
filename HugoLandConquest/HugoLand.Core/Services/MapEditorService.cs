@@ -1,5 +1,4 @@
 ﻿using HugoLand.Core.Constants;
-using HugoLand.Core.Constants;
 using HugoLand.Core.Data;
 using HugoLand.Core.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -22,13 +21,19 @@ namespace HugoLand.Core.Services
 
             return result;
         }
-        public async Task<Game> GetGame()
+        public async Task<Game> GetGame(Guid gameId)
         {
+            Context.CurrentGameId = gameId;
+
             var game = await Context.Games
             .Include(g => g.Players)
             .Include(g => g.Territories)
-            .ThenInclude(t => t.MilitaryDetachment)
-            .FirstAsync();
+                .ThenInclude(t => t.MilitaryDetachment)
+                    .ThenInclude(m => m.Player)
+            .Include(g => g.Territories)
+                .ThenInclude(t => t.Installation)
+                    .ThenInclude(i => i.Player)
+            .FirstAsync(g => g.Id == gameId);
 
             return game;
         }
@@ -100,17 +105,17 @@ namespace HugoLand.Core.Services
         }
         public async Task<ResultService> SaveGameAsync(Game game)
         {
-            int NumberOfTerritories = game.GameSizeX * game.GameSizeY;
-            if ((double)game.Territories.Where(t => t.TerritoryType != TerritoryType.Ocean).Count() / NumberOfTerritories <= 0.6)
+            int numberOfTerritories = game.GameSizeX * game.GameSizeY;
+            if ((double)game.Territories.Count(t => t.TerritoryType != TerritoryType.Ocean) / numberOfTerritories <= 0.6)
                 return ResultService.FailureResult("The map must have at least 60% of accessible territories.");
-            else if (!game.MilitaryDetachments.Any(m => m.Player.PlayerNumber == 1) || !game.MilitaryDetachments.Any(m => m.Player.PlayerNumber == 2))
+
+            bool player1HasStartPosition = game.Territories.Any(t => t.MilitaryDetachment?.Player?.PlayerNumber == 1);
+            bool player2HasStartPosition = game.Territories.Any(t => t.MilitaryDetachment?.Player?.PlayerNumber == 2);
+            if (!player1HasStartPosition || !player2HasStartPosition)
                 return ResultService.FailureResult("The map must have at least one starting position for each player.");
 
-
             if (Context.Entry(game).State == EntityState.Detached)
-            {
-                Context.Games.Update(game);
-            }
+                return ResultService.FailureResult("The map template is not loaded in the current editor context.");
 
             game.SaveName = DateTime.Now.ToString();
             await Context.SaveChangesAsync();

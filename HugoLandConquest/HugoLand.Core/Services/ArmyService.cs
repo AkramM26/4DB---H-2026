@@ -160,11 +160,15 @@ namespace HugoLand.Core.Services
 
             if (otherMilitaryDetachment == null)
             {
+                oldTerritory.MilitaryDetachment = null;
+                territory.MilitaryDetachment = militaryDetachement;
+                militaryDetachement.Territory = territory;
                 militaryDetachement.TerritoryId = territory.Id;
                 move = true;
             }
             else if (otherMilitaryDetachment.PlayerId == militaryDetachement.PlayerId)
             {
+                oldTerritory.MilitaryDetachment = null;
                 Fusion(militaryDetachement, otherMilitaryDetachment);
                 fusion = true;
                 move = true;
@@ -177,8 +181,7 @@ namespace HugoLand.Core.Services
                     if (combatResult.DefenceForce >= GameConstants.MinimumArmyForceForActions)
                     {
                         List<Territory> listTerritory = (await TryMove(otherMilitaryDetachment, territory.PositionX, territory.PositionY))
-                            .Where(t => t.MilitaryDetachment == null
-                                || (t.Id == militaryDetachement.TerritoryId && t.MilitaryDetachment?.Id == militaryDetachement.Id))
+                            .Where(t => t.MilitaryDetachment == null)
                             .ToList();
 
                         if (listTerritory.Count == 0)
@@ -186,10 +189,15 @@ namespace HugoLand.Core.Services
                         else
                         {
                             Territory newTerritory = listTerritory[Rnd.Next(listTerritory.Count)];
+                            newTerritory.MilitaryDetachment = otherMilitaryDetachment;
+                            otherMilitaryDetachment.Territory = newTerritory;
                             otherMilitaryDetachment.TerritoryId = newTerritory.Id;
                         }
                     }
 
+                    oldTerritory.MilitaryDetachment = null;
+                    territory.MilitaryDetachment = militaryDetachement;
+                    militaryDetachement.Territory = territory;
                     militaryDetachement.TerritoryId = territory.Id;
                     move = true;
                 }

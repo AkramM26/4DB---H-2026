@@ -71,23 +71,9 @@ namespace HugoLand.WPF.Views
             if (sender is Button btn)
             {
                 var id = (Guid)btn.Tag;
-                var map = Context.Games.IgnoreQueryFilters()
-                    .Include(g => g.Territories)
-                    .Include(g=> g.MilitaryDetachments)
-                    .ThenInclude(m=> m.Player)
-                    .FirstOrDefault(m => m.Id == id);
-
-                int gameSizeX = map.Territories.Max(t => t.PositionX) -1;
-                int gameSizeY = map.Territories.Max(t => t.PositionY) -1;
-                string gameName = map.GameName;
-                string gameDescription = map.GameDescription;
-
-                if (map != null)
-                {
-                    var window = new MapEditor(map, ConnectionString);
-                    window.Show();
-                    this.Close();
-                }
+                var window = new MapEditor(id, ConnectionString);
+                window.Show();
+                this.Close();
             }
         }
 

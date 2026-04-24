@@ -26,29 +26,20 @@ namespace HugoLand.WPF.Views
         private Game? Game;
         private readonly MapEditorService MapEditorService;
         private readonly string ConnectionString;
-        private readonly int InitialGameSizeX;
-        private readonly int InitialGameSizeY;
-        private readonly string InitialGameName;
-        private readonly string InitialGameDescription;
 
-        public MapEditor(Game game, string connectionString)
+        public MapEditor(Guid gameId, string connectionString)
         {
             InitializeComponent();
             Context = HugoLandContextFactory.Create(connectionString);
             ConnectionString = connectionString;
             MapEditorService = new MapEditorService(Context);
-            Game = game;
-            InitialGameSizeX = Game.GameSizeX;
-            InitialGameSizeY = Game.GameSizeY;
-            InitialGameName = Game.GameName;
-            InitialGameDescription = Game.GameDescription;
-            Loaded += MapEditor_Loaded;
+            Context.CurrentGameId = gameId;
+            Loaded += async (_, _) => await MapEditor_Loaded(gameId);
         }
 
-        private void MapEditor_Loaded(object sender, RoutedEventArgs e)
+        private async Task MapEditor_Loaded(Guid gameId)
         {
-            Loaded -= MapEditor_Loaded;
-
+            Game = await MapEditorService.GetGame(gameId);
             CreateGrid();
         }
 
@@ -102,18 +93,28 @@ namespace HugoLand.WPF.Views
 
                     button.Click += (s, e) =>
                     {
+                        ResultService result;
                         if (radioForest.IsChecked == true)
-                            MapEditorService.ChangeTerritoryType(x, y, TerritoryType.Forest, Game!);
+                            result = MapEditorService.ChangeTerritoryType(x, y, TerritoryType.Forest, Game!);
                         else if (radioMountain.IsChecked == true)
-                            MapEditorService.ChangeTerritoryType(x, y, TerritoryType.Mountain, Game!);
+                            result = MapEditorService.ChangeTerritoryType(x, y, TerritoryType.Mountain, Game!);
                         else if (radioPlain.IsChecked == true)
-                            MapEditorService.ChangeTerritoryType(x, y, TerritoryType.Plain, Game!);
+                            result = MapEditorService.ChangeTerritoryType(x, y, TerritoryType.Plain, Game!);
                         else if (radioOcean.IsChecked == true)
-                            MapEditorService.ChangeTerritoryType(x, y, TerritoryType.Ocean, Game!);
+                            result = MapEditorService.ChangeTerritoryType(x, y, TerritoryType.Ocean, Game!);
                         else if (radioPlayer1.IsChecked == true)
-                            MapEditorService.ChangeStartPosition(1, x, y, Game!);
+                            result = MapEditorService.ChangeStartPosition(1, x, y, Game!);
                         else if (radioPlayer2.IsChecked == true)
-                            MapEditorService.ChangeStartPosition(2, x, y, Game!);
+                            result = MapEditorService.ChangeStartPosition(2, x, y, Game!);
+                        else
+                            result = ResultService.SuccessResult();
+
+                        if (!result.Success)
+                        {
+                            MessageBox.Show(result.Message);
+                            return;
+                        }
+
                         UpdateGrid();
                     };
 
