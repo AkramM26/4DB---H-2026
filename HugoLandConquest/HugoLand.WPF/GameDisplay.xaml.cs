@@ -368,9 +368,11 @@ namespace HugoLand.WPF
 
                     cell.Background = t.TerritoryType switch
                     {
-                        TerritoryType.Forest => Brushes.LightGreen,
-                        TerritoryType.Mountain => Brushes.LightGray,
-                        _ => Brushes.PapayaWhip,
+                        TerritoryType.Plain => Brushes.LightGreen,
+                        TerritoryType.Forest => Brushes.DarkGreen,
+                        TerritoryType.Mountain => Brushes.Gray,
+                        TerritoryType.Ocean => Brushes.LightBlue,
+                        _ => Brushes.LightGreen,
                     };
                     cell.BorderBrush = Brushes.Black;
                     cell.BorderThickness = new Thickness(1);
@@ -378,9 +380,10 @@ namespace HugoLand.WPF
                     cell.Cursor = Cursors.Arrow;
 
                     label.Text = FormatCell(t);
+                    Brush defaultForeground = t.TerritoryType == TerritoryType.Forest ? Brushes.White : Brushes.Black;
                     label.Foreground = t.MilitaryDetachment?.Player.PlayerNumber == 1
                         ? Brushes.DarkBlue
-                        : t.MilitaryDetachment != null ? Brushes.DarkRed : Brushes.Black;
+                        : t.MilitaryDetachment != null ? Brushes.DarkRed : defaultForeground;
 
                     if (t.MilitaryDetachment == null)
                         continue;
@@ -606,17 +609,62 @@ namespace HugoLand.WPF
                     (t.PositionX == x && t.PositionY == y + 1) ? "S" :
                     (t.PositionX == x + 1 && t.PositionY == y) ? "E" :
                     (t.PositionX == x - 1 && t.PositionY == y) ? "W" : "?";
-                string info = $"[{dir}] ({t.PositionX},{t.PositionY}) {t.TerritoryType}";
+                int energyCost = ArmyService.GetTerrainEnergyCost(t.TerritoryType);
+                string info = $"[{dir}] ({t.PositionX},{t.PositionY}) {t.TerritoryType} - Cost: {energyCost} energy";
                 if (t.MilitaryDetachment != null)
                 {
                     bool enemy = t.MilitaryDetachment.PlayerId != army.PlayerId;
-                    info += enemy
-                        ? $" - Enemy ({t.MilitaryDetachment.MilitaryForce})"
-                        : $" - Ally ({t.MilitaryDetachment.MilitaryForce})";
+                    if (enemy)
+                    {
+                        info += $" - Enemy ({t.MilitaryDetachment.MilitaryForce}), defender terrain x{GetTerrainDefenseMultiplier(t.TerritoryType):F1}";
+                    }
+                    else
+                    {
+                        info += $" - Ally ({t.MilitaryDetachment.MilitaryForce})";
+                    }
                 }
                 lines.Add(info);
             }
             return string.Join("\n", lines);
+        }
+
+        private static float GetTerrainDefenseMultiplier(TerritoryType territoryType)
+            => territoryType switch
+            {
+                TerritoryType.Forest => CombatConstants.ForestMultiplayer,
+                TerritoryType.Mountain => CombatConstants.MountainMultiplayer,
+                _ => CombatConstants.PlainMultiplayer,
+            };
+
+        private static string DescribeTerrainDefense(TerritoryType territoryType)
+            => $"defender terrain x{GetTerrainDefenseMultiplier(territoryType):F1}";
+
+        private static string DescribeInstallationDefense(CombatResult result)
+            => result.InstallationMultiplier > 1f
+                ? $", installation x{result.InstallationMultiplier:F1}"
+                : string.Empty;
+
+        private static string DescribeTerrainNameFromMultiplier(float terrainMultiplier)
+            => terrainMultiplier switch
+            {
+                >= 1.3f => "Mountain",
+                >= 1.2f => "Forest",
+                _ => "Plain",
+            };
+
+        private static string DescribeDefenderTerrainFromResult(CombatResult result)
+            => $"Defender terrain: {DescribeTerrainNameFromMultiplier(result.TerritoryMultiplier)} ({DescribeTerrainDefenseMultiplier(result)})";
+
+        private static string DescribeTerrainDefenseMultiplier(CombatResult result)
+            => $"x{result.TerritoryMultiplier:F1}";
+
+        private static string DescribeMovementOutcome(MoveResult result)
+        {
+            if (result.Fusion)
+                return "Armies fused after paying the terrain cost.";
+            if (result.move)
+                return "Army moved and paid the terrain cost.";
+            return "Move cancelled or invalid.";
         }
 
         private async Task<int?> AwaitNumberAsync(string prompt, int min)
@@ -692,20 +740,24 @@ namespace HugoLand.WPF
 
         private void LogMoveResult(MoveResult? r)
         {
-            if (r == null) { Log("Move returned nothing."); return; }
-            if (r.Fusion) { Log("Armies fused."); return; }
+            if (r == null)
+            {
+                Log("Move returned nothing.");
+                return;
+            }
+
             if (r.Fight && r.CombatResult is CombatResult cr)
             {
-                Log($"Combat: Atk {cr.AttackInitialForce} vs Def {cr.DefenceInitialForce} " +
-                    $"(terrain x{cr.TerritoryMultiplier}, installation x{cr.InstallationMultiplier})");
+                Log($"Combat: Atk {cr.AttackInitialForce} vs Def {cr.DefenceInitialForce}");
+                Log($"  {DescribeDefenderTerrainFromResult(cr)}{DescribeInstallationDefense(cr)}");
                 Log($"  Random: atk x{cr.AttackRandomFactor:F2}, def x{cr.DefenceRandomFactor:F2}");
                 Log($"  Effective: atk {cr.EffectiveAttackForce:F1} / def {cr.EffectiveDefenceForce:F1}");
                 Log(cr.DefenceVictory ? "  Defender wins." : "  Attacker wins.");
                 Log($"  Loot: {cr.GoldGain} gold. Atk left: {cr.AttackForce}, Def left: {cr.DefenceForce}");
                 return;
             }
-            if (r.move) { Log("Army moved."); return; }
-            Log("Move cancelled or invalid.");
+
+            Log(DescribeMovementOutcome(r));
         }
 
         // ============================================================

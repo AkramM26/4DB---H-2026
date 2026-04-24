@@ -35,6 +35,14 @@ namespace HugoLand.Core.Services
         private Random Rnd = new Random();
         public record MoveResult(bool move, bool Fight, bool Fusion, CombatResult? CombatResult);
 
+        public static int GetTerrainEnergyCost(TerritoryType territoryType)
+            => territoryType switch
+            {
+                TerritoryType.Forest => 2,
+                TerritoryType.Mountain => 3,
+                _ => 1,
+            };
+
         /// <summary>
         /// Donne la liste des mouvements possibles 
         /// </summary>
@@ -55,10 +63,10 @@ namespace HugoLand.Core.Services
             if (Ny >= 0)
             {
                 var NTerritory = territories.First(t => t.PositionX == Nx && t.PositionY == Ny);
-
-                mpossibles.Add(NTerritory);
+                if (TerrainRules.IsPassable(NTerritory.TerritoryType))
+                    mpossibles.Add(NTerritory);
             }
-            //South movement 
+            //South movement
             int Sx = x;
             int Sy = y + 1;
 
@@ -66,12 +74,11 @@ namespace HugoLand.Core.Services
             {
                 var STerritory = territories
                     .FirstOrDefault(t => t.PositionX == Sx && t.PositionY == Sy);
-
-                mpossibles.Add(STerritory);
-
+                if (STerritory != null && TerrainRules.IsPassable(STerritory.TerritoryType))
+                    mpossibles.Add(STerritory);
             }
 
-            //East movement 
+            //East movement
             int Ex = x + 1;
             int Ey = y;
 
@@ -79,12 +86,11 @@ namespace HugoLand.Core.Services
             {
                 var ETerritory = territories
                     .FirstOrDefault(t => t.PositionX == Ex && t.PositionY == Ey);
-
-                mpossibles.Add(ETerritory);
-
+                if (ETerritory != null && TerrainRules.IsPassable(ETerritory.TerritoryType))
+                    mpossibles.Add(ETerritory);
             }
 
-            //West movement 
+            //West movement
             int Wx = x - 1;
             int Wy = y;
 
@@ -92,9 +98,8 @@ namespace HugoLand.Core.Services
             {
                 var WTerritory = territories
                     .FirstOrDefault(t => t.PositionX == Wx && t.PositionY == Wy);
-
-                mpossibles.Add(WTerritory);
-
+                if (WTerritory != null && TerrainRules.IsPassable(WTerritory.TerritoryType))
+                    mpossibles.Add(WTerritory);
             }
             return mpossibles;
         }
@@ -140,28 +145,20 @@ namespace HugoLand.Core.Services
                 .Include(t => t.MilitaryDetachment)
                 .FirstAsync(t => t.PositionX == newX && t.PositionY == newY);
 
-            int energyCost = 1;
-            switch (territory.TerritoryType)
-            {
-                case TerritoryType.Plain:
-                    energyCost = 1;
-                    break;
-                case TerritoryType.Forest:
-                    energyCost = 2;
-                    break;
-                case TerritoryType.Mountain:
-                    energyCost = 3;
-                    break;
-            }
+            if (!TerrainRules.IsPassable(territory.TerritoryType))
+                return new MoveResult(move, fight, fusion, combatResult);
+
+            int energyCost = GetTerrainEnergyCost(territory.TerritoryType);
             if (militaryDetachement.Energy - energyCost < 0)
                 return new MoveResult(move, fight, fusion, combatResult);
+
+            militaryDetachement.Energy -= energyCost;
 
             MilitaryDetachment otherMilitaryDetachment = territory.MilitaryDetachment;
 
             if (otherMilitaryDetachment == null)
             {
                 militaryDetachement.TerritoryId = territory.Id;
-                militaryDetachement.Energy--;
                 move = true;
             }
             else if (otherMilitaryDetachment.PlayerId == militaryDetachement.PlayerId)
@@ -211,24 +208,70 @@ namespace HugoLand.Core.Services
             if (remainingArmy <= 0)
                 return new MoveResult(false, false, false, null);
 
+            int originalForce = militaryDetachement.MilitaryForce;
+            int splitEnergy = militaryDetachement.Energy;
+            int destinationX = territory.PositionX;
+            int destinationY = territory.PositionY;
+
+            switch (movement)
+            {
+                case Movements.North:
+                    destinationY--;
+                    break;
+                case Movements.South:
+                    destinationY++;
+                    break;
+                case Movements.East:
+                    destinationX++;
+                    break;
+                case Movements.West:
+                    destinationX--;
+                    break;
+            }
+
+            if (destinationX >= 0 && destinationX < GameConstants.gameSizeX && destinationY >= 0 && destinationY < GameConstants.gameSizeY)
+            {
+                var destinationTerritory = await Context.Territories
+                    .FirstAsync(t => t.PositionX == destinationX && t.PositionY == destinationY);
+                splitEnergy = Math.Max(0, militaryDetachement.Energy - GetTerrainEnergyCost(destinationTerritory.TerritoryType));
+            }
+
             militaryDetachement.MilitaryForce = splitNumber;
             await Context.SaveChangesAsync();
 
-            int energy = militaryDetachement.Energy;
             MoveResult moveResult = await Move(militaryDetachementId, movement);
 
             if (!moveResult.move && !moveResult.Fight)
+            {
+                militaryDetachement.MilitaryForce = originalForce;
+                await Context.SaveChangesAsync();
                 return moveResult;
+            }
             else if (moveResult.Fight && moveResult.CombatResult!.DefenceVictory)
-                militaryDetachement.MilitaryForce = remainingArmy;
+            {
+                var survivingAttacker = await Context.MilitaryDetachments
+                    .FirstOrDefaultAsync(m => m.Id == militaryDetachementId);
+
+                if (survivingAttacker != null)
+                {
+                    survivingAttacker.MilitaryForce += remainingArmy;
+                }
+                else
+                {
+                    MilitaryDetachment stationaryMilitaryDetachment = MilitaryDetachment.Create(splitEnergy, remainingArmy,
+                        militaryDetachement.PlayerId, territory.Id, militaryDetachement.GameId);
+                    await Context.AddAsync(stationaryMilitaryDetachment);
+                    stationaryMilitaryDetachment.CanMove = false;
+                    stationaryMilitaryDetachment.CanAct = false;
+                }
+            }
             else
             {
                 MilitaryDetachment stationaryMilitaryDetachment = MilitaryDetachment.Create(militaryDetachement.Energy, remainingArmy,
-                    militaryDetachement.Player.Id, territory.Id, militaryDetachement.Game.Id);
+                    militaryDetachement.PlayerId, territory.Id, militaryDetachement.GameId);
                 await Context.AddAsync(stationaryMilitaryDetachment);
                 stationaryMilitaryDetachment.CanMove = false;
                 stationaryMilitaryDetachment.CanAct = false;
-                stationaryMilitaryDetachment.Energy = energy;
             }
 
             await Context.SaveChangesAsync();
@@ -237,7 +280,6 @@ namespace HugoLand.Core.Services
 
         private void Fusion(MilitaryDetachment movingArmy, MilitaryDetachment stationaryArmy)
         {
-            movingArmy.Energy--;
             stationaryArmy.MilitaryForce += movingArmy.MilitaryForce;
 
             if (movingArmy.Energy < stationaryArmy.Energy)
