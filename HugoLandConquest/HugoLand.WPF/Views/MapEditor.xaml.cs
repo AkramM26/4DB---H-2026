@@ -77,9 +77,11 @@ namespace HugoLand.WPF.Views
                     if (territory.TerritoryType == TerritoryType.Plain)
                         button.Background = Brushes.LightGreen;
                     else if (territory.TerritoryType == TerritoryType.Forest)
-                        button.Background = Brushes.ForestGreen;
+                        button.Background = Brushes.DarkGreen;
                     else if (territory.TerritoryType == TerritoryType.Mountain)
                         button.Background = Brushes.Gray;
+                    else if (territory.TerritoryType == TerritoryType.Ocean)
+                        button.Background = Brushes.LightBlue;
 
                     if (territory.MilitaryDetachment != null)
                     {
@@ -99,6 +101,8 @@ namespace HugoLand.WPF.Views
                             MapEditorService.ChangeTerritoryType(x, y, TerritoryType.Mountain, Game);
                         else if (radioPlain.IsChecked == true)
                             MapEditorService.ChangeTerritoryType(x, y, TerritoryType.Plain, Game);
+                        else if (radioOcean.IsChecked == true)
+                            MapEditorService.ChangeTerritoryType(x, y, TerritoryType.Ocean, Game);
                         else if (radioPlayer1.IsChecked == true)
                             MapEditorService.ChangeStartPosition(x, y, 1, Game);
                         else if (radioPlayer2.IsChecked == true)
@@ -134,9 +138,11 @@ namespace HugoLand.WPF.Views
                     if (territory.TerritoryType == TerritoryType.Plain)
                         button.Background = Brushes.LightGreen;
                     else if (territory.TerritoryType == TerritoryType.Forest)
-                        button.Background = Brushes.ForestGreen;
+                        button.Background = Brushes.DarkGreen;
                     else if (territory.TerritoryType == TerritoryType.Mountain)
                         button.Background = Brushes.Gray;
+                    else if (territory.TerritoryType == TerritoryType.Ocean)
+                        button.Background = Brushes.LightBlue;
                     if (territory.MilitaryDetachment != null)
                     {
                         button.Content = territory.MilitaryDetachment.MilitaryForce;

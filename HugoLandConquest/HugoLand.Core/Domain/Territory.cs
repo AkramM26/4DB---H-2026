@@ -1,4 +1,5 @@
-﻿using System;
+using HugoLand.Core.Constants;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,8 +11,35 @@ namespace HugoLand.Core.Domain
     {
         Plain,
         Forest,
-        Mountain
+        Mountain,
+        Ocean
     }
+
+    public static class TerrainRules
+    {
+        public static int GetEnergyCost(TerritoryType territoryType)
+            => territoryType switch
+            {
+                TerritoryType.Forest => 2,
+                TerritoryType.Mountain => 3,
+                _ => 1,
+            };
+
+        public static float GetDefenseMultiplier(TerritoryType territoryType)
+            => territoryType switch
+            {
+                TerritoryType.Forest => CombatConstants.ForestMultiplayer,
+                TerritoryType.Mountain => CombatConstants.MountainMultiplayer,
+                _ => CombatConstants.PlainMultiplayer,
+            };
+
+        public static bool IsPassable(TerritoryType territoryType)
+            => territoryType != TerritoryType.Ocean;
+
+        public static bool IsBuildable(TerritoryType territoryType)
+            => territoryType != TerritoryType.Ocean;
+    }
+
     public class Territory
     {
         public Guid Id { get; set; }

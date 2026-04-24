@@ -38,6 +38,20 @@ namespace HugoLand.Core.Data
 
             await context.SaveChangesAsync();
         }
+        private static TerritoryType GetRandomTerrainType(Random rng)
+        {
+            int roll = rng.Next(100);
+            if (roll < 60) return TerritoryType.Plain;
+            if (roll < 80) return TerritoryType.Forest;
+            if (roll < 92) return TerritoryType.Mountain;
+            return TerritoryType.Ocean;
+        }
+
+        private static bool IsNearStartPosition(int x, int y, int startX, int startY, int radius = 2)
+        {
+            return Math.Abs(x - startX) <= radius && Math.Abs(y - startY) <= radius;
+        }
+
         private static async Task SeedMapAsync(HugoLandContext context, Guid gameId, Guid player1Id, Guid player2Id, int gameSizeX, int gameSizeY)
         {
             int gamesizex = gameSizeX;
@@ -47,12 +61,24 @@ namespace HugoLand.Core.Data
             int player2initialx = GameConstants.player2intitialx;
             int player2initialy = GameConstants.player2intitialy;
 
-            Territory[,] territories = new Territory[gamesizex, gamesizey]; //à changer temporairement 
+            var rng = new Random();
+            Territory[,] territories = new Territory[gamesizex, gamesizey];
             for (int y = 0; y < gamesizey; y++)
             {
                 for (int x = 0; x < gamesizex; x++)
                 {
-                    Territory territory = Territory.Create(TerritoryType.Plain, x, y, gameId);
+                    TerritoryType terrainType;
+                    if (IsNearStartPosition(x, y, player1initialx, player1initialy) ||
+                        IsNearStartPosition(x, y, player2initialx, player2initialy))
+                    {
+                        terrainType = TerritoryType.Plain;
+                    }
+                    else
+                    {
+                        terrainType = GetRandomTerrainType(rng);
+                    }
+
+                    Territory territory = Territory.Create(terrainType, x, y, gameId);
                     territories[x, y] = territory;
                     await context.AddAsync(territory);
                 }
