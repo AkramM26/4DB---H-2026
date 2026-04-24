@@ -60,7 +60,7 @@ namespace HugoLand.Core.Services
             Context.CurrentGameId = id;
         }
 
-        public async Task SaveGameAsync()
+        public async Task<Guid> SaveGameAsync()
         {
             var gameClone = await Context.Games.AsNoTracking()
                 .Include(game => game.Territories)
@@ -100,6 +100,8 @@ namespace HugoLand.Core.Services
             gameClone.IsTemplate = false;
             await Context.AddAsync(gameClone);
             await Context.SaveChangesAsync();
+
+            return gameClone.Id;
         }
 
         private void CopyTerritoryAndSiblings(Territory t, Game gameClone)
