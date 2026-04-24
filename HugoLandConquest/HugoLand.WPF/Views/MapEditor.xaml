@@ -11,6 +11,7 @@
         <RadioButton x:Name="radioPlain" Content="Plain" HorizontalAlignment="Left" Margin="53,0,0,91" Height="15" VerticalAlignment="Bottom"/>
         <RadioButton x:Name="radioForest" Content="Forest" HorizontalAlignment="Left" Margin="53,0,0,71" Height="15" VerticalAlignment="Bottom"/>
         <RadioButton x:Name="radioMountain" Content="Mountain" HorizontalAlignment="Left" Margin="53,0,0,56" Height="15" VerticalAlignment="Bottom"/>
+        <RadioButton x:Name="radioOcean" Content="Ocean" HorizontalAlignment="Left" Margin="153,0,0,56" Height="15" VerticalAlignment="Bottom"/>
         <RadioButton x:Name="radioPlayer1" Content="Set position player 1" HorizontalAlignment="Left" Margin="53,0,0,36" Height="15" VerticalAlignment="Bottom"/>
         <RadioButton x:Name="radioPlayer2" Content="Set position player 2" HorizontalAlignment="Left" Margin="53,0,0,16" Height="15" VerticalAlignment="Bottom"/>
         <Button Content="Confirm" HorizontalAlignment="Left" Margin="379,0,0,36" Width="114" Click="Button_Click" Height="27" VerticalAlignment="Bottom"/>
