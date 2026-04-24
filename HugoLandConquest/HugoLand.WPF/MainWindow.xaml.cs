@@ -107,8 +107,8 @@ namespace HugoLand.WPF
             if (dlg.ShowDialog() != true || dlg.SelectedGameId is null) return;
 
             _gameService.LoadGame(dlg.SelectedGameId.Value);
-            await _gameService.SaveGameAsync();
-            await LaunchGameAsync(dlg.SelectedGameId.Value, startTurnOnOpen: false);
+            Guid newGameId = await _gameService.SaveGameAsync();
+            await LaunchGameAsync(newGameId, startTurnOnOpen: false);
         }
     }
 }
