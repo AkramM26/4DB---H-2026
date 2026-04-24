@@ -84,7 +84,7 @@ namespace HugoLand.WPF.Views
 
                 if (map != null)
                 {
-                    var window = new MapEditor(map, gameSizeX, gameSizeY, gameName, gameDescription, ConnectionString);
+                    var window = new MapEditor(map, ConnectionString);
                     window.Show();
                     this.Close();
                 }
