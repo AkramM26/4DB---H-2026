@@ -13,8 +13,20 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Text="Select a saved game:" FontWeight="Bold" Margin="0,0,0,8"/>
+        <GroupBox x:Name="grpFiltres" Header="Filtres" FontWeight="Bold" Margin="0,21,308,221" Grid.RowSpan="2">
+            <Grid>
+                <GroupBox x:Name="grpMap" Header="Maps" FontWeight="Bold" Margin="10,0,147,10"/>
+                <GroupBox x:Name="grpResul" Header="Result" FontWeight="Bold" Margin="120,0,37,10"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox x:Name="grpTri" Header="Tri" FontWeight="Bold" Margin="365,21,28,221" Grid.RowSpan="2">
+            <Grid>
+                <RadioButton x:Name="optDate" Content="Date" HorizontalAlignment="Left" Tag="Date" Margin="23,10,0,0" VerticalAlignment="Top" Checked="optTri_Checked"/>
+                <RadioButton Content="Tours" HorizontalAlignment="Left" Tag="Tours" Margin="23,30,0,0" VerticalAlignment="Top" Checked="optTri_Checked"/>
+            </Grid>
+        </GroupBox>
 
-        <ListView Grid.Row="1" x:Name="lstGames" MouseDoubleClick="lstGames_DoubleClick">
+        <ListView Grid.Row="1" x:Name="lstGames" MouseDoubleClick="lstGames_DoubleClick" Margin="0,153,0,0">
             <ListView.Background>
                 <ImageBrush ImageSource="/img/loading.jpg" Stretch="UniformToFill" Opacity="0.3"/>
             </ListView.Background>

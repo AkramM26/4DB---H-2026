@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace HugoLand.WPF
 {
@@ -88,6 +89,22 @@ namespace HugoLand.WPF
             public DateTime? Date { get; set; } = DateTime.UtcNow;
             public int? WinnerNumber { get; set; } = 0;
             public int Turns { get; set; } = 0;
+        }
+
+        private void optTri_Checked(object sender, RoutedEventArgs e)
+        {
+            var rb = sender as RadioButton;
+            if (rb == null) return;
+
+            switch (rb.Tag.ToString())
+            {
+                case "Date":
+                   lstGames.ItemsSource  = _rows.OrderByDescending(g => g.Date).ToList();
+                    break;
+                case "Tours":
+                    lstGames.ItemsSource = _rows.OrderByDescending(g => g.Turns).ToList();
+                    break;
+            }
         }
     }
 }
