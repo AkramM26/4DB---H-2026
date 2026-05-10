@@ -134,5 +134,16 @@ namespace HugoLand.WPF
             Guid newGameId = await _gameService.SaveGameAsync();
             await LaunchGameAsync(newGameId, startTurnOnOpen: false);
         }
+
+        private void btnHistory_Click(object sender, RoutedEventArgs e)
+        {
+            //Button sound 
+            AudioManager.MenuSound.Play();
+
+            var dlg = new HistoryGame(_context) { Owner = this };
+            if (dlg.ShowDialog() != true || dlg.SelectedGameId is null) return;
+
+            // Appeler le rapport détaillé
+        }
     }
 }

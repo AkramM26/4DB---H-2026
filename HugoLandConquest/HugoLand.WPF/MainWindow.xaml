@@ -1,7 +1,7 @@
 <Window x:Class="HugoLand.WPF.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="HugoLand Conquest" Height="500" Width="420"
+        Title="HugoLand Conquest" Height="509" Width="420"
         WindowStartupLocation="CenterScreen"
         Background="#121212"
         ResizeMode="NoResize">
@@ -61,7 +61,7 @@
         <Grid.Background>
             <ImageBrush ImageSource="/img/MainWidowImg.png" Stretch="UniformToFill"/>
         </Grid.Background>
-        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,10,0,0">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Height="464">
 
             <!-- Title -->
             <TextBlock Text="HUGOLAND"
@@ -85,12 +85,13 @@
 
             <!-- Menu buttons -->
             <StackPanel Margin="0,20,0,0">
-                <Button x:Name="btnNewGame"             Content="New Game"                Style="{StaticResource MenuButton}" Click="btnNewGame_Click"/>
-                <Button x:Name="btnLoadGame"            Content="Load Game"               Style="{StaticResource MenuButton}" Click="btnLoadGame_Click"/>
-                <Button x:Name="btnNewGameWithTemplate" Content="New Game With Template"  Style="{StaticResource MenuButton}" Click="btnNewGameWithTemplate_Click"/>
-                <Button x:Name="btnMapTemplateList"     Content="Edit Map Template"       Style="{StaticResource MenuButton}" Click="btnMapTemplateList_Click"/>
-                <Button x:Name="btnMapTemplate"         Content="Create Map Template"     Style="{StaticResource MenuButton}" Click="btnMapTemplate_Click"/>
-                <Button x:Name="btnQuit"                Content="Quit"                    Style="{StaticResource QuitButton}" Click="btnQuit_Click"/>
+                <Button x:Name="btnNewGame"             Content="New Game"                Style="{StaticResource MenuButton}" Click="btnNewGame_Click" Height="37"/>
+                <Button x:Name="btnLoadGame"            Content="Load Game"               Style="{StaticResource MenuButton}" Click="btnLoadGame_Click" Height="37"/>
+                <Button x:Name="btnNewGameWithTemplate" Content="New Game With Template"  Style="{StaticResource MenuButton}" Click="btnNewGameWithTemplate_Click" Height="37"/>
+                <Button x:Name="btnMapTemplateList"     Content="Edit Map Template"       Style="{StaticResource MenuButton}" Click="btnMapTemplateList_Click" Height="37"/>
+                <Button x:Name="btnMapTemplate"         Content="Create Map Template"     Style="{StaticResource MenuButton}" Click="btnMapTemplate_Click" Height="37"/>
+                <Button x:Name="btnHistory"         Content="History"     Style="{StaticResource MenuButton}" Height="37" Click="btnHistory_Click"/>
+                <Button x:Name="btnQuit"                Content="Quit"                    Style="{StaticResource QuitButton}" Click="btnQuit_Click" Height="37"/>
             </StackPanel>
 
         </StackPanel>
