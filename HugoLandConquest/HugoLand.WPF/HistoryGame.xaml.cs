@@ -12,6 +12,7 @@ namespace HugoLand.WPF
     public partial class HistoryGame : Window
     {
         private readonly HugoLandContext _context;
+        private List<HistoryRow> _source = new();
         private List<HistoryRow> _rows = new();
 
         public Guid? SelectedGameId { get; private set; }
@@ -28,19 +29,21 @@ namespace HugoLand.WPF
         {
             var games = await _context.Games
                 .IgnoreQueryFilters()
-                .Where(g => !g.IsTemplate && g.IsFinished)
+                .Where(g => g.IsFinished)
                 .OrderByDescending(g => g.EndedAt)
                 .ToListAsync();
 
-            _rows = games.Select(g => new HistoryRow
+            _source = games.Select(g => new HistoryRow
             {
                 Id = g.Id,
                 GameName = g.GameName,
-                Map = "test", // mettre le nom de la map
+                Map = (g.IsTemplate) ? "Template" : "Normal",
                 Date = g.EndedAt,
                 WinnerNumber = g.WinnerPlayerNumber,
-                Turns = g.TurnNumber
+                Turns = g.TurnNumber,
+                IsTemplate = g.IsTemplate
             }).ToList();
+            _rows = _source.ToList();
 
             lstGames.ItemsSource = _rows;
             if (_rows.Count > 0)
@@ -89,6 +92,7 @@ namespace HugoLand.WPF
             public DateTime? Date { get; set; } = DateTime.UtcNow;
             public int? WinnerNumber { get; set; } = 0;
             public int Turns { get; set; } = 0;
+            public bool IsTemplate {  get; set; } = false;
         }
 
         private void optTri_Checked(object sender, RoutedEventArgs e)
@@ -99,12 +103,32 @@ namespace HugoLand.WPF
             switch (rb.Tag.ToString())
             {
                 case "Date":
-                   lstGames.ItemsSource  = _rows.OrderByDescending(g => g.Date).ToList();
+                    _source = _source.OrderByDescending(g => g.Date).ToList();
+                    _rows = _rows.OrderByDescending(g => g.Date).ToList();
+                   lstGames.ItemsSource  = _rows;
                     break;
                 case "Tours":
+                    _source = _source.OrderByDescending(g => g.Turns).ToList();
+                    _rows = _rows.OrderByDescending(g => g.Turns).ToList();
                     lstGames.ItemsSource = _rows.OrderByDescending(g => g.Turns).ToList();
                     break;
             }
+        }
+
+        private void Filters_Changed(object sender, RoutedEventArgs e)
+        {
+            bool isTemplate = (chkTemplate.IsChecked == true) ? true : false, 
+                isNotTemplate = (chkNotTemplate.IsChecked == true) ? true : false, 
+                isWinner1 = (chkPlayer1.IsChecked == true) ? true : false, 
+                isWinner2 = (chkPlayer2.IsChecked == true) ? true : false;
+
+            _rows = _source.Where(g => (isTemplate == false || g.IsTemplate) &&
+                                        (isNotTemplate == false || !g.IsTemplate) &&
+                                        (isWinner1 == false || g.WinnerNumber == 1) &&
+                                        (isWinner2 == false || g.WinnerNumber == 2) 
+                ).ToList();
+
+            lstGames.ItemsSource = _rows;
         }
     }
 }

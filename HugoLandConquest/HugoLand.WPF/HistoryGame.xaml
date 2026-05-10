@@ -13,13 +13,23 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Text="Select a saved game:" FontWeight="Bold" Margin="0,0,0,8"/>
-        <GroupBox x:Name="grpFiltres" Header="Filtres" FontWeight="Bold" Margin="0,21,308,221" Grid.RowSpan="2">
+        <GroupBox x:Name="grpFiltres" Foreground="White" Header="Filtres" Margin="0,21,308,221" Grid.RowSpan="2">
             <Grid>
-                <GroupBox x:Name="grpMap" Header="Maps" FontWeight="Bold" Margin="10,0,147,10"/>
-                <GroupBox x:Name="grpResul" Header="Result" FontWeight="Bold" Margin="120,0,37,10"/>
+                <GroupBox x:Name="grpMap" Header="Maps" Margin="10,0,121,10">
+                    <Grid>
+                        <CheckBox x:Name="chkTemplate" Foreground="White" Content="Template" HorizontalAlignment="Left" Margin="11,10,0,0" VerticalAlignment="Top" Checked="Filters_Changed" Unchecked="Filters_Changed"/>
+                        <CheckBox x:Name="chkNotTemplate" Foreground="White" Content="Not template" HorizontalAlignment="Center" Margin="0,42,0,0" VerticalAlignment="Top" Checked="Filters_Changed" Unchecked="Filters_Changed"/>
+                    </Grid>
+                </GroupBox>
+                <GroupBox x:Name="grpResult" Header="Winner" Margin="153,0,10,10">
+                    <Grid>
+                        <CheckBox x:Name="chkPlayer1" Content="Player 1" Foreground="White" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Checked="Filters_Changed" Unchecked="Filters_Changed"/>
+                        <CheckBox x:Name="chkPlayer2" Content="Player 2" Foreground="White" HorizontalAlignment="Center" Margin="0,42,0,0" VerticalAlignment="Top" Checked="Filters_Changed" Unchecked="Filters_Changed"/>
+                    </Grid>
+                </GroupBox>
             </Grid>
         </GroupBox>
-        <GroupBox x:Name="grpTri" Header="Tri" FontWeight="Bold" Margin="365,21,28,221" Grid.RowSpan="2">
+        <GroupBox x:Name="grpTri" Header="Tri" Foreground="White" Margin="365,21,28,221" Grid.RowSpan="2">
             <Grid>
                 <RadioButton x:Name="optDate" Content="Date" HorizontalAlignment="Left" Tag="Date" Margin="23,10,0,0" VerticalAlignment="Top" Checked="optTri_Checked"/>
                 <RadioButton Content="Tours" HorizontalAlignment="Left" Tag="Tours" Margin="23,30,0,0" VerticalAlignment="Top" Checked="optTri_Checked"/>
