@@ -134,5 +134,11 @@ namespace HugoLand.WPF
             Guid newGameId = await _gameService.SaveGameAsync();
             await LaunchGameAsync(newGameId, startTurnOnOpen: false);
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            //EndGameReport end = new EndGameReport();
+            //end.Show(); 
+        }
     }
 }

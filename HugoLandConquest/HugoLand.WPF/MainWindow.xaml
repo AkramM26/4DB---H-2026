@@ -92,7 +92,9 @@
                 <Button x:Name="btnMapTemplate"         Content="Create Map Template"     Style="{StaticResource MenuButton}" Click="btnMapTemplate_Click"/>
                 <Button x:Name="btnQuit"                Content="Quit"                    Style="{StaticResource QuitButton}" Click="btnQuit_Click"/>
             </StackPanel>
+            <Label Content="Label"/>
 
         </StackPanel>
+        <Button Content="ENDR" HorizontalAlignment="Left" Margin="345,75,0,0" VerticalAlignment="Top" Click="Button_Click"/>
     </Grid>
 </Window>
