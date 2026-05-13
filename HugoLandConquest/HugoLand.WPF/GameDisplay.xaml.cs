@@ -913,5 +913,10 @@ namespace HugoLand.WPF
 
         private void btnVictoryOk_Click(object sender, RoutedEventArgs e)
             => _victoryTcs?.TrySetResult(true);
+
+        private void btnForceEvolution_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
