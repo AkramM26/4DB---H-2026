@@ -141,9 +141,18 @@ namespace HugoLand.WPF
             AudioManager.MenuSound.Play();
 
             var dlg = new HistoryGame(_context) { Owner = this };
-            if (dlg.ShowDialog() != true || dlg.SelectedGameId is null) return;
+            if (dlg.ShowDialog() != true || dlg.SelectedGameId is null) return; // Vérifier l'utilité de la 2e condition ici
 
             // Appeler le rapport détaillé
+        }
+
+        private void btnPlayerHistory_Click(object sender, RoutedEventArgs e)
+        {
+            //Button sound 
+            AudioManager.MenuSound.Play();
+
+            var dlg = new PlayerHistory(_context) { Owner = this };
+            if (dlg.ShowDialog() != true || dlg.SelectedGameId is null) return; // Vérifier l'utilité de la 2e condition ici
         }
     }
 }

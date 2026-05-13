@@ -85,13 +85,14 @@
 
             <!-- Menu buttons -->
             <StackPanel Margin="0,20,0,0">
-                <Button x:Name="btnNewGame"             Content="New Game"                Style="{StaticResource MenuButton}" Click="btnNewGame_Click" Height="37"/>
-                <Button x:Name="btnLoadGame"            Content="Load Game"               Style="{StaticResource MenuButton}" Click="btnLoadGame_Click" Height="37"/>
-                <Button x:Name="btnNewGameWithTemplate" Content="New Game With Template"  Style="{StaticResource MenuButton}" Click="btnNewGameWithTemplate_Click" Height="37"/>
-                <Button x:Name="btnMapTemplateList"     Content="Edit Map Template"       Style="{StaticResource MenuButton}" Click="btnMapTemplateList_Click" Height="37"/>
-                <Button x:Name="btnMapTemplate"         Content="Create Map Template"     Style="{StaticResource MenuButton}" Click="btnMapTemplate_Click" Height="37"/>
-                <Button x:Name="btnHistory"         Content="History"     Style="{StaticResource MenuButton}" Height="37" Click="btnHistory_Click"/>
-                <Button x:Name="btnQuit"                Content="Quit"                    Style="{StaticResource QuitButton}" Click="btnQuit_Click" Height="37"/>
+                <Button x:Name="btnNewGame"             Content="New Game"                Style="{StaticResource MenuButton}" Click="btnNewGame_Click" Height="30"/>
+                <Button x:Name="btnLoadGame"            Content="Load Game"               Style="{StaticResource MenuButton}" Click="btnLoadGame_Click" Height="30"/>
+                <Button x:Name="btnNewGameWithTemplate" Content="New Game With Template"  Style="{StaticResource MenuButton}" Click="btnNewGameWithTemplate_Click" Height="30"/>
+                <Button x:Name="btnMapTemplateList"     Content="Edit Map Template"       Style="{StaticResource MenuButton}" Click="btnMapTemplateList_Click" Height="30"/>
+                <Button x:Name="btnMapTemplate"         Content="Create Map Template"     Style="{StaticResource MenuButton}" Click="btnMapTemplate_Click" Height="30"/>
+                <Button x:Name="btnHistory"         Content="Game History"     Style="{StaticResource MenuButton}" Height="30" Click="btnHistory_Click"/>
+                <Button x:Name="btnPlayerHistory"         Content="Player History"     Style="{StaticResource MenuButton}" Height="30" Click="btnPlayerHistory_Click"/>
+                <Button x:Name="btnQuit"                Content="Quit"                    Style="{StaticResource QuitButton}" Click="btnQuit_Click" Height="30"/>
             </StackPanel>
 
         </StackPanel>
