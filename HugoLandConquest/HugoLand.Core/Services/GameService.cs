@@ -53,6 +53,7 @@ namespace HugoLand.Core.Services
             await _economyService.CollectRevenue(player);
             await _economyService.PayMaintenance(player);
             await Context.SaveChangesAsync();
+
         }
 
         public void LoadGame(Guid id)
@@ -144,6 +145,7 @@ namespace HugoLand.Core.Services
                 player.MilitaryDetachments.Count, player.MilitaryDetachments.Sum(m => m.MilitaryForce),
                 player.Installations.Count(i => i.InstallationType == InstallationType.Fortification));
 
+
             await Context.TurnSnapShots.AddAsync(snapshot);
             //Ajouter la force militaire actuelle au tableau 
             if (game.TurnNumber == 1)
@@ -155,6 +157,7 @@ namespace HugoLand.Core.Services
             player.ForcesTable.Add(player.MilitaryDetachments.Sum(m => m.MilitaryForce));
 
             var otherPlayerNumber = currentPlayerNumber == 1 ? 2 : 1;
+
 
             var otherPlayer = await Context.Players
                 .Include(p => p.MilitaryDetachments)
@@ -197,6 +200,16 @@ namespace HugoLand.Core.Services
 
             game.TurnNumber++;
             await Context.SaveChangesAsync();
+        }
+
+        private int FinalForce(Player player)
+        {
+            int force = 0;
+            foreach (var militarydetachement in player.MilitaryDetachments)
+            {
+                force += militarydetachement.MilitaryForce;
+            }
+            return force;
         }
     }
 }
