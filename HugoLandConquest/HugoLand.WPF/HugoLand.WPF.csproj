@@ -55,6 +55,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Include="App.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\HugoLand.Core\HugoLand.Core.csproj" />
   </ItemGroup>
 
