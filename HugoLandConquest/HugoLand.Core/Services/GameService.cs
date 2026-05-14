@@ -200,14 +200,6 @@ namespace HugoLand.Core.Services
             await Context.SaveChangesAsync();
         }
 
-        private int FinalForce(Player player)
-        {
-            int force = 0;
-            foreach (var militarydetachement in player.MilitaryDetachments)
-            {
-                force += militarydetachement.MilitaryForce;
-            }
-            return force;
-        }
+
     }
 }

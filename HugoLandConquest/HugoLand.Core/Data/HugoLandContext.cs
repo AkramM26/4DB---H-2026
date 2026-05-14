@@ -68,6 +68,8 @@ namespace HugoLand.Core.Data
             modelBuilder.Entity<Territory>()
                 .HasIndex(t => new { t.GameId, t.PositionX, t.PositionY })
                 .IsUnique();
+            modelBuilder.Entity<CombatEvent>().Property(c => c.TerritoryDefendedPosX).IsRequired();
+            modelBuilder.Entity<CombatEvent>().Property(c => c.TerritoryDefendedPosY).IsRequired();
 
             //modelBuilder.Entity<MilitaryDetachment>()
             //    .HasOne(m => m.Game)

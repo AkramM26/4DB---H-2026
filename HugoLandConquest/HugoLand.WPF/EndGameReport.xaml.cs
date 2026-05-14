@@ -36,11 +36,12 @@ namespace HugoLand.WPF
 
 
 
-        public EndGameReport(HugoLandContext context)
+        public EndGameReport(HugoLandContext context, Guid gameId )
         {
             InitializeComponent();
 
             _context = context;
+            _gameId = gameId;
             ApplyStats();
             this.DataContext = new EndGameReportGraphics(_player1Forces, _player2Forces);
         }
@@ -73,8 +74,8 @@ namespace HugoLand.WPF
         {
             try
             {
-                var gameId = _gameId;
-                var game = await FetchGameGraphAsync();
+                //var gameId = _gameId;
+                var game = _context.Games.FirstOrDefault(g => g.Id == _gameId);
                 var playerActions = game.PlayerActions;
 
                 var actionsRanking = playerActions.GroupBy(pa => pa.ActionType).OrderByDescending(g => g.Count());
@@ -151,15 +152,15 @@ namespace HugoLand.WPF
             }
         }
 
-        private async Task<Game?> FetchGameGraphAsync()
-        {
-            return await _context.Games
-                .Include(g => g.Players)
-                .Include(g => g.Territories).ThenInclude(t => t.MilitaryDetachment).ThenInclude(m => m!.Player)
-                .Include(g => g.Territories).ThenInclude(t => t.Installation)
-                .Include(g => g.MilitaryDetachments).ThenInclude(m => m.Territory)
-                .FirstOrDefaultAsync();
-        }
+        //private async Task<Game?> FetchGameGraphAsync()
+        //{
+        //    return await _context.Games
+        //        .Include(g => g.Players)
+        //        .Include(g => g.Territories).ThenInclude(t => t.MilitaryDetachment).ThenInclude(m => m!.Player)
+        //        .Include(g => g.Territories).ThenInclude(t => t.Installation)
+        //        .Include(g => g.MilitaryDetachments).ThenInclude(m => m.Territory)
+        //        .FirstOrDefaultAsync();
+        //}
 
     }
 }

@@ -2,6 +2,7 @@ using HugoLand.Core.Constants;
 using HugoLand.Core.Data;
 using HugoLand.Core.Domain;
 using HugoLand.Core.Services;
+using HugoLand.WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using OpenTK.Input;
 using System;
@@ -67,9 +68,6 @@ namespace HugoLand.WPF
             Loaded += async (_, _) => await RunGameAsync();
 
 
-
-
-
         }
 
         private async Task StartTurnIfNeededAsync()
@@ -110,11 +108,9 @@ namespace HugoLand.WPF
                     if (game == null) return;
 
                     if (game.IsFinished)
-                    {
-                        _endgamereport = new EndGameReport(_context) { Owner = this };
+                    {               
 
                         await ShowVictoryAsync(game);
-                        _endgamereport.ShowDialog();
                         Close();
                         return;
                     }
@@ -919,5 +915,17 @@ namespace HugoLand.WPF
 
         private void btnVictoryOk_Click(object sender, RoutedEventArgs e)
             => _victoryTcs?.TrySetResult(true);
+
+        private void btnPostGameReport_Click(object sender, RoutedEventArgs e)
+        {
+            _endgamereport = new EndGameReport(_context,_gameId) { Owner = this };
+            _endgamereport.ShowDialog();
+        }
+
+        private void btnMapFigths_Click(object sender, RoutedEventArgs e)
+        {
+            FightsMap map = new FightsMap(_context,_gameId);
+            map.ShowDialog();
+        }
     }
 }

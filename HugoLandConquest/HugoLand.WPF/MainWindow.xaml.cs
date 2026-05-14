@@ -137,8 +137,7 @@ namespace HugoLand.WPF
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            //EndGameReport end = new EndGameReport();
-            //end.Show(); 
+            //FightsMap map = new  FightsMap(_context);
         }
     }
 }

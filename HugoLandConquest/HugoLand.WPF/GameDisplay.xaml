@@ -38,9 +38,9 @@
 
         <!-- Right action panel -->
         <Border DockPanel.Dock="Right" Width="280" Margin="8,0,0,0" BorderBrush="#333333" BorderThickness="1" CornerRadius="3" Padding="10">
-            <Border.Background>
+            <!--<Border.Background>
                 <ImageBrush ImageSource="/img/vs.jpg" Stretch="UniformToFill" Opacity="0.3"/>
-            </Border.Background>
+            </Border.Background>-->
             <StackPanel>
                 <StackPanel TextElement.Foreground="White">
 
@@ -102,6 +102,10 @@
                     <StackPanel x:Name="pnlVictory" Visibility="Collapsed">
                         <TextBlock x:Name="txtVictory" FontWeight="Bold" FontSize="16" TextWrapping="Wrap" Margin="0,0,0,8"/>
                         <Button Content="Return to Main Menu" Padding="4" Click="btnVictoryOk_Click"/>
+                        <Button Content="Show Post Game Report" Padding="4" Click="btnPostGameReport_Click"/>
+                        <Button Content="Show Map Figths Statistics" Padding="4" Click="btnMapFigths_Click"/>
+
+
                     </StackPanel>
                 </StackPanel>
             </StackPanel>

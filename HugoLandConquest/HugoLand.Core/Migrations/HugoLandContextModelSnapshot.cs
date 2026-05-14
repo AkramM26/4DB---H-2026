@@ -57,6 +57,12 @@ namespace HugoLand.Core.Migrations
                     b.Property<int>("GoldLooted")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("TerritoryDefendedPosX")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TerritoryDefendedPosY")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("VictorPlayerNumber")
                         .HasColumnType("INTEGER");
 
