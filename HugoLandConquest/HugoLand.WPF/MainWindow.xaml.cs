@@ -141,7 +141,8 @@ namespace HugoLand.WPF
             AudioManager.MenuSound.Play();
 
             var dlg = new HistoryGame(_context) { Owner = this };
-            if (dlg.ShowDialog() != true || dlg.SelectedGameId is null) return; // Vérifier l'utilité de la 2e condition ici
+            if (dlg.ShowDialog() != true || dlg.SelectedGameId is null) return;
+            Guid gameId = dlg.SelectedGameId.Value;
 
             // Appeler le rapport détaillé
         }
@@ -152,7 +153,7 @@ namespace HugoLand.WPF
             AudioManager.MenuSound.Play();
 
             var dlg = new PlayerHistory(_context) { Owner = this };
-            if (dlg.ShowDialog() != true || dlg.SelectedGameId is null) return; // Vérifier l'utilité de la 2e condition ici
+            if (dlg.ShowDialog() != true) return;
         }
     }
 }

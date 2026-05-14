@@ -14,8 +14,6 @@ namespace HugoLand.WPF
         private readonly HugoLandContext _context;
         private List<PlayerStats> _playerStats;
 
-        public Guid? SelectedGameId { get; private set; }
-
         public PlayerHistory(HugoLandContext context)
         {
             InitializeComponent();

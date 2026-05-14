@@ -12,7 +12,6 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="Select a game:" FontWeight="Bold" Margin="0,0,0,8"/>
         <GroupBox x:Name="grpPlayers" Foreground="White" Header="Choose a player" Margin="0,21,308,253" Grid.RowSpan="2">
             <Grid>
                 <ComboBox x:Name="cmbPlayer" HorizontalAlignment="Left" SelectedIndex="0" Margin="81,37,0,0" VerticalAlignment="Top" Width="120">

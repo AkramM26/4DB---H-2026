@@ -916,7 +916,11 @@ namespace HugoLand.WPF
 
         private void btnForceEvolution_Click(object sender, RoutedEventArgs e)
         {
+            //Button sound 
+            AudioManager.MenuSound.Play();
 
+            var dlg = new ForceEvolution(_context, _gameId) { Owner = this };
+            if (dlg.ShowDialog() != true) return;
         }
     }
 }
