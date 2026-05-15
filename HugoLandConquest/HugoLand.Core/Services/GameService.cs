@@ -151,6 +151,8 @@ namespace HugoLand.Core.Services
             if (game.TurnNumber == 1)
             {
                 if (player.ForcesTable == null) player.ForcesTable = new List<int>();
+            if (game.TurnNumber==1)
+            {
                 player.ForcesTable.Add(Constants.GameConstants.baseMilitaryForce);
 
             }
