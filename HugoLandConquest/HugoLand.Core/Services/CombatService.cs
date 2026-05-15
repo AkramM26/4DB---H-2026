@@ -80,9 +80,11 @@ namespace HugoLand.Core.Services
             CombatEvent combatEvent = CombatEvent.Create(defence.Player.GameId, victorPlayerNumber,
                 combatResult.DefenceRandomFactor, combatResult.AttackRandomFactor, defenceForce, attackForce,
                 combatResult.EffectiveDefenceForce, combatResult.EffectiveAttackForce,
-                defenceForce - combatResult.DefenceForce, attackForce - combatResult.AttackForce, combatResult.GoldGain);
+                defenceForce - combatResult.DefenceForce, attackForce - combatResult.AttackForce, combatResult.GoldGain,
+                defence.Territory.PositionX, defence.Territory.PositionY);
 
-            Context.Add(combatEvent);
+            Context.CombatEvents.Add(combatEvent);
+            //Context.Add(combatEvent);
 
             await IsGameOver();
 

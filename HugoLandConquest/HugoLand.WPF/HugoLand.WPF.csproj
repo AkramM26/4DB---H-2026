@@ -13,7 +13,6 @@
     <None Remove="img\loading.jpg" />
     <None Remove="img\MainWidowImg.png" />
     <None Remove="img\vs.jpg" />
-    <None Remove="loading.jpg" />
     <None Remove="sound\GameBeginning.wav" />
     <None Remove="sound\menubutton.mp3" />
     <None Remove="sound\Movements.mp3" />
@@ -26,7 +25,6 @@
     <Resource Include="img\loading.jpg" />
     <Resource Include="img\MainWidowImg.png" />
     <Resource Include="img\vs.jpg" />
-    <Resource Include="loading.jpg" />
     <Content Include="sound\GameBeginning.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -45,7 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.2" />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.12">
       <PrivateAssets>all</PrivateAssets>
@@ -54,6 +52,10 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
     <PackageReference Include="SkiaSharp.Views.WPF" Version="3.119.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Include="App.xaml" />
   </ItemGroup>
 
   <ItemGroup>

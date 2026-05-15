@@ -21,13 +21,14 @@ namespace HugoLand.Core.Domain
         public int AttackLoss { get; set; }
         public int GoldLooted { get; set; }
         public Guid GameId { get; set; }
+        public int TerritoryDefendedPosX { get; set; }
+        public int TerritoryDefendedPosY { get; set; }
         public virtual Game Game { get; set; }
-
         protected CombatEvent() { }
 
-        public static CombatEvent Create( Guid gameId, int victorPlayerNumber, float defenceRandomFactor, float attackRandomFactor,
+        public static CombatEvent Create(Guid gameId, int victorPlayerNumber, float defenceRandomFactor, float attackRandomFactor,
             int defenceForce, int attackForce, float effectiveDefenceForce, float effectiveAttackForce,
-            int defenceLoss, int attackLoss, int goldLooted)
+            int defenceLoss, int attackLoss, int goldLooted, int territoryDefendedposx, int territoryDefendedposy)
         {
             return new CombatEvent
             {
@@ -42,7 +43,9 @@ namespace HugoLand.Core.Domain
                 EffectiveAttackForce = effectiveAttackForce,
                 DefenceLoss = defenceLoss,
                 AttackLoss = attackLoss,
-                GoldLooted = goldLooted
+                GoldLooted = goldLooted,
+                TerritoryDefendedPosX = territoryDefendedposx,
+                TerritoryDefendedPosY = territoryDefendedposy
             };
         }
     }
