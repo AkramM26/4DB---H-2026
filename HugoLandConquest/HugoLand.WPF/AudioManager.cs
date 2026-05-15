@@ -13,7 +13,6 @@ namespace HugoLand.WPF
         public static readonly MediaPlayer MenuSound = new MediaPlayer();
         public static readonly MediaPlayer Movements = new MediaPlayer();
 
-
         static AudioManager() 
         {
             MusiqueFond.Open(new Uri(@"sound/GameBeginning.wav", UriKind.Relative));
