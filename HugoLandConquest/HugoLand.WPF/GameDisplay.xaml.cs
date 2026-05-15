@@ -3,6 +3,7 @@ using HugoLand.Core.Data;
 using HugoLand.Core.Domain;
 using HugoLand.Core.Services;
 using Microsoft.EntityFrameworkCore;
+using OpenTK.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,10 +44,7 @@ namespace HugoLand.WPF
         private TaskCompletionSource<bool>? _victoryTcs;
 
         private bool _windowClosing;
-
-
-
-
+        private EndGameReport _endgamereport;
 
 
 
@@ -96,6 +94,7 @@ namespace HugoLand.WPF
 
         private async Task RunGameAsync()
         {
+
             try
             {
                 BuildBoard();
@@ -112,7 +111,10 @@ namespace HugoLand.WPF
 
                     if (game.IsFinished)
                     {
+                        _endgamereport = new EndGameReport(_context) { Owner = this };
+
                         await ShowVictoryAsync(game);
+                        _endgamereport.ShowDialog();
                         Close();
                         return;
                     }
@@ -135,7 +137,7 @@ namespace HugoLand.WPF
                                 break;
 
                             case 2: // Save game
-                                AudioManager.Movements.Play();    
+                                AudioManager.Movements.Play();
                                 await _gameService.SaveGameAsync();
                                 Log("Game saved.");
                                 break;
@@ -183,7 +185,10 @@ namespace HugoLand.WPF
         {
             int choice = await AwaitArmyActionAsync(army);
             if (_windowClosing) return;
-
+            var playerActions = _context.PlayerActions;
+            
+            
+            
             switch (choice)
             {
                 case 1: // Move
@@ -199,42 +204,43 @@ namespace HugoLand.WPF
                             if (_windowClosing) return;
                             if (moveChoice == 'X' || moveChoice == 'Q') break;
 
-                        Movements dir = moveChoice switch
-                        {
-                            'N' => Movements.North,
-                            'S' => Movements.South,
-                            'E' => Movements.East,
-                            'W' => Movements.West,
-                            _ => Movements.North,
-                        };
-                        try
-                        {
-                            var result = await _armyService.Move(army.Id, dir);
-                            LogMoveResult(result);
-                            await RefreshBoardAsync();
-                            var refreshed = await _context.MilitaryDetachments
-                                .Include(m => m.Territory).FirstOrDefaultAsync(m => m.Id == army.Id);
-                            if (refreshed == null)
+                            Movements dir = moveChoice switch
                             {
-                                Log("Army no longer exists.");
+                                'N' => Movements.North,
+                                'S' => Movements.South,
+                                'E' => Movements.East,
+                                'W' => Movements.West,
+                                _ => Movements.North,
+                            };
+                            try
+                            {
+                                var result = await _armyService.Move(army.Id, dir);
+                                LogMoveResult(result);
+                                await RefreshBoardAsync();
+                                var refreshed = await _context.MilitaryDetachments
+                                    .Include(m => m.Territory).FirstOrDefaultAsync(m => m.Id == army.Id);
+                                if (refreshed == null)
+                                {
+                                    Log("Army no longer exists.");
+                                    return;
+                                }
+                                army = refreshed;
+                            }
+                            catch (Exception ex)
+                            {
+                                Log($"Move failed: {ex.Message}");
                                 return;
                             }
-                            army = refreshed;
                         }
-                        catch (Exception ex)
-                        {
-                            Log($"Move failed: {ex.Message}");
-                            return;
-                        }
+                        break;
                     }
-                    break;
-                }
                 case 2:
                     {
                         //Button sound 
                         AudioManager.Movements.Play();
                         var result = await _installationService.BuildCampAsync(army.Id);
                         Log(result.Success ? "Camp built." : $"Cannot build camp: {result.Message}");
+                        
                         break;
                     }
                 case 3:
@@ -305,28 +311,28 @@ namespace HugoLand.WPF
             grdBoard.ColumnDefinitions.Clear();
             grdBoard.Children.Clear();
 
-            const int RightReserve  = 288;
-            const int TopReserve    = 110;
-            const int BotReserve    = 132;
+            const int RightReserve = 288;
+            const int TopReserve = 110;
+            const int BotReserve = 132;
             const int ChromeReserve = 40;
-            const int Margins       = 32;
-            const int RowHeaderW    = 26;
-            const int ColHeaderH    = 22;
+            const int Margins = 32;
+            const int RowHeaderW = 26;
+            const int ColHeaderH = 22;
 
-            var screen   = SystemParameters.WorkArea;
-            double availW = screen.Width  - RightReserve - RowHeaderW - Margins;
-            double availH = screen.Height - TopReserve  - BotReserve - ColHeaderH - Margins - ChromeReserve;
+            var screen = SystemParameters.WorkArea;
+            double availW = screen.Width - RightReserve - RowHeaderW - Margins;
+            double availH = screen.Height - TopReserve - BotReserve - ColHeaderH - Margins - ChromeReserve;
 
             int cellSize = (int)Math.Floor(Math.Min(availW / w, availH / h));
             cellSize = Math.Clamp(cellSize, 20, 64);
 
             // Resize and re-centre the window on the current screen
-            double newW = Math.Min(RowHeaderW  + cellSize * w + RightReserve + Margins, screen.Width);
+            double newW = Math.Min(RowHeaderW + cellSize * w + RightReserve + Margins, screen.Width);
             double newH = Math.Min(ColHeaderH + cellSize * h + TopReserve + BotReserve + Margins + ChromeReserve, screen.Height);
-            Width  = newW;
+            Width = newW;
             Height = newH;
-            Left   = screen.Left + (screen.Width  - newW) / 2;
-            Top    = screen.Top  + (screen.Height - newH) / 2;
+            Left = screen.Left + (screen.Width - newW) / 2;
+            Top = screen.Top + (screen.Height - newH) / 2;
 
             grdBoard.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(RowHeaderW) });
             for (int i = 0; i < w; i++)
@@ -346,10 +352,10 @@ namespace HugoLand.WPF
                 {
                     Text = x.ToString(),
                     HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment   = VerticalAlignment.Center,
-                    FontSize            = 10,
-                    Foreground          = headerFg,
-                    Visibility          = showHeaders ? Visibility.Visible : Visibility.Hidden,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    FontSize = 10,
+                    Foreground = headerFg,
+                    Visibility = showHeaders ? Visibility.Visible : Visibility.Hidden,
                 };
                 Grid.SetRow(header, 0);
                 Grid.SetColumn(header, x + 1);
@@ -361,21 +367,21 @@ namespace HugoLand.WPF
                 {
                     Text = y.ToString(),
                     HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment   = VerticalAlignment.Center,
-                    FontSize            = 10,
-                    Foreground          = headerFg,
-                    Visibility          = showHeaders ? Visibility.Visible : Visibility.Hidden,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    FontSize = 10,
+                    Foreground = headerFg,
+                    Visibility = showHeaders ? Visibility.Visible : Visibility.Hidden,
                 };
                 Grid.SetRow(header, y + 1);
                 Grid.SetColumn(header, 0);
                 grdBoard.Children.Add(header);
             }
 
-            _cells      = new Border[w, h];
+            _cells = new Border[w, h];
             _cellLabels = new TextBlock[w, h];
 
             var cellBorder = new SolidColorBrush(Color.FromRgb(0x33, 0x33, 0x33));
-            var cellBg     = new SolidColorBrush(Color.FromRgb(0x1E, 0x1E, 0x1E));
+            var cellBg = new SolidColorBrush(Color.FromRgb(0x1E, 0x1E, 0x1E));
 
             for (int x = 0; x < w; x++)
             {
@@ -384,18 +390,18 @@ namespace HugoLand.WPF
                     var tb = new TextBlock
                     {
                         HorizontalAlignment = HorizontalAlignment.Center,
-                        VerticalAlignment   = VerticalAlignment.Center,
-                        FontFamily          = new FontFamily("Consolas"),
-                        FontSize            = 11,
-                        Foreground          = new SolidColorBrush(Color.FromRgb(0xE0, 0xE0, 0xE0)),
+                        VerticalAlignment = VerticalAlignment.Center,
+                        FontFamily = new FontFamily("Consolas"),
+                        FontSize = 11,
+                        Foreground = new SolidColorBrush(Color.FromRgb(0xE0, 0xE0, 0xE0)),
                     };
                     var border = new Border
                     {
-                        BorderBrush     = cellBorder,
+                        BorderBrush = cellBorder,
                         BorderThickness = new Thickness(0.5),
-                        Background      = cellBg,
-                        Cursor          = Cursors.Arrow,
-                        Child           = tb,
+                        Background = cellBg,
+                        Cursor = Cursors.Arrow,
+                        Child = tb,
                     };
                     Grid.SetColumn(border, x + 1);
                     Grid.SetRow(border, y + 1);
@@ -405,7 +411,7 @@ namespace HugoLand.WPF
                     border.MouseLeftButtonUp += (_, _) => OnCellClick(capturedX, capturedY);
 
                     grdBoard.Children.Add(border);
-                    _cells[x, y]      = border;
+                    _cells[x, y] = border;
                     _cellLabels[x, y] = tb;
                 }
             }
@@ -788,11 +794,11 @@ namespace HugoLand.WPF
 
             char? direction = e.Key switch
             {
-                Key.W or Key.Up => 'N',
-                Key.S or Key.Down => 'S',
-                Key.D or Key.Right => 'E',
-                Key.A or Key.Left => 'W',
-                Key.Escape => 'X',
+                System.Windows.Input.Key.W or System.Windows.Input.Key.Up => 'N',
+                System.Windows.Input.Key.S or System.Windows.Input.Key.Down => 'S',
+                System.Windows.Input.Key.D or System.Windows.Input.Key.Right => 'E',
+                System.Windows.Input.Key.A or System.Windows.Input.Key.Left => 'W',
+                System.Windows.Input.Key.Escape => 'X',
                 _ => null,
             };
 

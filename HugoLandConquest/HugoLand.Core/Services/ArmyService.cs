@@ -112,6 +112,9 @@ namespace HugoLand.Core.Services
                 .Include(m => m.Territory)
                 .ThenInclude(t => t.Installation)
                 .FirstAsync(m => m.Id == militaryDetachementId);
+
+            await Context.AddAsync(PlayerAction.Create(militaryDetachement.GameId, PlayerActionType.Move,
+                            $"Movement done in ({militaryDetachement.Territory.PositionX}, {militaryDetachement.Territory.PositionY})"));
             CombatResult combatResult = null;
             bool move = false;
             bool fight = false;
@@ -208,8 +211,7 @@ namespace HugoLand.Core.Services
             militaryDetachement.CanAct = false;
 
             if (oldTerritory.Installation != null && oldTerritory.Installation.InstallationType == InstallationType.Camp)
-                Context.Remove(oldTerritory.Installation);
-
+                Context.Remove(oldTerritory.Installation);            
             await Context.SaveChangesAsync();
             return new MoveResult(move, fight, fusion, combatResult);
         }
@@ -220,6 +222,9 @@ namespace HugoLand.Core.Services
                 .Include(m => m.Territory)
                 .FirstAsync(m => m.Id == militaryDetachementId);
             int remainingArmy = militaryDetachement.MilitaryForce - splitNumber;
+
+            await Context.AddAsync(PlayerAction.Create(militaryDetachement.GameId, PlayerActionType.SplitArmy,
+                            $"Army split in ({militaryDetachement.Territory.PositionX}, {militaryDetachement.Territory.PositionY})"));
             Territory territory = militaryDetachement.Territory;
 
             if (splitNumber < 10)
@@ -310,6 +315,8 @@ namespace HugoLand.Core.Services
 
         public async Task<ResultService> Reinforce(MilitaryDetachment army, int soldierForReinfocement, Player player)
         {
+            await Context.AddAsync(PlayerAction.Create(army.GameId, PlayerActionType.StreghtenArmy,
+                            $"Reiforcement done ({army.Territory.PositionX}, {army.Territory.PositionY})"));
             if (army.MilitaryForce < 10)
                 return ResultService.FailureResult("The militaryForce need to be 10 or more");
             if (army.Territory.Installation == null)
@@ -330,5 +337,6 @@ namespace HugoLand.Core.Services
                     return ResultService.FailureResult("There is not enough gold");
             }
         }
+
     }
 }
