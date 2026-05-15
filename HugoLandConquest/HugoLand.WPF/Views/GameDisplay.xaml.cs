@@ -927,5 +927,14 @@ namespace HugoLand.WPF
             FightsMap map = new FightsMap(_context,_gameId);
             map.ShowDialog();
         }
+
+        private void btnForceEvolution_Click(object sender, RoutedEventArgs e)
+        {
+            //Button sound 
+            AudioManager.MenuSound.Play();
+
+            var dlg = new ForceEvolution(_context, _gameId) { Owner = this };
+            if (dlg.ShowDialog() != true) return;
+        }
     }
 }

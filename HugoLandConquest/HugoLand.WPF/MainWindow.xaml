@@ -97,6 +97,5 @@
             <Label Content="Label"/>
 
         </StackPanel>
-        <Button Content="ENDR" HorizontalAlignment="Left" Margin="345,75,0,0" VerticalAlignment="Top" Click="Button_Click"/>
     </Grid>
 </Window>

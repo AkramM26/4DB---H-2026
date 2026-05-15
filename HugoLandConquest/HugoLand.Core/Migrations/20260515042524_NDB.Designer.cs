@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HugoLand.Core.Migrations
 {
     [DbContext(typeof(HugoLandContext))]
-    [Migration("20260515022236_NDB")]
+    [Migration("20260515042524_NDB")]
     partial class NDB
     {
         /// <inheritdoc />
@@ -204,6 +204,7 @@ namespace HugoLand.Core.Migrations
                         .HasColumnType("INTEGER");
 
                     b.PrimitiveCollection<string>("ForcesTable")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("GameId")
