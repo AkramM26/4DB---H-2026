@@ -8,7 +8,10 @@ namespace HugoLand.Core.Domain
 {
     public enum PlayerActionType
     {
+        Move,
         BuildCamp,
         UpgradeCampToFortification,
+        StreghtenArmy,
+        SplitArmy
     }
 }

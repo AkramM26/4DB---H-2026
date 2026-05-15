@@ -3,6 +3,7 @@ using System;
 using HugoLand.Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HugoLand.Core.Migrations
 {
     [DbContext(typeof(HugoLandContext))]
-    partial class HugoLandContextModelSnapshot : ModelSnapshot
+    [Migration("20260515022236_NDB")]
+    partial class NDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,6 +58,12 @@ namespace HugoLand.Core.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("GoldLooted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TerritoryDefendedPosX")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TerritoryDefendedPosY")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("VictorPlayerNumber")

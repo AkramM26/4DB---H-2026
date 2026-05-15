@@ -29,7 +29,7 @@ namespace HugoLand.Core.Services
                     return ResultService.FailureResult("A template with the same name already exists. Please choose a different name.");
             }
 
-            await Seed.SeedGameAsync(Context, gameSizeX, gameSizeY, gameName,isTemplate, description);
+            await Seed.SeedGameAsync(Context, gameSizeX, gameSizeY, gameName, isTemplate, description);
             return ResultService.SuccessResult();
         }
 
@@ -53,6 +53,7 @@ namespace HugoLand.Core.Services
             await _economyService.CollectRevenue(player);
             await _economyService.PayMaintenance(player);
             await Context.SaveChangesAsync();
+
         }
 
         public void LoadGame(Guid id)
@@ -144,12 +145,34 @@ namespace HugoLand.Core.Services
                 player.MilitaryDetachments.Count, player.MilitaryDetachments.Sum(m => m.MilitaryForce),
                 player.Installations.Count(i => i.InstallationType == InstallationType.Fortification));
 
+
             await Context.TurnSnapShots.AddAsync(snapshot);
+            //Ajouter la force militaire actuelle au tableau 
+            if (game.TurnNumber == 1)
+            {
+                if (player.ForcesTable == null) player.ForcesTable = new List<int>();
+            if (game.TurnNumber==1)
+            {
+                player.ForcesTable.Add(Constants.GameConstants.baseMilitaryForce);
+
+            }
+            player.ForcesTable.Add(player.MilitaryDetachments.Sum(m => m.MilitaryForce));
+
             var otherPlayerNumber = currentPlayerNumber == 1 ? 2 : 1;
+
 
             var otherPlayer = await Context.Players
                 .Include(p => p.MilitaryDetachments)
                 .FirstAsync(p => p.PlayerNumber == otherPlayerNumber);
+
+            //Ajouter la force militaire actuelle au tableau 
+            if (game.TurnNumber == 1)
+            {
+                if (otherPlayer.ForcesTable == null) otherPlayer.ForcesTable = new List<int>();
+                otherPlayer.ForcesTable.Add(Constants.GameConstants.baseMilitaryForce);
+
+            }
+            otherPlayer.ForcesTable.Add(otherPlayer.MilitaryDetachments.Sum(m => m.MilitaryForce));
 
             if (!otherPlayer.MilitaryDetachments.Any())
             {
@@ -179,6 +202,16 @@ namespace HugoLand.Core.Services
 
             game.TurnNumber++;
             await Context.SaveChangesAsync();
+        }
+
+        private int FinalForce(Player player)
+        {
+            int force = 0;
+            foreach (var militarydetachement in player.MilitaryDetachments)
+            {
+                force += militarydetachement.MilitaryForce;
+            }
+            return force;
         }
     }
 }
