@@ -29,7 +29,7 @@ namespace HugoLand.Core.Services
                     return ResultService.FailureResult("A template with the same name already exists. Please choose a different name.");
             }
 
-            await Seed.SeedGameAsync(Context, gameSizeX, gameSizeY, gameName,isTemplate, description);
+            await Seed.SeedGameAsync(Context, gameSizeX, gameSizeY, gameName, isTemplate, description);
             return ResultService.SuccessResult();
         }
 
@@ -148,6 +148,9 @@ namespace HugoLand.Core.Services
 
             await Context.TurnSnapShots.AddAsync(snapshot);
             //Ajouter la force militaire actuelle au tableau 
+            if (game.TurnNumber == 1)
+            {
+                if (player.ForcesTable == null) player.ForcesTable = new List<int>();
             if (game.TurnNumber==1)
             {
                 player.ForcesTable.Add(Constants.GameConstants.baseMilitaryForce);
@@ -165,6 +168,7 @@ namespace HugoLand.Core.Services
             //Ajouter la force militaire actuelle au tableau 
             if (game.TurnNumber == 1)
             {
+                if (otherPlayer.ForcesTable == null) otherPlayer.ForcesTable = new List<int>();
                 otherPlayer.ForcesTable.Add(Constants.GameConstants.baseMilitaryForce);
 
             }
