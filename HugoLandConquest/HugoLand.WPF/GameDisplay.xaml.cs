@@ -96,6 +96,7 @@ namespace HugoLand.WPF
 
         private async Task RunGameAsync()
         {
+            string tableauBord = "";
             try
             {
                 BuildBoard();
@@ -150,6 +151,14 @@ namespace HugoLand.WPF
                                 _selectedArmyId = null;
                                 ClearArmySelectionState();
                                 await _gameService.EndTurnAsync();
+                                // 
+                                tableauBord =   $"Nombre d'armées:      - Adversaire: \n" +
+                                                $"Force totale:         - Adversaire: \n" +
+                                                $"Fortifications:       - Adversaire: \n" +
+                                                $"Production or/tour:   - Adversaire: \n" +
+                                                $"Or disponible:        - Adversaire: \n" +
+                                                $"Dette:                - Adversaire: \n";
+                                txtTableauBord .Text = tableauBord;
                                 await _gameService.StartTurnAsync();
                                 await RefreshBoardAsync();
                                 inTurn = false;

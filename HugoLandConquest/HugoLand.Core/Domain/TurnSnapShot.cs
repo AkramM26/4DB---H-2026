@@ -16,7 +16,6 @@ namespace HugoLand.Core.Domain
         public int TotalMilitaryForce { get; set; }
         public int FortificationCount { get; set; }
         public DateTime CreatedAt { get; set; }
-
         public Guid GameId { get; set; }
         public virtual Game Game { get; set; }
 
