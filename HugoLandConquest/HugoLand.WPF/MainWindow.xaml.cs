@@ -19,9 +19,7 @@ namespace HugoLand.WPF
         private readonly GameService _gameService;
 
         private string ConnectionString;
-
-
-
+        private EndGameReport _endGameReport;
 
         public MainWindow()
         {
@@ -145,6 +143,8 @@ namespace HugoLand.WPF
             Guid gameId = dlg.SelectedGameId.Value;
 
             // Appeler le rapport détaillé
+            _endGameReport = new EndGameReport(_context, gameId) { Owner = this };
+            _endGameReport.ShowDialog();
         }
 
         private void btnPlayerHistory_Click(object sender, RoutedEventArgs e)

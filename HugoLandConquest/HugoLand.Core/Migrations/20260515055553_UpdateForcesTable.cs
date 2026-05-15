@@ -5,25 +5,32 @@
 namespace HugoLand.Core.Migrations
 {
     /// <inheritdoc />
-    public partial class NDB : Migration
+    public partial class UpdateForcesTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
+            migrationBuilder.AlterColumn<string>(
                 name: "ForcesTable",
                 table: "Players",
                 type: "TEXT",
-                nullable: false,
-                defaultValue: "[]");
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "TEXT");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
+            migrationBuilder.AlterColumn<string>(
                 name: "ForcesTable",
-                table: "Players");
+                table: "Players",
+                type: "TEXT",
+                nullable: false,
+                defaultValue: "",
+                oldClrType: typeof(string),
+                oldType: "TEXT",
+                oldNullable: true);
         }
     }
 }

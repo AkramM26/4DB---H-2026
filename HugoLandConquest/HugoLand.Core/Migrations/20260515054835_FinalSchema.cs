@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HugoLand.Core.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class FinalSchema : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -25,7 +25,9 @@ namespace HugoLand.Core.Migrations
                     IsTemplate = table.Column<bool>(type: "INTEGER", nullable: false),
                     MilitaryVictory = table.Column<bool>(type: "INTEGER", nullable: false),
                     WinnerPlayerNumber = table.Column<int>(type: "INTEGER", nullable: true),
-                    EndedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    EndedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    GameSizeX = table.Column<int>(type: "INTEGER", nullable: false),
+                    GameSizeY = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -47,7 +49,9 @@ namespace HugoLand.Core.Migrations
                     DefenceLoss = table.Column<int>(type: "INTEGER", nullable: false),
                     AttackLoss = table.Column<int>(type: "INTEGER", nullable: false),
                     GoldLooted = table.Column<int>(type: "INTEGER", nullable: false),
-                    GameId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    GameId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    TerritoryDefendedPosX = table.Column<int>(type: "INTEGER", nullable: false),
+                    TerritoryDefendedPosY = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -91,7 +95,8 @@ namespace HugoLand.Core.Migrations
                     Income = table.Column<int>(type: "INTEGER", nullable: false),
                     Cost = table.Column<int>(type: "INTEGER", nullable: false),
                     TurnInDept = table.Column<int>(type: "INTEGER", nullable: false),
-                    GameId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    GameId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ForcesTable = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -167,7 +172,7 @@ namespace HugoLand.Core.Migrations
                         column: x => x.GameId,
                         principalTable: "Games",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Installations_Players_PlayerId",
                         column: x => x.PlayerId,
@@ -178,7 +183,7 @@ namespace HugoLand.Core.Migrations
                         column: x => x.TerritoryId,
                         principalTable: "Territories",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -202,7 +207,7 @@ namespace HugoLand.Core.Migrations
                         column: x => x.GameId,
                         principalTable: "Games",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_MilitaryDetachments_Players_PlayerId",
                         column: x => x.PlayerId,
@@ -214,7 +219,7 @@ namespace HugoLand.Core.Migrations
                         column: x => x.TerritoryId,
                         principalTable: "Territories",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

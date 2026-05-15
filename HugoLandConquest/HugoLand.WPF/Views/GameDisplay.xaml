@@ -46,12 +46,13 @@
 
 
                     <!-- Main actions -->
-                    <StackPanel x:Name="pnlMainActions" Visibility="Collapsed" TextElement.Foreground="White">
+                    <StackPanel x:Name="pnlMainActions" TextElement.Foreground="White">
                         <TextBlock Text="Turn actions" FontWeight="Bold" Margin="0,0,0,6"/>
                         <Button Content="Select an army" Margin="0,2" Padding="4" Click="btnSelectArmy_Click"/>
                         <Button Content="Save Game" Margin="0,2" Padding="4" Click="btnSaveGame_Click"/>
                         <Button Content="Go to Main Menu" Margin="0,2" Padding="4" Click="btnMainMenu_Click"/>
                         <Button Content="End Turn" Margin="0,2" Padding="4" Click="btnEndTurn_Click"/>
+                        <Button Content="Force Evolution" Margin="0,2" Padding="4" Click="btnForceEvolution_Click"/>
                     </StackPanel>
 
                     <!-- Army selection -->

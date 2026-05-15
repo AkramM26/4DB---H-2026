@@ -201,7 +201,6 @@ namespace HugoLand.Core.Migrations
                         .HasColumnType("INTEGER");
 
                     b.PrimitiveCollection<string>("ForcesTable")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("GameId")

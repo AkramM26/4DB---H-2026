@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HugoLand.Core.Migrations
 {
     [DbContext(typeof(HugoLandContext))]
-    [Migration("20260423234827_AddCascadeOnDelete2")]
-    partial class AddCascadeOnDelete2
+    [Migration("20260515054835_FinalSchema")]
+    partial class FinalSchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -58,6 +58,12 @@ namespace HugoLand.Core.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("GoldLooted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TerritoryDefendedPosX")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TerritoryDefendedPosY")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("VictorPlayerNumber")
@@ -196,6 +202,10 @@ namespace HugoLand.Core.Migrations
 
                     b.Property<int>("Cost")
                         .HasColumnType("INTEGER");
+
+                    b.PrimitiveCollection<string>("ForcesTable")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid>("GameId")
                         .HasColumnType("TEXT");
