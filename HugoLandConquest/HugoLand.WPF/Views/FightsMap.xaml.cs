@@ -54,8 +54,7 @@ namespace HugoLand.WPF.Views
                     MessageBox.Show($"Error in game loop:\n{ex}", "Error",
                         MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
-        
+        }        
 
         private void BuildBoard()
         {
