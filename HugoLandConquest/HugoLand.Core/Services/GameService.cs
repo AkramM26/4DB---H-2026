@@ -151,57 +151,58 @@ namespace HugoLand.Core.Services
             if (game.TurnNumber == 1)
             {
                 if (player.ForcesTable == null) player.ForcesTable = new List<int>();
-            if (game.TurnNumber==1)
-            {
-                player.ForcesTable.Add(Constants.GameConstants.baseMilitaryForce);
+                if (game.TurnNumber == 1)
+                {
+                    player.ForcesTable.Add(Constants.GameConstants.baseMilitaryForce);
 
+                }
+                player.ForcesTable.Add(player.MilitaryDetachments.Sum(m => m.MilitaryForce));
+
+                var otherPlayerNumber = currentPlayerNumber == 1 ? 2 : 1;
+
+
+                var otherPlayer = await Context.Players
+                    .Include(p => p.MilitaryDetachments)
+                    .FirstAsync(p => p.PlayerNumber == otherPlayerNumber);
+
+                //Ajouter la force militaire actuelle au tableau 
+                if (game.TurnNumber == 1)
+                {
+                    if (otherPlayer.ForcesTable == null) otherPlayer.ForcesTable = new List<int>();
+                    otherPlayer.ForcesTable.Add(Constants.GameConstants.baseMilitaryForce);
+
+                }
+                otherPlayer.ForcesTable.Add(otherPlayer.MilitaryDetachments.Sum(m => m.MilitaryForce));
+
+                if (!otherPlayer.MilitaryDetachments.Any())
+                {
+                    game.IsFinished = true;
+                    game.MilitaryVictory = true;
+                    game.WinnerPlayerNumber = currentPlayerNumber;
+                    game.EndedAt = DateTime.UtcNow;
+                }
+                else if (player.TurnInDept >= 5)
+                {
+                    game.IsFinished = true;
+                    game.MilitaryVictory = false;
+                    game.WinnerPlayerNumber = otherPlayerNumber;
+                    game.EndedAt = DateTime.UtcNow;
+                }
+                else if (otherPlayer.TurnInDept >= 5)
+                {
+                    game.IsFinished = true;
+                    game.MilitaryVictory = false;
+                    game.WinnerPlayerNumber = currentPlayerNumber;
+                    game.EndedAt = DateTime.UtcNow;
+                }
+                else
+                {
+                    game.PlayerTurn = otherPlayerNumber;
+                }
+
+                game.TurnNumber++;
+                await Context.SaveChangesAsync();
             }
-            player.ForcesTable.Add(player.MilitaryDetachments.Sum(m => m.MilitaryForce));
-
-            var otherPlayerNumber = currentPlayerNumber == 1 ? 2 : 1;
-
-
-            var otherPlayer = await Context.Players
-                .Include(p => p.MilitaryDetachments)
-                .FirstAsync(p => p.PlayerNumber == otherPlayerNumber);
-
-            //Ajouter la force militaire actuelle au tableau 
-            if (game.TurnNumber == 1)
-            {
-                if (otherPlayer.ForcesTable == null) otherPlayer.ForcesTable = new List<int>();
-                otherPlayer.ForcesTable.Add(Constants.GameConstants.baseMilitaryForce);
-
-            }
-            otherPlayer.ForcesTable.Add(otherPlayer.MilitaryDetachments.Sum(m => m.MilitaryForce));
-
-            if (!otherPlayer.MilitaryDetachments.Any())
-            {
-                game.IsFinished = true;
-                game.MilitaryVictory = true;
-                game.WinnerPlayerNumber = currentPlayerNumber;
-                game.EndedAt = DateTime.UtcNow;
-            }
-            else if (player.TurnInDept >= 5)
-            {
-                game.IsFinished = true;
-                game.MilitaryVictory = false;
-                game.WinnerPlayerNumber = otherPlayerNumber;
-                game.EndedAt = DateTime.UtcNow;
-            }
-            else if (otherPlayer.TurnInDept >= 5)
-            {
-                game.IsFinished = true;
-                game.MilitaryVictory = false;
-                game.WinnerPlayerNumber = currentPlayerNumber;
-                game.EndedAt = DateTime.UtcNow;
-            }
-            else
-            {
-                game.PlayerTurn = otherPlayerNumber;
-            }
-
-            game.TurnNumber++;
-            await Context.SaveChangesAsync();
         }
 
         private int FinalForce(Player player)
